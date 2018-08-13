@@ -37,12 +37,19 @@ public class Raytrace {
 
 class Scene {
 
+    Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f);
+
     Color resolveRayColor(Ray ray) {
+
+        if (sphere.intersectsRay(ray)) {
+            return Color.of(.7f, .7f, .7f);
+        }
+
         Vec direction = ray.getDirection();
 
         if (direction.y < 0) {
             // ground hit
-            return Color.of(1, 1, 1);
+            return Color.of(.4f, .4f, 0);
         }
 
         // nothing hit
@@ -97,6 +104,10 @@ class Ray {
     public Vec getDirection() {
         return direction;
     }
+
+    public Vec getOrigin() {
+        return origin;
+    }
 }
 
 class Color {
@@ -104,14 +115,14 @@ class Color {
     float g;
     float b;
 
-    public Color(int r, int g, int b) {
+    public Color(float r, float g, float b) {
         this.r = r;
         this.g = g;
         this.b = b;
     }
 
-    public static Color of(int i, int i1, int i2) {
-        return new Color(i, i1, i2);
+    public static Color of(float r, float g, float b) {
+        return new Color(r, g, b);
     }
 
     public int toIntRGB() {
@@ -125,6 +136,26 @@ class Color {
 class Sphere {
     Vec center;
     float radius;
+
+    public Sphere(Vec center, float radius) {
+        this.center = center;
+        this.radius = radius;
+    }
+
+    public boolean intersectsRay(Ray ray) {
+        // ray = at+b
+        // |at+b - c|^2 = (at+b-c).(at+b-c) = a.a t^2 + 2 a.(b-c) t + (b-c).(b-c) < r
+        // has solution if 4 (a.(b-c))^2 - 4 a.a ((b-c).(b-c)-r) >= 0
+        // (a.(b-c))^2 >= a.a ((b-c).(b-c)-r)
+        Vec a = ray.getDirection();
+        Vec b = ray.getOrigin();
+        Vec c = this.center;
+        float r = this.radius;
+
+        Vec bMINUSc = b.copy().sub(c);
+
+        return Math.pow(a.dot(bMINUSc), 2) >= a.sqLen() * (bMINUSc.sqLen() - r);
+    }
 }
 
 class Vec {
@@ -188,6 +219,10 @@ class Vec {
     public Vec normalize() {
         float len = (float) Math.sqrt(sqLen());
         return div(len);
+    }
+
+    public Vec copy() {
+        return new Vec(this);
     }
 
     public static Vec of(float x, float y, float z) {
