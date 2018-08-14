@@ -46,14 +46,15 @@ class Scene {
 
         if (sphere.intersectsRay(ray)) {
             float intercept = sphere.getIntercept(ray);
-            if (Float.isFinite(intercept)) {
+            if (Float.isFinite(intercept) && intercept > 1e-6) {
                 Vec interceptPoint = ray.apply(intercept);
                 Vec normal = sphere.getNormal(interceptPoint).normalize();
 
+                Ray reflected = ray.getReflected(normal, interceptPoint);
+
                 float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
 
-                Color sphereColor = Color.of(.7f, .7f, .7f);
-
+                Color sphereColor = resolveRayColor(reflected);
                 return sphereColor.mulAdd(directionalLightEnergy, directionalLight.color, ambientLight.color);
             }
         }
@@ -64,7 +65,7 @@ class Scene {
         }
 
         // nothing hit
-        return Color.of(0, 0, 0);
+        return Color.of(.1f, .25f, .333f);
     }
 }
 
@@ -122,6 +123,10 @@ class Ray {
 
     public Vec apply(float t) {
         return Vec.mulAdd(t, direction, origin);
+    }
+
+    public Ray getReflected(Vec normal, Vec interceptPoint) {
+        return new Ray(interceptPoint, normal.reflected(direction));
     }
 }
 
@@ -223,6 +228,10 @@ class HorizontalPlane {
             return Float.NaN;
         }
     }
+
+    public Vec getNormal(Vec point) {
+        return Vec.of(0, 1, 0);
+    }
 }
 
 class DirectionalLight {
@@ -323,5 +332,9 @@ class Vec {
     @Override
     public String toString() {
         return String.format("Vec(%f, %f, %f)", x, y, z);
+    }
+
+    public Vec reflected(Vec v) {
+        return mulAdd(-2 * this.dot(v) / this.sqLen(), this, v);
     }
 }
