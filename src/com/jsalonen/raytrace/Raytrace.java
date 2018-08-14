@@ -37,7 +37,7 @@ public class Raytrace {
 
 class Scene {
 
-    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 1).normalize(), Color.of(1, 1, 1));
+    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
     AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .2f, .2f));
     Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f);
     HorizontalPlane plane = new HorizontalPlane(-.5f);
@@ -61,7 +61,17 @@ class Scene {
 
         float planeIntercept = plane.getIntercept(ray);
         if (Float.isFinite(planeIntercept)) {
-            return Color.of(.4f, .3f, .1f);
+            Vec interceptPoint = ray.apply(planeIntercept);
+            Ray lightRay = directionalLight.getRay(interceptPoint);
+            Color planeColor = Color.of(.4f, .3f, .1f);
+            ;
+            if (sphere.intersectsRay(lightRay)) {
+                return planeColor;
+            } else {
+                float directionalLightEnergy = Math.max(0, -plane.getNormal(interceptPoint).dot(directionalLight.direction));
+
+                return planeColor.mulAdd(directionalLightEnergy, directionalLight.color, ambientLight.color);
+            }
         }
 
         // nothing hit
@@ -241,6 +251,10 @@ class DirectionalLight {
     DirectionalLight(Vec direction, Color color) {
         this.direction = direction;
         this.color = color;
+    }
+
+    public Ray getRay(Vec origin) {
+        return new Ray(origin, direction.copy().mul(-1));
     }
 }
 
