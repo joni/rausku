@@ -40,6 +40,7 @@ class Scene {
     DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 1).normalize(), Color.of(1, 1, 1));
     AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .2f, .2f));
     Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f);
+    HorizontalPlane plane = new HorizontalPlane(-.5f);
 
     Color resolveRayColor(Ray ray) {
 
@@ -57,11 +58,9 @@ class Scene {
             }
         }
 
-        Vec direction = ray.getDirection();
-
-        if (direction.y < 0) {
-            // ground hit
-            return Color.of(.4f, .4f, 0);
+        float planeIntercept = plane.getIntercept(ray);
+        if (Float.isFinite(planeIntercept)) {
+            return Color.of(.4f, .3f, .1f);
         }
 
         // nothing hit
@@ -206,6 +205,23 @@ class Sphere {
 
     public Vec getNormal(Vec point) {
         return point.copy().sub(center);
+    }
+}
+
+class HorizontalPlane {
+    float groundLevel;
+
+    public HorizontalPlane(float groundLevel) {
+        this.groundLevel = groundLevel;
+    }
+
+    public float getIntercept(Ray ray) {
+        float intercept = (groundLevel - ray.getOrigin().y) / ray.getDirection().y;
+        if (intercept > 0) {
+            return intercept;
+        } else {
+            return Float.NaN;
+        }
     }
 }
 
