@@ -37,12 +37,24 @@ public class Raytrace {
 
 class Scene {
 
+    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 1).normalize(), Color.of(1, 1, 1));
+    AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .2f, .2f));
     Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f);
 
     Color resolveRayColor(Ray ray) {
 
         if (sphere.intersectsRay(ray)) {
-            return Color.of(.7f, .7f, .7f);
+            float intercept = sphere.getIntercept(ray);
+            if (Float.isFinite(intercept)) {
+                Vec interceptPoint = ray.apply(intercept);
+                Vec normal = sphere.getNormal(interceptPoint).normalize();
+
+                float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
+
+                Color sphereColor = Color.of(.7f, .7f, .7f);
+
+                return sphereColor.mulAdd(directionalLightEnergy, directionalLight.color, ambientLight.color);
+            }
         }
 
         Vec direction = ray.getDirection();
@@ -108,6 +120,10 @@ class Ray {
     public Vec getOrigin() {
         return origin;
     }
+
+    public Vec apply(float t) {
+        return Vec.mulAdd(t, direction, origin);
+    }
 }
 
 class Color {
@@ -130,6 +146,13 @@ class Color {
         int g = Math.min(255, (int) (256 * this.g));
         int b = Math.min(255, (int) (256 * this.b));
         return (0xff << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    public Color mulAdd(float directionalLightEnergy, Color color, Color color1) {
+        this.r = this.r * directionalLightEnergy * color.r + color1.r;
+        this.g = this.g * directionalLightEnergy * color.g + color1.g;
+        this.b = this.b * directionalLightEnergy * color.b + color1.b;
+        return this;
     }
 }
 
@@ -156,6 +179,52 @@ class Sphere {
 
         return Math.pow(a.dot(bMINUSc), 2) >= a.sqLen() * (bMINUSc.sqLen() - r);
     }
+
+    public float getIntercept(Ray ray) {
+        Vec a = ray.getDirection();
+        Vec b = ray.getOrigin();
+        Vec c = this.center;
+        float r = this.radius;
+
+        Vec bMINUSc = b.copy().sub(c);
+
+        float A = a.sqLen();
+        float B = 2 * a.dot(bMINUSc);
+        float C = bMINUSc.sqLen() - r;
+
+        float determinant = B * B - 4 * A * C;
+        if (determinant > 0) {
+            float sol1 = (-B - (float) Math.sqrt(determinant)) / (2 * A);
+            if (sol1 > 0) {
+                return sol1;
+            } else {
+                return (-B + (float) Math.sqrt(determinant)) / (2 * A);
+            }
+        }
+        return Float.NaN;
+    }
+
+    public Vec getNormal(Vec point) {
+        return point.copy().sub(center);
+    }
+}
+
+class DirectionalLight {
+    Vec direction;
+    Color color;
+
+    DirectionalLight(Vec direction, Color color) {
+        this.direction = direction;
+        this.color = color;
+    }
+}
+
+class AmbientLight {
+    Color color;
+
+    AmbientLight(Color color) {
+        this.color = color;
+    }
 }
 
 class Vec {
@@ -178,6 +247,12 @@ class Vec {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public static Vec mulAdd(float t, Vec direction, Vec origin) {
+        return new Vec(direction.x * t + origin.x,
+                direction.y * t + origin.y,
+                direction.z * t + origin.z);
     }
 
     public Vec add(Vec v) {
