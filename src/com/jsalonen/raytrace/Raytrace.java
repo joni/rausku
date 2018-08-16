@@ -2,12 +2,14 @@ package com.jsalonen.raytrace;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 
 public class Raytrace {
     public static void main(String... args) {
-        int pixelWidth = 256;
-        int pixelHeight = 256;
-        Canvas canvas = new Canvas(pixelWidth, pixelHeight, 64, Vec.of(0, 0, 0), 1);
+        int pixelWidth = 640;
+        int pixelHeight = 480;
+        Canvas canvas = new Canvas(pixelWidth, pixelHeight, 1280, Vec.of(0, 0, 0), 1);
 
         Scene scene = new Scene();
 
@@ -37,27 +39,41 @@ public class Raytrace {
 
 class Scene {
 
+    public static final double INTERCEPT_NEAR = 1e-3;
+    List<SceneObject> objects;
+
     DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
-    AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
-    Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f, new Material(Color.of(1, .2f, .2f), .8f));
-    HorizontalPlane plane = new HorizontalPlane(-.5f);
+    AmbientLight ambientLight = new AmbientLight(Color.of(.5f, .5f, .5f));
+
+    public Scene() {
+        Sphere sphere = new Sphere(Vec.of(-.6667f, 0, 5), .333f, new Material(Color.of(1, .2f, .2f), .9f));
+        Sphere sphere2 = new Sphere(Vec.of(.0f, 0f, 5), .333f, new Material(Color.of(.2f, 1f, .2f), .9f));
+        Sphere sphere3 = new Sphere(Vec.of(.6667f, 0, 5), .333f, new Material(Color.of(.2f, .2f, 1f), .9f));
+        HorizontalPlane plane = new HorizontalPlane(-.333f);
+
+        objects = Arrays.asList(sphere, sphere2, sphere3, plane);
+    }
 
     boolean interceptsRay(Ray ray) {
-        return sphere.intersectsRay(ray) || plane.intersectsRay(ray);
+        return objects.stream().anyMatch(o -> o.getIntercept(ray) > INTERCEPT_NEAR);
     }
 
     Color resolveRayColor(float reflectiveness, Ray ray) {
 
-        if (sphere.intersectsRay(ray)) {
-            float intercept = sphere.getIntercept(ray);
-            if (Float.isFinite(intercept) && intercept > 1e-6) {
-                return getColorFromObject(reflectiveness, ray, intercept, sphere);
+        float closestIntercept = Float.POSITIVE_INFINITY;
+        SceneObject closestObject = null;
+
+        for (SceneObject object : objects) {
+            float intercept = object.getIntercept(ray);
+            if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
+                closestIntercept = intercept;
+                closestObject = object;
             }
         }
 
-        float planeIntercept = plane.getIntercept(ray);
-        if (Float.isFinite(planeIntercept)) {
-            return getColorFromObject(reflectiveness, ray, planeIntercept, plane);
+        if (closestObject != null) {
+            Vec interceptPoint = ray.apply(closestIntercept);
+            return getColorFromObject(reflectiveness, interceptPoint, ray, closestObject);
         }
 
         // nothing hit
@@ -68,12 +84,13 @@ class Scene {
         return Color.of(.1f, .1f, .1f);
     }
 
-    private Color getColorFromObject(float reflectiveness, Ray ray, float intercept, SceneObject sceneObject) {
-        Vec interceptPoint = ray.apply(intercept);
+    private Color getColorFromObject(float reflectiveness, Vec interceptPoint, Ray ray, SceneObject sceneObject) {
+
         Vec normal = sceneObject.getNormal(interceptPoint).normalize();
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.color.copy();
+
         float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
         if (directionalLightEnergy > 0) {
             Ray lightRay = directionalLight.getRay(interceptPoint);
@@ -81,12 +98,14 @@ class Scene {
                 light.add(directionalLight.color.copy().mul(directionalLightEnergy));
             }
         }
-        if (material.getReflectiveness() > 0 && reflectiveness > 1e-3) {
+        if (material.getReflectiveness() > 0 && reflectiveness > 1e-9) {
             Ray reflected = ray.getReflected(normal, interceptPoint);
-            light.add(resolveRayColor(reflectiveness * material.getReflectiveness(), reflected).mul(material.getReflectiveness()));
+            Color reflectedLight = resolveRayColor(reflectiveness * material.getReflectiveness(), reflected);
+            reflectedLight.mul(material.getReflectiveness());
+            light.add(reflectedLight);
         }
 
-        return material.color.copy().mul(light);
+        return material.getColor().copy().mul(light);
     }
 }
 
@@ -167,9 +186,9 @@ class Color {
     }
 
     public int toIntRGB() {
-        int r = Math.min(255, (int) (256 * this.r));
-        int g = Math.min(255, (int) (256 * this.g));
-        int b = Math.min(255, (int) (256 * this.b));
+        int r = Math.min(255, (int) (256 * (1 - Math.exp(-this.r))));
+        int g = Math.min(255, (int) (256 * (1 - Math.exp(-this.g))));
+        int b = Math.min(255, (int) (256 * (1 - Math.exp(-this.b))));
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 
@@ -210,6 +229,8 @@ abstract class SceneObject {
     public abstract Vec getNormal(Vec interceptPoint);
 
     public abstract Material getMaterial();
+
+    public abstract float getIntercept(Ray ray);
 }
 
 class Sphere extends SceneObject {
