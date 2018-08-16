@@ -1,6 +1,8 @@
 package com.jsalonen.raytrace;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,12 @@ public class Raytrace {
                     JFrame frame = new JFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             JLabel label = new JLabel(new ImageIcon(image));
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.exit(0);
+                }
+            });
                     frame.add(label);
                     frame.pack();
                     frame.setVisible(true);
