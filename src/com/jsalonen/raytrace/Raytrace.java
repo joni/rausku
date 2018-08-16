@@ -258,22 +258,24 @@ class Sphere extends SceneObject {
 
         float A = a.sqLen();
         float B = 2 * a.dot(bMINUSc);
-        float C = bMINUSc.sqLen() - r;
+        float C = bMINUSc.sqLen() - r * r;
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
-            float sol1 = (-B - (float) Math.sqrt(determinant)) / (2 * A);
-            if (sol1 > 0) {
-                return sol1;
-            } else {
-                return (-B + (float) Math.sqrt(determinant)) / (2 * A);
+            float intercept = (-B - (float) Math.sqrt(determinant)) / (2 * A);
+            if (intercept > 0) {
+                return intercept;
+            }
+            intercept = (-B + (float) Math.sqrt(determinant)) / (2 * A);
+            if (intercept > 0) {
+                return intercept;
             }
         }
         return Float.NaN;
     }
 
     public Vec getNormal(Vec point) {
-        return point.copy().sub(center);
+        return point.copy().sub(center).normalize();
     }
 
     public Material getMaterial() {
@@ -295,10 +297,6 @@ class HorizontalPlane extends SceneObject {
         } else {
             return Float.NaN;
         }
-    }
-
-    public boolean intersectsRay(Ray r) {
-        return getIntercept(r) > 1e-6;
     }
 
     public Vec getNormal(Vec point) {
