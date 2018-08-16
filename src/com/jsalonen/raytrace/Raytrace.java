@@ -2,8 +2,10 @@ package com.jsalonen.raytrace;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.*;
 
 public class Raytrace {
     public static void main(String... args) {
@@ -46,12 +48,21 @@ class Scene {
     AmbientLight ambientLight = new AmbientLight(Color.of(.5f, .5f, .5f));
 
     public Scene() {
-        Sphere sphere = new Sphere(Vec.of(-.6667f, 0, 5), .333f, new Material(Color.of(1, .2f, .2f), .9f));
-        Sphere sphere2 = new Sphere(Vec.of(.0f, 0f, 5), .333f, new Material(Color.of(.2f, 1f, .2f), .9f));
-        Sphere sphere3 = new Sphere(Vec.of(.6667f, 0, 5), .333f, new Material(Color.of(.2f, .2f, 1f), .9f));
-        HorizontalPlane plane = new HorizontalPlane(-.333f);
+        Color silver = Color.of(1f, 1f, 1f);
+        Sphere sphere = new Sphere(Vec.of(-.5f, 0, 5), .5f, Material.metallic(silver, .9f));
+        Sphere sphere2 = new Sphere(Vec.of(.0f, 0, 5.866f), .5f, Material.plastic(silver, .5f));
+        Sphere sphere3 = new Sphere(Vec.of(.5f, 0, 5), .5f, Material.metallic(silver, .9f));
+        Sphere sphere4 = new Sphere(Vec.of(.0f, .866f, 5.422f), .5f, Material.plastic(silver, .5f));
+        HorizontalPlane plane = new HorizontalPlane(-.5f);
 
-        objects = Arrays.asList(sphere, sphere2, sphere3, plane);
+        objects = new ArrayList<>();
+        for (int i = -3; i <= 3; i++) {
+            for (int j = -3; j <= 3; j++) {
+                objects.add(new Sphere(Vec.of(i, j, 10), .5f, Material.plastic(Color.of(.8f, .2f, .2f), .5f)));
+            }
+        }
+
+//        objects.add(plane);
     }
 
     boolean interceptsRay(Ray ray) {
@@ -91,21 +102,25 @@ class Scene {
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.color.copy();
 
-        float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
+        float directionalLightEnergy = max(0, -normal.dot(directionalLight.direction));
         if (directionalLightEnergy > 0) {
             Ray lightRay = directionalLight.getRay(interceptPoint);
             if (!interceptsRay(lightRay)) {
                 light.add(directionalLight.color.copy().mul(directionalLightEnergy));
             }
         }
-        if (material.getReflectiveness() > 0 && reflectiveness > 1e-9) {
+
+        Color diffuseColor = material.getDiffuseColor().copy().mul(light);
+
+        if (reflectiveness <= 1e-9 || material.getReflectiveness() <= 0) {
+            return diffuseColor;
+        } else {
             Ray reflected = ray.getReflected(normal, interceptPoint);
             Color reflectedLight = resolveRayColor(reflectiveness * material.getReflectiveness(), reflected);
-            reflectedLight.mul(material.getReflectiveness());
-            light.add(reflectedLight);
+            reflectedLight.mul(material.getReflectiveness()).mul(material.getReflectiveColor());
+            diffuseColor.add(reflectedLight);
+            return diffuseColor;
         }
-
-        return material.getColor().copy().mul(light);
     }
 }
 
@@ -186,9 +201,9 @@ class Color {
     }
 
     public int toIntRGB() {
-        int r = Math.min(255, (int) (256 * (1 - Math.exp(-this.r))));
-        int g = Math.min(255, (int) (256 * (1 - Math.exp(-this.g))));
-        int b = Math.min(255, (int) (256 * (1 - Math.exp(-this.b))));
+        int r = min(255, (int) (256 * (1 - exp(-this.r))));
+        int g = min(255, (int) (256 * (1 - exp(-this.g))));
+        int b = min(255, (int) (256 * (1 - exp(-this.b))));
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 
@@ -262,11 +277,11 @@ class Sphere extends SceneObject {
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
-            float intercept = (-B - (float) Math.sqrt(determinant)) / (2 * A);
+            float intercept = (-B - (float) sqrt(determinant)) / (2 * A);
             if (intercept > 0) {
                 return intercept;
             }
-            intercept = (-B + (float) Math.sqrt(determinant)) / (2 * A);
+            intercept = (-B + (float) sqrt(determinant)) / (2 * A);
             if (intercept > 0) {
                 return intercept;
             }
@@ -305,31 +320,52 @@ class HorizontalPlane extends SceneObject {
 
     @Override
     public Material getMaterial() {
-        return new Material(Color.of(.4f, .3f, .1f), .8f);
+        return Material.plastic(Color.of(.24f, .5f, .2f), .3f);
     }
 }
 
 class Material {
-    Color color;
+    Color diffuseColor;
+    Color reflectiveColor;
     float reflectiveness;
     float transparency;
     float indexOfRefraction;
 
-    public Material(Color color) {
-        this(color, 0);
+    public Material(Color diffuseColor) {
+        this.diffuseColor = diffuseColor;
+        this.reflectiveness = 0f;
     }
 
-    public Material(Color color, float reflectiveness) {
-        this.color = color;
+    public Material(Color reflectiveColor, float reflectiveness) {
+        this.diffuseColor = Color.of(.1f, .1f, .1f);
+        this.reflectiveColor = reflectiveColor;
         this.reflectiveness = reflectiveness;
     }
 
-    public Color getColor() {
-        return color;
+    public Material(Color diffuseColor, Color reflectiveColor, float reflectiveness) {
+        this.diffuseColor = diffuseColor;
+        this.reflectiveColor = reflectiveColor;
+        this.reflectiveness = reflectiveness;
+    }
+
+    static Material plastic(Color color, float reflectiveness) {
+        return new Material(color, color, reflectiveness);
+    }
+
+    static Material metallic(Color color, float reflectiveness) {
+        return new Material(Color.of(.01f, .01f, .01f), color, reflectiveness);
     }
 
     public float getReflectiveness() {
         return reflectiveness;
+    }
+
+    public Color getDiffuseColor() {
+        return diffuseColor;
+    }
+
+    public Color getReflectiveColor() {
+        return reflectiveColor;
     }
 }
 
@@ -420,7 +456,7 @@ class Vec {
     }
 
     public Vec normalize() {
-        float len = (float) Math.sqrt(sqLen());
+        float len = (float) sqrt(sqLen());
         return div(len);
     }
 
@@ -442,6 +478,6 @@ class Vec {
     }
 
     public float cos(Vec v) {
-        return this.dot(v) / (float) Math.sqrt(this.sqLen() * v.sqLen());
+        return this.dot(v) / (float) sqrt(this.sqLen() * v.sqLen());
     }
 }
