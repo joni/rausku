@@ -16,7 +16,7 @@ public class Raytrace {
             for (int x = 0; x < pixelWidth; x++) {
                 Ray ray = canvas.getRayFromOriginToCanvas(x, y);
 
-                Color color = scene.resolveRayColor(ray);
+                Color color = scene.resolveRayColor(1, ray);
 
                 image.setRGB(x, y, color.toIntRGB());
             }
@@ -38,44 +38,55 @@ public class Raytrace {
 class Scene {
 
     DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
-    AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .2f, .2f));
-    Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f);
+    AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
+    Sphere sphere = new Sphere(Vec.of(0, 0, 1), .5f, new Material(Color.of(1, .2f, .2f), .8f));
     HorizontalPlane plane = new HorizontalPlane(-.5f);
 
-    Color resolveRayColor(Ray ray) {
+    boolean interceptsRay(Ray ray) {
+        return sphere.intersectsRay(ray) || plane.intersectsRay(ray);
+    }
+
+    Color resolveRayColor(float reflectiveness, Ray ray) {
 
         if (sphere.intersectsRay(ray)) {
             float intercept = sphere.getIntercept(ray);
             if (Float.isFinite(intercept) && intercept > 1e-6) {
-                Vec interceptPoint = ray.apply(intercept);
-                Vec normal = sphere.getNormal(interceptPoint).normalize();
-
-                Ray reflected = ray.getReflected(normal, interceptPoint);
-
-                float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
-
-                Color sphereColor = resolveRayColor(reflected);
-                return sphereColor.mulAdd(directionalLightEnergy, directionalLight.color, ambientLight.color);
+                return getColorFromObject(reflectiveness, ray, intercept, sphere);
             }
         }
 
         float planeIntercept = plane.getIntercept(ray);
         if (Float.isFinite(planeIntercept)) {
-            Vec interceptPoint = ray.apply(planeIntercept);
-            Ray lightRay = directionalLight.getRay(interceptPoint);
-            Color planeColor = Color.of(.4f, .3f, .1f);
-            ;
-            if (sphere.intersectsRay(lightRay)) {
-                return planeColor;
-            } else {
-                float directionalLightEnergy = Math.max(0, -plane.getNormal(interceptPoint).dot(directionalLight.direction));
-
-                return planeColor.mulAdd(directionalLightEnergy, directionalLight.color, ambientLight.color);
-            }
+            return getColorFromObject(reflectiveness, ray, planeIntercept, plane);
         }
 
         // nothing hit
-        return Color.of(.1f, .25f, .333f);
+        if (directionalLight.direction.cos(ray.getDirection()) < -.99) {
+            return Color.of(10f, 10f, 10f);
+        }
+
+        return Color.of(.1f, .1f, .1f);
+    }
+
+    private Color getColorFromObject(float reflectiveness, Ray ray, float intercept, SceneObject sceneObject) {
+        Vec interceptPoint = ray.apply(intercept);
+        Vec normal = sceneObject.getNormal(interceptPoint).normalize();
+
+        Material material = sceneObject.getMaterial();
+        Color light = ambientLight.color.copy();
+        float directionalLightEnergy = Math.max(0, -normal.dot(directionalLight.direction));
+        if (directionalLightEnergy > 0) {
+            Ray lightRay = directionalLight.getRay(interceptPoint);
+            if (!interceptsRay(lightRay)) {
+                light.add(directionalLight.color.copy().mul(directionalLightEnergy));
+            }
+        }
+        if (material.getReflectiveness() > 0 && reflectiveness > 1e-3) {
+            Ray reflected = ray.getReflected(normal, interceptPoint);
+            light.add(resolveRayColor(reflectiveness * material.getReflectiveness(), reflected).mul(material.getReflectiveness()));
+        }
+
+        return material.color.copy().mul(light);
     }
 }
 
@@ -168,30 +179,52 @@ class Color {
         this.b = this.b * directionalLightEnergy * color.b + color1.b;
         return this;
     }
+
+    public Color mul(Color color) {
+        this.r *= color.r;
+        this.g *= color.g;
+        this.b *= color.b;
+        return this;
+    }
+
+    public Color copy() {
+        return new Color(r, g, b);
+    }
+
+    public Color mul(float directionalLightEnergy) {
+        this.r *= directionalLightEnergy;
+        this.g *= directionalLightEnergy;
+        this.b *= directionalLightEnergy;
+        return this;
+    }
+
+    public Color add(Color resolveRayColor) {
+        this.r += resolveRayColor.r;
+        this.g += resolveRayColor.g;
+        this.b += resolveRayColor.b;
+        return this;
+    }
 }
 
-class Sphere {
+abstract class SceneObject {
+    public abstract Vec getNormal(Vec interceptPoint);
+
+    public abstract Material getMaterial();
+}
+
+class Sphere extends SceneObject {
     Vec center;
     float radius;
+    Material material;
 
-    public Sphere(Vec center, float radius) {
+    public Sphere(Vec center, float radius, Material material) {
         this.center = center;
         this.radius = radius;
+        this.material = material;
     }
 
     public boolean intersectsRay(Ray ray) {
-        // ray = at+b
-        // |at+b - c|^2 = (at+b-c).(at+b-c) = a.a t^2 + 2 a.(b-c) t + (b-c).(b-c) < r
-        // has solution if 4 (a.(b-c))^2 - 4 a.a ((b-c).(b-c)-r) >= 0
-        // (a.(b-c))^2 >= a.a ((b-c).(b-c)-r)
-        Vec a = ray.getDirection();
-        Vec b = ray.getOrigin();
-        Vec c = this.center;
-        float r = this.radius;
-
-        Vec bMINUSc = b.copy().sub(c);
-
-        return Math.pow(a.dot(bMINUSc), 2) >= a.sqLen() * (bMINUSc.sqLen() - r);
+        return getIntercept(ray) > 1e-6;
     }
 
     public float getIntercept(Ray ray) {
@@ -221,9 +254,13 @@ class Sphere {
     public Vec getNormal(Vec point) {
         return point.copy().sub(center);
     }
+
+    public Material getMaterial() {
+        return material;
+    }
 }
 
-class HorizontalPlane {
+class HorizontalPlane extends SceneObject {
     float groundLevel;
 
     public HorizontalPlane(float groundLevel) {
@@ -239,8 +276,41 @@ class HorizontalPlane {
         }
     }
 
+    public boolean intersectsRay(Ray r) {
+        return getIntercept(r) > 1e-6;
+    }
+
     public Vec getNormal(Vec point) {
         return Vec.of(0, 1, 0);
+    }
+
+    @Override
+    public Material getMaterial() {
+        return new Material(Color.of(.4f, .3f, .1f), .8f);
+    }
+}
+
+class Material {
+    Color color;
+    float reflectiveness;
+    float transparency;
+    float indexOfRefraction;
+
+    public Material(Color color) {
+        this(color, 0);
+    }
+
+    public Material(Color color, float reflectiveness) {
+        this.color = color;
+        this.reflectiveness = reflectiveness;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public float getReflectiveness() {
+        return reflectiveness;
     }
 }
 
@@ -350,5 +420,9 @@ class Vec {
 
     public Vec reflected(Vec v) {
         return mulAdd(-2 * this.dot(v) / this.sqLen(), this, v);
+    }
+
+    public float cos(Vec v) {
+        return this.dot(v) / (float) Math.sqrt(this.sqLen() * v.sqLen());
     }
 }
