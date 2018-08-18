@@ -12,11 +12,11 @@ import static java.lang.Math.*;
 
 public class Raytrace {
     public static void main(String... args) {
-        int pixelWidth = 640;
-        int pixelHeight = 480;
+        int pixelWidth = 768;
+        int pixelHeight = 768;
         Canvas canvas = new Canvas(pixelWidth, pixelHeight, 1280, Vec.of(0, 0, 0), 1);
 
-        Scene scene = new Scene();
+        Scene scene = new Scene2();
 
         BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
         BufferedImage debugimage = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
@@ -36,18 +36,18 @@ public class Raytrace {
         SwingUtilities.invokeLater(() -> {
                     JFrame frame = new JFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JLabel label = new JLabel(new ImageIcon(image));
-            label.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    Point point = e.getPoint();
-                    Ray ray = canvas.getRayFromOriginToCanvas(point.x, point.y);
+                    JLabel label = new JLabel(new ImageIcon(image));
+                    label.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            Point point = e.getPoint();
+                            Ray ray = canvas.getRayFromOriginToCanvas(point.x, point.y);
 
-                    scene.resolveRayColorDebug(1, ray, true);
+                            scene.resolveRayColorDebug(1, ray, true);
 
-                    //System.exit(0);
-                }
-            });
+                            //System.exit(0);
+                        }
+                    });
                     frame.add(label);
                     frame.pack();
                     frame.setVisible(true);
@@ -56,33 +56,48 @@ public class Raytrace {
     }
 }
 
-class Scene {
+class Scene1 extends Scene {
+
+    public Scene1() {
+        Color red = Color.of(.9f, .2f, .2f);
+        Color green = Color.of(.2f, .9f, .2f);
+        Color blue = Color.of(.2f, .2f, .9f);
+        Sphere sphere = new Sphere(Vec.of(-.5f, 0, 5), .5f, Material.plastic(red, .5f));
+        Sphere sphere2 = new Sphere(Vec.of(.0f, 0, 5.866f), .5f, Material.plastic(red, .5f));
+        Sphere sphere3 = new Sphere(Vec.of(.5f, 0, 5), .5f, Material.plastic(blue, .5f));
+        Sphere sphere4 = new Sphere(Vec.of(.0f, .8165f, 5.422f), .5f, Material.plastic(green, .5f));
+        HorizontalPlane plane = new HorizontalPlane(-.5f);
+
+        objects.add(sphere);
+        objects.add(sphere2);
+        objects.add(sphere3);
+        objects.add(sphere4);
+
+        objects.add(plane);
+    }
+}
+
+class Scene2 extends Scene {
+
+    public Scene2() {
+        for (int i = -5; i <= 5; i++) {
+            for (int j = -5; j <= 5; j++) {
+                objects.add(new Sphere(Vec.of(i, j, 10), .5f, Material.plastic(Color.of((i + 5) / 10f, (j + 5) / 10f, (10 - i - j) / 20f), .5f)));
+            }
+        }
+
+        objects.add(new Sphere(Vec.of(0, 0, 5f), 1f, Material.glass()));
+    }
+}
+
+abstract class Scene {
 
     public static final double INTERCEPT_NEAR = 1e-3;
-    List<SceneObject> objects;
+    List<SceneObject> objects = new ArrayList<>();
 
     DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
     AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
 
-    public Scene() {
-        Color silver = Color.of(1f, 1f, 1f);
-        Sphere sphere = new Sphere(Vec.of(-.5f, 0, 5), .5f, Material.metallic(silver, .9f));
-        Sphere sphere2 = new Sphere(Vec.of(.0f, 0, 5.866f), .5f, Material.plastic(silver, .5f));
-        Sphere sphere3 = new Sphere(Vec.of(.5f, 0, 5), .5f, Material.metallic(silver, .9f));
-        Sphere sphere4 = new Sphere(Vec.of(.0f, .866f, 5.422f), .5f, Material.plastic(silver, .5f));
-        HorizontalPlane plane = new HorizontalPlane(-.5f);
-
-        objects = new ArrayList<>();
-        for (int i = -3; i <= 3; i++) {
-            for (int j = -3; j <= 3; j++) {
-                objects.add(new Sphere(Vec.of(i, j, 10), .5f, Material.plastic(Color.of((i + 3) / 6f, (j + 3) / 6f, .2f), .5f)));
-            }
-        }
-
-        objects.add(new Sphere(Vec.of(0, 0, 1f), .2f, Material.glass()));
-
-//        objects.add(plane);
-    }
 
     boolean interceptsRay(Ray ray) {
         return objects.stream().anyMatch(o -> o.getIntercept(ray) > INTERCEPT_NEAR);
