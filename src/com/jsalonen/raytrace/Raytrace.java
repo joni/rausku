@@ -1,6 +1,7 @@
 package com.jsalonen.raytrace;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -18,6 +19,7 @@ public class Raytrace {
         Scene scene = new Scene();
 
         BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage debugimage = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < pixelHeight; y++) {
             for (int x = 0; x < pixelWidth; x++) {
                 Ray ray = canvas.getRayFromOriginToCanvas(x, y);
@@ -25,6 +27,8 @@ public class Raytrace {
                 Color color = scene.resolveRayColor(1, ray);
 
                 image.setRGB(x, y, color.toIntRGB());
+                Color debugcolor = scene.resolveRayColorDebug(1, ray, false);
+                debugimage.setRGB(x, y, debugcolor.toIntRGB());
             }
         }
 
@@ -36,7 +40,12 @@ public class Raytrace {
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    System.exit(0);
+                    Point point = e.getPoint();
+                    Ray ray = canvas.getRayFromOriginToCanvas(point.x, point.y);
+
+                    scene.resolveRayColorDebug(1, ray, true);
+
+                    //System.exit(0);
                 }
             });
                     frame.add(label);
@@ -53,7 +62,7 @@ class Scene {
     List<SceneObject> objects;
 
     DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
-    AmbientLight ambientLight = new AmbientLight(Color.of(.5f, .5f, .5f));
+    AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
 
     public Scene() {
         Color silver = Color.of(1f, 1f, 1f);
@@ -66,15 +75,40 @@ class Scene {
         objects = new ArrayList<>();
         for (int i = -3; i <= 3; i++) {
             for (int j = -3; j <= 3; j++) {
-                objects.add(new Sphere(Vec.of(i, j, 10), .5f, Material.plastic(Color.of(.8f, .2f, .2f), .5f)));
+                objects.add(new Sphere(Vec.of(i, j, 10), .5f, Material.plastic(Color.of((i + 3) / 6f, (j + 3) / 6f, .2f), .5f)));
             }
         }
+
+        objects.add(new Sphere(Vec.of(0, 0, 1f), .2f, Material.glass()));
 
 //        objects.add(plane);
     }
 
     boolean interceptsRay(Ray ray) {
         return objects.stream().anyMatch(o -> o.getIntercept(ray) > INTERCEPT_NEAR);
+    }
+
+    Color resolveRayColorDebug(float reflectiveness, Ray ray, boolean debug) {
+        float closestIntercept = Float.POSITIVE_INFINITY;
+        SceneObject closestObject = null;
+
+        for (SceneObject object : objects) {
+            float intercept = object.getIntercept(ray);
+            if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
+                closestIntercept = intercept;
+                closestObject = object;
+            }
+        }
+
+        if (closestObject != null) {
+            if (debug) {
+                System.out.printf("object %s\n", closestObject);
+            }
+            int hashCode = closestObject.hashCode();
+            return Color.of((0xff & (hashCode >>> 16)) / 255f, (0xff & (hashCode >>> 8)) / 255f, (0xff & (hashCode)) / 255f);
+        }
+
+        return Color.of(0, 0, 0);
     }
 
     Color resolveRayColor(float reflectiveness, Ray ray) {
@@ -100,12 +134,12 @@ class Scene {
             return Color.of(10f, 10f, 10f);
         }
 
-        return Color.of(.1f, .1f, .1f);
+        return ambientLight.color;
     }
 
     private Color getColorFromObject(float reflectiveness, Vec interceptPoint, Ray ray, SceneObject sceneObject) {
 
-        Vec normal = sceneObject.getNormal(interceptPoint).normalize();
+        Vec normal = sceneObject.getNormal(interceptPoint);
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.color.copy();
@@ -120,15 +154,25 @@ class Scene {
 
         Color diffuseColor = material.getDiffuseColor().copy().mul(light);
 
-        if (reflectiveness <= 1e-9 || material.getReflectiveness() <= 0) {
+        if (reflectiveness <= 1e-6) {
             return diffuseColor;
-        } else {
+        }
+
+        if (material.getReflectiveness() > 0) {
             Ray reflected = ray.getReflected(normal, interceptPoint);
             Color reflectedLight = resolveRayColor(reflectiveness * material.getReflectiveness(), reflected);
             reflectedLight.mul(material.getReflectiveness()).mul(material.getReflectiveColor());
             diffuseColor.add(reflectedLight);
-            return diffuseColor;
         }
+
+        if (material.hasRefraction()) {
+            Ray refracted = ray.getRefracted(normal, interceptPoint, material.getIndexOfRefraction());
+            Color refractedLight = resolveRayColor(reflectiveness, refracted);
+//            refractedLight.mul(material.getReflectiveness()).mul(material.getReflectiveColor());
+            diffuseColor.add(refractedLight);
+        }
+
+        return diffuseColor;
     }
 }
 
@@ -166,10 +210,16 @@ class Ray {
 
     private final Vec origin;
     private final Vec direction;
+    private final float velocity;
 
     public Ray(Vec origin, Vec direction) {
+        this(origin, direction.normalize(), 1);
+    }
+
+    public Ray(Vec origin, Vec direction, float velocity) {
         this.origin = origin;
         this.direction = direction;
+        this.velocity = velocity;
     }
 
     public static Ray from(Vec origin, Vec canvasPoint) {
@@ -190,6 +240,10 @@ class Ray {
 
     public Ray getReflected(Vec normal, Vec interceptPoint) {
         return new Ray(interceptPoint, normal.reflected(direction));
+    }
+
+    public Ray getRefracted(Vec normal, Vec interceptPoint, float indexOfRefraction) {
+        return new Ray(interceptPoint, normal.refracted(direction, indexOfRefraction));
     }
 }
 
@@ -286,11 +340,11 @@ class Sphere extends SceneObject {
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
             float intercept = (-B - (float) sqrt(determinant)) / (2 * A);
-            if (intercept > 0) {
+            if (intercept > Scene.INTERCEPT_NEAR) {
                 return intercept;
             }
             intercept = (-B + (float) sqrt(determinant)) / (2 * A);
-            if (intercept > 0) {
+            if (intercept > Scene.INTERCEPT_NEAR) {
                 return intercept;
             }
         }
@@ -356,12 +410,24 @@ class Material {
         this.reflectiveness = reflectiveness;
     }
 
+    public Material(Color diffuseColor, Color reflectiveColor, float reflectiveness, float transparency, float indexOfRefraction) {
+        this.diffuseColor = diffuseColor;
+        this.reflectiveColor = reflectiveColor;
+        this.reflectiveness = reflectiveness;
+        this.transparency = transparency;
+        this.indexOfRefraction = indexOfRefraction;
+    }
+
     static Material plastic(Color color, float reflectiveness) {
         return new Material(color, color, reflectiveness);
     }
 
     static Material metallic(Color color, float reflectiveness) {
         return new Material(Color.of(.01f, .01f, .01f), color, reflectiveness);
+    }
+
+    static Material glass() {
+        return new Material(Color.of(0.01f, .01f, .01f), Color.of(1f, 1f, 1f), 0f, .99f, 1.5f);
     }
 
     public float getReflectiveness() {
@@ -374,6 +440,14 @@ class Material {
 
     public Color getReflectiveColor() {
         return reflectiveColor;
+    }
+
+    public boolean hasRefraction() {
+        return transparency > 0;
+    }
+
+    public float getIndexOfRefraction() {
+        return indexOfRefraction;
     }
 }
 
@@ -425,6 +499,15 @@ class Vec {
         return new Vec(direction.x * t + origin.x,
                 direction.y * t + origin.y,
                 direction.z * t + origin.z);
+    }
+
+    /**
+     * Computes sU + tV
+     */
+    public static Vec mulAdd(float s, Vec u, float t, Vec v) {
+        return new Vec(u.x * s + v.x * t,
+                u.y * s + v.y * t,
+                u.z * s + v.z * t);
     }
 
     public Vec add(Vec v) {
@@ -487,5 +570,18 @@ class Vec {
 
     public float cos(Vec v) {
         return this.dot(v) / (float) sqrt(this.sqLen() * v.sqLen());
+    }
+
+    public Vec refracted(Vec v, float r) {
+        float dot = this.dot(v);
+        float s, t;
+        if (dot > 0) {
+            t = r;
+            s = (float) (t * dot - sqrt(1 - pow(t, 2) * (1 - pow(dot, 2))));
+        } else {
+            t = 1 / r;
+            s = (float) (t * dot + sqrt(1 - pow(t, 2) * (1 - pow(dot, 2))));
+        }
+        return mulAdd(-s, this, t, v);
     }
 }
