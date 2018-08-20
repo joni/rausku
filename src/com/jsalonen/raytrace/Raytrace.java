@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Math.*;
@@ -16,7 +17,7 @@ public class Raytrace {
         int pixelHeight = 768;
         Canvas canvas = new Canvas(pixelWidth, pixelHeight, 1280, Vec.of(0, 0, -10), 1);
 
-        Scene scene = new Scene3();
+        Scene scene = new Scene5();
 
         BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
         BufferedImage debugimage = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
@@ -98,6 +99,26 @@ class Scene3 extends Scene {
     }
 }
 
+class Scene4 extends Scene {
+    public Scene4() {
+        Material plastic = Material.plastic(Color.of(1, 1, 1), .8f);
+        objects.add(new Intersection(plastic,
+                new Cube(plastic),
+                new Sphere(Vec.of(0, 0, 0f), 1.2f, plastic)));
+        objects.add(new HorizontalPlane(-1));
+    }
+}
+
+class Scene5 extends Scene {
+    public Scene5() {
+        Material plastic = Material.plastic(Color.of(1, 1, 1), .8f);
+        objects.add(new Subtraction(plastic,
+                new Cube(plastic),
+                new Sphere(Vec.of(0, 0, 0f), 1.4f, plastic)));
+        objects.add(new HorizontalPlane(-1));
+    }
+}
+
 abstract class Scene {
 
     public static final double INTERCEPT_NEAR = 1e-3;
@@ -162,7 +183,7 @@ abstract class Scene {
 
     private Color getColorFromObject(float reflectiveness, Vec interceptPoint, Ray ray, SceneObject sceneObject) {
 
-        Vec normal = sceneObject.getNormal(interceptPoint);
+        Vec normal = sceneObject.getNormal(ray, interceptPoint);
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.color.copy();
@@ -326,16 +347,127 @@ class Color {
 }
 
 abstract class SceneObject {
-    public abstract Vec getNormal(Vec interceptPoint);
+    public abstract Vec getNormal(Ray ray, Vec interceptPoint);
 
     public abstract Material getMaterial();
 
     public abstract float getIntercept(Ray ray);
+
+    public abstract float[] getIntercepts(Ray ray);
+}
+
+class Intersection extends SceneObject {
+
+    private final Material material;
+    private SceneObject obj1;
+    private SceneObject obj2;
+
+    public Intersection(Material material, Cube cube, Sphere sphere) {
+        this.material = material;
+        obj1 = cube;
+        obj2 = sphere;
+    }
+
+    @Override
+    public Material getMaterial() {
+        return material;
+    }
+
+    @Override
+    public float getIntercept(Ray ray) {
+        return max(obj1.getIntercept(ray), obj2.getIntercept(ray));
+    }
+
+    @Override
+    public float[] getIntercepts(Ray ray) {
+        float[] intercepts = obj1.getIntercepts(ray);
+        float[] intercepts1 = obj2.getIntercepts(ray);
+        float[] allIntercepts = {max(intercepts[0], intercepts1[0]), min(intercepts[1], intercepts1[1])};
+        return allIntercepts;
+    }
+
+    @Override
+    public Vec getNormal(Ray ray, Vec interceptPoint) {
+        float intercept1 = obj1.getIntercept(ray);
+        float intercept2 = obj2.getIntercept(ray);
+        float max = max(intercept1, intercept2);
+        if (intercept1 == max) {
+            return obj1.getNormal(ray, interceptPoint);
+        } else if (intercept2 == max) {
+            return obj2.getNormal(ray, interceptPoint);
+        } else {
+            // should not happen
+            return null;
+        }
+    }
+}
+
+class Subtraction extends SceneObject {
+
+    private final Material material;
+    private final SceneObject obj1;
+    private final SceneObject obj2;
+
+    public Subtraction(Material material, Cube cube, Sphere sphere) {
+        this.material = material;
+        obj1 = cube;
+        obj2 = sphere;
+    }
+
+    @Override
+    public Material getMaterial() {
+        return material;
+    }
+
+    @Override
+    public float getIntercept(Ray ray) {
+        float[] obj1Intercepts = obj1.getIntercepts(ray);
+        float[] obj2Intercepts = obj2.getIntercepts(ray);
+
+        if (!Float.isFinite(obj2Intercepts[0]) || obj1Intercepts[0] < obj2Intercepts[0]) {
+            return obj1Intercepts[0];
+        }
+        if (obj2Intercepts[1] < obj1Intercepts[1]) {
+            return obj2Intercepts[1];
+        }
+        return Float.NaN;
+
+//        int count = 0;
+//
+//        int index1 = 0, index2=0;
+//        while (count < 0 && index1 < obj1Intercepts.length && index2 < obj2Intercepts.length) {
+//            if (obj1Intercepts[index1] < obj2Intercepts[index2]) {
+//                return obj1Intercepts[0];
+//            }
+//        }
+
+    }
+
+    @Override
+    public float[] getIntercepts(Ray ray) {
+        return new float[0];
+    }
+
+
+    @Override
+    public Vec getNormal(Ray ray, Vec interceptPoint) {
+        float[] obj1Intercepts = obj1.getIntercepts(ray);
+        float[] obj2Intercepts = obj2.getIntercepts(ray);
+
+        if (!Float.isFinite(obj2Intercepts[0]) || obj1Intercepts[0] < obj2Intercepts[0]) {
+            return obj1.getNormal(ray, interceptPoint);
+        }
+        if (obj2Intercepts[1] < obj1Intercepts[1]) {
+            return obj2.getNormal(ray, interceptPoint).mul(-1);
+        }
+        return null;
+    }
+
 }
 
 class Cube extends SceneObject {
 
-    public static final double bounds = 1.0001;
+    public static final double bounds = 1.000001;
     private final Material material;
 
     public Cube(Material material) {
@@ -348,7 +480,7 @@ class Cube extends SceneObject {
     }
 
     @Override
-    public Vec getNormal(Vec interceptPoint) {
+    public Vec getNormal(Ray ray, Vec interceptPoint) {
         float absx = abs(interceptPoint.x);
         float absy = abs(interceptPoint.y);
         float absz = abs(interceptPoint.z);
@@ -362,6 +494,29 @@ class Cube extends SceneObject {
             return Vec.of(0, 0, interceptPoint.z).normalize();
         }
         return interceptPoint.copy().normalize();
+    }
+
+    @Override
+    public float[] getIntercepts(Ray ray) {
+        float[] intercepts = {Float.NaN, Float.NaN};
+        int index = 0;
+        float[] possibleIntercepts = {
+                (+1 - ray.getOrigin().x) / ray.getDirection().x,
+                (-1 - ray.getOrigin().x) / ray.getDirection().x,
+                (+1 - ray.getOrigin().y) / ray.getDirection().y,
+                (-1 - ray.getOrigin().y) / ray.getDirection().y,
+                (+1 - ray.getOrigin().z) / ray.getDirection().z,
+                (-1 - ray.getOrigin().z) / ray.getDirection().z,
+        };
+        float closestIntercept = Float.POSITIVE_INFINITY;
+        for (float intercept : possibleIntercepts) {
+            if (isOk(ray, intercept) && index < 2) {
+                closestIntercept = intercept;
+                intercepts[index++] = intercept;
+            }
+        }
+        Arrays.sort(intercepts);
+        return intercepts;
     }
 
     @Override
@@ -411,6 +566,28 @@ class Sphere extends SceneObject {
         return getIntercept(ray) > 1e-6;
     }
 
+    @Override
+    public float[] getIntercepts(Ray ray) {
+        float[] floats = {Float.NaN, Float.NaN};
+
+        Vec a = ray.getDirection();
+        Vec b = ray.getOrigin();
+        Vec c = this.center;
+        float r = this.radius;
+
+        Vec bMINUSc = b.copy().sub(c);
+
+        float A = a.sqLen();
+        float B = 2 * a.dot(bMINUSc);
+        float C = bMINUSc.sqLen() - r * r;
+
+        float determinant = B * B - 4 * A * C;
+        if (determinant > 0) {
+            floats = new float[]{(-B - (float) sqrt(determinant)) / (2 * A), (-B + (float) sqrt(determinant)) / (2 * A)};
+        }
+        return floats;
+    }
+
     public float getIntercept(Ray ray) {
         Vec a = ray.getDirection();
         Vec b = ray.getOrigin();
@@ -437,7 +614,7 @@ class Sphere extends SceneObject {
         return Float.NaN;
     }
 
-    public Vec getNormal(Vec point) {
+    public Vec getNormal(Ray ray, Vec point) {
         return point.copy().sub(center).normalize();
     }
 
@@ -453,6 +630,11 @@ class HorizontalPlane extends SceneObject {
         this.groundLevel = groundLevel;
     }
 
+    @Override
+    public float[] getIntercepts(Ray ray) {
+        return new float[]{getIntercept(ray)};
+    }
+
     public float getIntercept(Ray ray) {
         float intercept = (groundLevel - ray.getOrigin().y) / ray.getDirection().y;
         if (intercept > 0) {
@@ -462,7 +644,7 @@ class HorizontalPlane extends SceneObject {
         }
     }
 
-    public Vec getNormal(Vec point) {
+    public Vec getNormal(Ray ray, Vec point) {
         return Vec.of(0, 1, 0);
     }
 
