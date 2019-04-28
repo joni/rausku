@@ -1,4 +1,4 @@
-package com.jsalonen.raytrace;
+package com.jsalonen.raytrace.geometry;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
