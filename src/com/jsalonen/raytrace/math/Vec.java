@@ -9,21 +9,10 @@ public class Vec {
 
     private static final Vec ORIGIN = Vec.point(0, 0, 0);
 
-    public float x;
-    public float y;
-    public float z;
-    public float w;
-
-    private Vec() {
-        x = y = z = w = 0;
-    }
-
-    private Vec(Vec v) {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        w = v.w;
-    }
+    public final float x;
+    public final float y;
+    public final float z;
+    public final float w;
 
     public Vec(float x, float y, float z, float w) {
         this.x = x;
@@ -32,11 +21,14 @@ public class Vec {
         this.w = w;
     }
 
-    public static Vec mulAdd(float t, Vec direction, Vec origin) {
-        return new Vec(direction.x * t + origin.x,
-                direction.y * t + origin.y,
-                direction.z * t + origin.z,
-                direction.w * t + origin.w);
+    /**
+     * Computes U + tV
+     */
+    public static Vec mulAdd(float t, Vec u, Vec v) {
+        return new Vec(u.x * t + v.x,
+                u.y * t + v.y,
+                u.z * t + v.z,
+                u.w * t + v.w);
     }
 
     /**
@@ -47,6 +39,16 @@ public class Vec {
                 u.y * s + v.y * t,
                 u.z * s + v.z * t,
                 u.w * s + v.w * t);
+    }
+
+    /**
+     * Computes rW + sU + tV
+     */
+    public static Vec mulAdd(float r, Vec w, float s, Vec u, float t, Vec v) {
+        return new Vec(u.x * s + v.x * t + r * w.x,
+                u.y * s + v.y * t + r * w.y,
+                u.z * s + v.z * t + r * w.z,
+                u.w * s + v.w * t + r * w.w);
     }
 
     public static Vec of(float x, float y, float z) {
@@ -66,35 +68,19 @@ public class Vec {
     }
 
     public Vec add(Vec v) {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        w += v.w;
-        return this;
+        return Vec.of(x + v.x, y + v.w, z + v.z, w + v.w);
     }
 
     public Vec sub(Vec v) {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
-        w -= v.w;
-        return this;
+        return Vec.of(x - v.x, y - v.y, z - v.z, w - v.w);
     }
 
     public Vec mul(float a) {
-        x *= a;
-        y *= a;
-        z *= a;
-        w *= a;
-        return this;
+        return Vec.of(a * x, a * y, a * z, a * w);
     }
 
     public Vec div(float a) {
-        x /= a;
-        y /= a;
-        z /= a;
-        w /= a;
-        return this;
+        return Vec.of(x / a, y / a, z / a, w / a);
     }
 
     public float l1norm() {
@@ -110,21 +96,20 @@ public class Vec {
     }
 
     public float dot(Vec v) {
-        return x * v.x + y * v.y + z * v.z;
+        return dot(this, v);
+    }
+
+    public static float dot(Vec v, Vec u) {
+        return v.x * u.x + v.y * u.y + v.z * u.z;
+    }
+
+    public static Vec cross(Vec v, Vec w) {
+        return Vec.of(v.y * w.z - v.z * w.y, v.z * w.x - v.x * w.z, v.x * w.y - v.y * w.x);
     }
 
     public Vec normalize() {
         float len = sqrt(sqLen());
         return div(len);
-    }
-
-    public Vec copy() {
-        return new Vec(this);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("[%f %f %f %f]", x, y, z, w);
     }
 
     public Vec reflected(Vec v) {
@@ -150,8 +135,9 @@ public class Vec {
         return mulAdd(-s, this, t, v);
     }
 
-    public static Vec cross(Vec v, Vec w) {
-        return Vec.of(v.y * w.z - v.z * w.y, v.z * w.x - v.x * w.z, v.x * w.y - v.y * w.x);
+    @Override
+    public String toString() {
+        return String.format("[%f %f %f %f]", x, y, z, w);
     }
 
     @Override
