@@ -1,7 +1,6 @@
 package com.jsalonen.raytrace;
 
-import com.jsalonen.raytrace.geometry.Vec;
-import com.jsalonen.raytrace.scenes.Scene6;
+import com.jsalonen.raytrace.scenes.Scene7;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,18 +9,21 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class Raytrace {
-    public static void main(String... args) {
-        int pixelWidth = 768;
-        int pixelHeight = 768;
-        Canvas canvas = new Canvas(pixelWidth, pixelHeight, 1280, Vec.of(0, 0, -10), 1);
 
-        Scene scene = new Scene6();
+    public static void main(String... args) {
+
+        Scene scene = new Scene7();
+
+        Camera camera = scene.getCamera();
+
+        int pixelWidth = camera.getPixelWidth();
+        int pixelHeight = camera.getPixelHeight();
 
         BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
         BufferedImage debugimage = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
         for (int y = 0; y < pixelHeight; y++) {
             for (int x = 0; x < pixelWidth; x++) {
-                Ray ray = canvas.getRayFromOriginToCanvas(x, y);
+                Ray ray = camera.getRayFromOriginToCanvas(x, y);
 
                 Color color = scene.resolveRayColor(1, ray);
 
@@ -39,7 +41,7 @@ public class Raytrace {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             Point point = e.getPoint();
-                            Ray ray = canvas.getRayFromOriginToCanvas(point.x, point.y);
+                            Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
 
                             scene.resolveRayColorDebug(1, ray, true);
 

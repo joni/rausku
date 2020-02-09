@@ -15,6 +15,7 @@ public abstract class Scene {
 
     public static final double INTERCEPT_NEAR = 1e-3;
     protected List<SceneObject> objects = new ArrayList<>();
+    protected Camera camera = Camera.initialCamera();
 
     protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
     //    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 0).normalize(), Color.of(1, 1, 1));
@@ -114,5 +115,9 @@ public abstract class Scene {
         }
 
         return diffuseColor;
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 }

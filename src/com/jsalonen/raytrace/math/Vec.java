@@ -112,6 +112,14 @@ public class Vec {
         return div(len);
     }
 
+    public Vec toCanonical() {
+        if (w == 0) {
+            return this;
+        } else {
+            return Vec.of(x / w, y / w, z / w, 1);
+        }
+    }
+
     public Vec reflected(Vec v) {
         // assert normalized
         return mulAdd(-2 * this.dot(v), this, v);
