@@ -2,7 +2,8 @@ package com.jsalonen.raytrace.math;
 
 import java.util.Objects;
 
-import static com.jsalonen.raytrace.math.FloatMath.*;
+import static com.jsalonen.raytrace.math.FloatMath.abs;
+import static com.jsalonen.raytrace.math.FloatMath.sqrt;
 import static java.lang.Float.max;
 
 public class Vec {
@@ -91,8 +92,8 @@ public class Vec {
         return x * x + y * y + z * z;
     }
 
-    public double len() {
-        return Math.sqrt(sqLen());
+    public static float cos(Vec v, Vec u) {
+        return dot(v, u) / sqrt(v.sqLen() * u.sqLen());
     }
 
     public float dot(Vec v) {
@@ -101,6 +102,10 @@ public class Vec {
 
     public static float dot(Vec v, Vec u) {
         return v.x * u.x + v.y * u.y + v.z * u.z;
+    }
+
+    public float len() {
+        return sqrt(sqLen());
     }
 
     public static Vec cross(Vec v, Vec w) {
@@ -125,20 +130,18 @@ public class Vec {
         return mulAdd(-2 * this.dot(v), this, v);
     }
 
-    public float cos(Vec v) {
-        return this.dot(v) / sqrt(this.sqLen() * v.sqLen());
-    }
-
     public Vec refracted(Vec v, float r) {
         // assert normalized
         float dot = this.dot(v);
         float s, t;
         if (dot > 0) {
+            // Ray is exiting the surface
             t = r;
-            s = (float) (t * dot - sqrt(1 - pow(t, 2) * (1 - pow(dot, 2))));
+            s = t * dot - sqrt(1 - t * t * (1 - dot * dot));
         } else {
+            // Ray is entering the surface
             t = 1 / r;
-            s = (float) (t * dot + sqrt(1 - pow(t, 2) * (1 - pow(dot, 2))));
+            s = t * dot + sqrt(1 - t * t * (1 - dot * dot));
         }
         return mulAdd(-s, this, t, v);
     }

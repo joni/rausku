@@ -4,8 +4,12 @@ public class FloatMath {
 
     public static float PI = (float) Math.PI;
 
-    public static float toRadians(float angle) {
-        return angle*PI/180;
+    public static float toRadians(float degrees) {
+        return degrees * PI / 180;
+    }
+
+    public static float toDegrees(float radians) {
+        return radians * 180 / PI;
     }
 
     public static float sin(float angle) {

@@ -69,11 +69,11 @@ public abstract class Scene {
             return getColorFromObject(reflectiveness, interceptInfo, ray, closestObject);
         }
 
-        // nothing hit
-        if (directionalLight.getDirection().cos(ray.getDirection()) < -.99) {
+        if (Vec.cos(directionalLight.getDirection(), ray.getDirection()) < -.99) {
             return Color.of(10f, 10f, 10f);
         }
 
+        // nothing hit
         return ambientLight.getColor();
     }
 
