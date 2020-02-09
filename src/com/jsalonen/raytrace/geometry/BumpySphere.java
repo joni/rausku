@@ -12,8 +12,9 @@ public class BumpySphere extends Sphere {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Vec point) {
+    public Vec getNormal(Ray ray, Intercept intercept) {
+        Vec point = intercept.interceptPoint;
         Vec bump = Vec.of(sin(point.x * 50), sin(point.y * 50), sin(point.z * 50)).div(50);
-        return super.getNormal(ray, point).add(bump);
+        return super.getNormal(ray, intercept).add(bump);
     }
 }

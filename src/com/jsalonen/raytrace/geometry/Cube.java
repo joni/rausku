@@ -30,7 +30,8 @@ public class Cube extends SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Vec interceptPoint) {
+    public Vec getNormal(Ray ray, Intercept intercept) {
+        Vec interceptPoint = intercept.interceptPoint;
         interceptPoint.sub(center);
         float absx = abs(interceptPoint.x);
         float absy = abs(interceptPoint.y);

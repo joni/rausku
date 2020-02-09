@@ -38,7 +38,7 @@ public class Intersection extends SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Vec interceptPoint) {
+    public Vec getNormal(Ray ray, Intercept interceptPoint) {
         float intercept1 = obj1.getIntercept(ray);
         float intercept2 = obj2.getIntercept(ray);
         float max = max(intercept1, intercept2);

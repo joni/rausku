@@ -52,7 +52,7 @@ public class Subtraction extends SceneObject {
 
 
     @Override
-    public Vec getNormal(Ray ray, Vec interceptPoint) {
+    public Vec getNormal(Ray ray, Intercept interceptPoint) {
         float[] obj1Intercepts = obj1.getIntercepts(ray);
         float[] obj2Intercepts = obj2.getIntercepts(ray);
 

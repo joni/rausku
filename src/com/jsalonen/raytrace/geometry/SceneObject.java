@@ -11,5 +11,10 @@ public abstract class SceneObject {
 
     public abstract float getIntercept(Ray ray);
 
+    public Intercept getIntercept2(Ray ray) {
+        float intercept = getIntercept(ray);
+        return new Intercept(intercept, ray.apply(intercept), null);
+    }
+
     public abstract float[] getIntercepts(Ray ray);
 }

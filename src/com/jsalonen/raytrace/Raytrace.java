@@ -31,7 +31,6 @@ public class Raytrace {
             }
         }
 
-
         SwingUtilities.invokeLater(() -> {
                     JFrame frame = new JFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

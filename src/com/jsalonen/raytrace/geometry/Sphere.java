@@ -70,8 +70,8 @@ public class Sphere extends SceneObject {
         return Float.NaN;
     }
 
-    public Vec getNormal(Ray ray, Vec point) {
-        return point.copy().sub(center).normalize();
+    public Vec getNormal(Ray ray, Intercept intercept) {
+        return intercept.interceptPoint.sub(center).normalize();
     }
 
     public Material getMaterial() {

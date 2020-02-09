@@ -1,6 +1,7 @@
 package com.jsalonen.raytrace;
 
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.geometry.Intercept;
+import com.jsalonen.raytrace.math.Vec;
 
 public class Material {
     private Color diffuseColor;
@@ -64,5 +65,13 @@ public class Material {
 
     public float getIndexOfRefraction() {
         return indexOfRefraction;
+    }
+
+    public Color getDiffuseColor(Intercept intercept) {
+//        if (intercept.info instanceof Polygon) {
+//            return ((Polygon) intercept.info).getColor(intercept.interceptPoint);
+//        } else {
+        return getDiffuseColor(intercept.interceptPoint);
+//        }
     }
 }

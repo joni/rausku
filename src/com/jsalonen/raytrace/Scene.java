@@ -1,9 +1,10 @@
 package com.jsalonen.raytrace;
 
+import com.jsalonen.raytrace.geometry.Intercept;
 import com.jsalonen.raytrace.geometry.SceneObject;
-import com.jsalonen.raytrace.geometry.Vec;
 import com.jsalonen.raytrace.lighting.AmbientLight;
 import com.jsalonen.raytrace.lighting.DirectionalLight;
+import com.jsalonen.raytrace.math.Vec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,8 @@ public abstract class Scene {
     public static final double INTERCEPT_NEAR = 1e-3;
     protected List<SceneObject> objects = new ArrayList<>();
 
-    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
+    protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
+    //    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 0).normalize(), Color.of(1, 1, 1));
     AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
 
 
@@ -50,18 +52,20 @@ public abstract class Scene {
 
         float closestIntercept = Float.POSITIVE_INFINITY;
         SceneObject closestObject = null;
+        Intercept interceptInfo = null;
 
         for (SceneObject object : objects) {
-            float intercept = object.getIntercept(ray);
+            Intercept intercept2 = object.getIntercept2(ray);
+            float intercept = intercept2.intercept;
             if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
                 closestIntercept = intercept;
                 closestObject = object;
+                interceptInfo = intercept2;
             }
         }
 
         if (closestObject != null) {
-            Vec interceptPoint = ray.apply(closestIntercept);
-            return getColorFromObject(reflectiveness, interceptPoint, ray, closestObject);
+            return getColorFromObject(reflectiveness, interceptInfo, ray, closestObject);
         }
 
         // nothing hit
@@ -72,9 +76,11 @@ public abstract class Scene {
         return ambientLight.getColor();
     }
 
-    private Color getColorFromObject(float reflectiveness, Vec interceptPoint, Ray ray, SceneObject sceneObject) {
+    private Color getColorFromObject(float reflectiveness, Intercept intercept, Ray ray, SceneObject sceneObject) {
 
-        Vec normal = sceneObject.getNormal(ray, interceptPoint);
+        Vec interceptPoint = intercept.interceptPoint;
+
+        Vec normal = sceneObject.getNormal(ray, intercept);
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.getColor().copy();
@@ -87,7 +93,7 @@ public abstract class Scene {
             }
         }
 
-        Color diffuseColor = material.getDiffuseColor(interceptPoint).copy().mul(light);
+        Color diffuseColor = material.getDiffuseColor(intercept).copy().mul(light);
 
         if (reflectiveness <= 1e-6) {
             return diffuseColor;
