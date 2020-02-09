@@ -5,9 +5,9 @@ import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Scene;
 import com.jsalonen.raytrace.geometry.HorizontalPlane;
 import com.jsalonen.raytrace.geometry.Sphere;
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.math.Vec;
 
-class Scene1 extends Scene {
+public class Scene1 extends Scene {
 
     public Scene1() {
         Color red = Color.of(.9f, .2f, .2f);

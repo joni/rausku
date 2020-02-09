@@ -1,6 +1,6 @@
 package com.jsalonen.raytrace;
 
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.math.Vec;
 
 import static java.lang.Math.*;
 

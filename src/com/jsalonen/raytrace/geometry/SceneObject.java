@@ -2,9 +2,10 @@ package com.jsalonen.raytrace.geometry;
 
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
+import com.jsalonen.raytrace.math.Vec;
 
 public abstract class SceneObject {
-    public abstract Vec getNormal(Ray ray, Vec interceptPoint);
+    public abstract Vec getNormal(Ray ray, Intercept interceptPoint);
 
     public abstract Material getMaterial();
 

@@ -3,7 +3,11 @@ package com.jsalonen.raytrace.scenes;
 import com.jsalonen.raytrace.Color;
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Scene;
-import com.jsalonen.raytrace.geometry.*;
+import com.jsalonen.raytrace.geometry.Cube;
+import com.jsalonen.raytrace.geometry.HorizontalPlane;
+import com.jsalonen.raytrace.geometry.Intersection;
+import com.jsalonen.raytrace.geometry.Sphere;
+import com.jsalonen.raytrace.math.Vec;
 
 class Scene4 extends Scene {
     public Scene4() {

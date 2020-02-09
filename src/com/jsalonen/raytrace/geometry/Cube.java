@@ -3,6 +3,7 @@ package com.jsalonen.raytrace.geometry;
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
 import com.jsalonen.raytrace.Scene;
+import com.jsalonen.raytrace.math.Vec;
 
 import java.util.Arrays;
 
@@ -43,21 +44,22 @@ public class Cube extends SceneObject {
         if (absz > absx && absz > absy) {
             return Vec.of(0, 0, interceptPoint.z).normalize();
         }
-        return interceptPoint.copy().normalize();
+        return interceptPoint.normalize();
     }
 
     @Override
     public float[] getIntercepts(Ray ray) {
-        ray.getOrigin().sub(center);
+        Vec rayOrigin = ray.getOrigin().sub(center);
+        Vec rayDirection = ray.getDirection();
         float[] intercepts = {Float.NaN, Float.NaN};
         int index = 0;
         float[] possibleIntercepts = {
-                (+1 - ray.getOrigin().x) / ray.getDirection().x,
-                (-1 - ray.getOrigin().x) / ray.getDirection().x,
-                (+1 - ray.getOrigin().y) / ray.getDirection().y,
-                (-1 - ray.getOrigin().y) / ray.getDirection().y,
-                (+1 - ray.getOrigin().z) / ray.getDirection().z,
-                (-1 - ray.getOrigin().z) / ray.getDirection().z,
+                (+1 - rayOrigin.x) / rayDirection.x,
+                (-1 - rayOrigin.x) / rayDirection.x,
+                (+1 - rayOrigin.y) / rayDirection.y,
+                (-1 - rayOrigin.y) / rayDirection.y,
+                (+1 - rayOrigin.z) / rayDirection.z,
+                (-1 - rayOrigin.z) / rayDirection.z,
         };
         float closestIntercept = Float.POSITIVE_INFINITY;
         for (float intercept : possibleIntercepts) {

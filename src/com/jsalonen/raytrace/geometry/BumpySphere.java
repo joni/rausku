@@ -2,8 +2,9 @@ package com.jsalonen.raytrace.geometry;
 
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
+import com.jsalonen.raytrace.math.Vec;
 
-import static java.lang.Math.sin;
+import static com.jsalonen.raytrace.math.FloatMath.sin;
 
 public class BumpySphere extends Sphere {
     public BumpySphere(Vec center, float radius, Material material) {

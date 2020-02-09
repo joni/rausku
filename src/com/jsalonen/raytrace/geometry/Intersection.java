@@ -2,6 +2,7 @@ package com.jsalonen.raytrace.geometry;
 
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
+import com.jsalonen.raytrace.math.Vec;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

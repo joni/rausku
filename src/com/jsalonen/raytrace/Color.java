@@ -1,5 +1,7 @@
 package com.jsalonen.raytrace;
 
+import java.util.Objects;
+
 import static java.lang.Math.exp;
 import static java.lang.Math.min;
 
@@ -59,5 +61,29 @@ public class Color {
         this.g += resolveRayColor.g;
         this.b += resolveRayColor.b;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Color{" +
+                "r=" + r +
+                ", g=" + g +
+                ", b=" + b +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Color color = (Color) o;
+        return Float.compare(color.r, r) == 0 &&
+                Float.compare(color.g, g) == 0 &&
+                Float.compare(color.b, b) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(r, g, b);
     }
 }

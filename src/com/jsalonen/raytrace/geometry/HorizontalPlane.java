@@ -3,6 +3,7 @@ package com.jsalonen.raytrace.geometry;
 import com.jsalonen.raytrace.Color;
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
+import com.jsalonen.raytrace.math.Vec;
 
 public class HorizontalPlane extends SceneObject {
     private float groundLevel;
@@ -25,7 +26,7 @@ public class HorizontalPlane extends SceneObject {
         }
     }
 
-    public Vec getNormal(Ray ray, Vec point) {
+    public Vec getNormal(Ray ray, Intercept point) {
         return Vec.of(0, 1, 0);
     }
 

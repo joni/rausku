@@ -6,7 +6,7 @@ import com.jsalonen.raytrace.Scene;
 import com.jsalonen.raytrace.geometry.Cube;
 import com.jsalonen.raytrace.geometry.HorizontalPlane;
 import com.jsalonen.raytrace.geometry.Sphere;
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.math.Vec;
 
 class Scene3 extends Scene {
     public Scene3() {

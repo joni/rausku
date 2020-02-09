@@ -4,7 +4,7 @@ import com.jsalonen.raytrace.Color;
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Scene;
 import com.jsalonen.raytrace.geometry.Sphere;
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.math.Vec;
 
 class Scene2 extends Scene {
 

@@ -3,6 +3,7 @@ package com.jsalonen.raytrace.geometry;
 import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
 import com.jsalonen.raytrace.Scene;
+import com.jsalonen.raytrace.math.Vec;
 
 import static java.lang.Math.sqrt;
 
@@ -30,7 +31,7 @@ public class Sphere extends SceneObject {
         Vec c = this.center;
         float r = this.radius;
 
-        Vec bMINUSc = b.copy().sub(c);
+        Vec bMINUSc = b.sub(c);
 
         float A = a.sqLen();
         float B = 2 * a.dot(bMINUSc);
@@ -49,7 +50,7 @@ public class Sphere extends SceneObject {
         Vec c = this.center;
         float r = this.radius;
 
-        Vec bMINUSc = b.copy().sub(c);
+        Vec bMINUSc = b.sub(c);
 
         float A = a.sqLen();
         float B = 2 * a.dot(bMINUSc);

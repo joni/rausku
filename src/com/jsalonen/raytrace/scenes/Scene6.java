@@ -6,7 +6,7 @@ import com.jsalonen.raytrace.MaterialX;
 import com.jsalonen.raytrace.Scene;
 import com.jsalonen.raytrace.geometry.BumpySphere;
 import com.jsalonen.raytrace.geometry.Sphere;
-import com.jsalonen.raytrace.geometry.Vec;
+import com.jsalonen.raytrace.math.Vec;
 
 public class Scene6 extends Scene {
 
