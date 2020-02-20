@@ -69,12 +69,12 @@ public abstract class Scene {
             return getColorFromObject(reflectiveness, interceptInfo, ray, closestObject);
         }
 
-        if (Vec.cos(directionalLight.getDirection(), ray.getDirection()) < -.99) {
+        if (Vec.cos(directionalLight.getDirection(), ray.getDirection()) > .99) {
             return Color.of(10f, 10f, 10f);
         }
 
         // nothing hit
-        return ambientLight.getColor();
+        return ambientLight.getColor().copy();
     }
 
     private Color getColorFromObject(float reflectiveness, Intercept intercept, Ray ray, SceneObject sceneObject) {
@@ -86,7 +86,7 @@ public abstract class Scene {
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.getColor().copy();
 
-        float directionalLightEnergy = max(0, -normal.dot(directionalLight.getDirection()));
+        float directionalLightEnergy = max(0, normal.dot(directionalLight.getDirection()));
         if (directionalLightEnergy > 0) {
             Ray lightRay = directionalLight.getRay(interceptPoint);
             if (!interceptsRay(lightRay)) {
