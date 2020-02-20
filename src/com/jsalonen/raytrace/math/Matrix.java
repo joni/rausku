@@ -10,6 +10,8 @@ import static com.jsalonen.raytrace.math.FloatMath.sin;
 
 public class Matrix {
 
+    private static final Matrix EYE = diag(1f);
+
     private final float f11;
     private final float f12;
     private final float f13;
@@ -59,7 +61,144 @@ public class Matrix {
     }
 
     public static Matrix eye() {
-        return diag(1f);
+        return EYE;
+    }
+
+    public Matrix transpose() {
+        return Matrix.of(
+                f11, f21, f31, f41,
+                f12, f22, f32, f42,
+                f13, f23, f33, f43,
+                f14, f24, f34, f44
+        );
+    }
+
+    public Matrix inverse() {
+
+        float g11 = f11, g12 = f12, g13 = f13, g14 = f14,
+                g21 = f21, g22 = f22, g23 = f23, g24 = f24,
+                g31 = f31, g32 = f32, g33 = f33, g34 = f34,
+                g41 = f41, g42 = f42, g43 = f43, g44 = f44;
+
+        float h11 = 1, h12 = 0, h13 = 0, h14 = 0,
+                h21 = 0, h22 = 1, h23 = 0, h24 = 0,
+                h31 = 0, h32 = 0, h33 = 1, h34 = 0,
+                h41 = 0, h42 = 0, h43 = 0, h44 = 1;
+
+        // first phase: going down
+
+        // divide first row with g11
+        g12 /= g11;
+        g13 /= g11;
+        g14 /= g11;
+        h11 /= g11;
+        g11 = 1;
+
+        // make rest of first column go to zero
+        g22 -= g21 * g12;
+        g23 -= g21 * g13;
+        g24 -= g21 * g14;
+        h21 -= g21 * h11;
+        g21 = 0;
+
+        g32 -= g31 * g12;
+        g33 -= g31 * g13;
+        g34 -= g31 * g14;
+        h31 -= g31 * h11;
+        g31 = 0;
+
+        g42 -= g41 * g12;
+        g43 -= g41 * g13;
+        g44 -= g41 * g14;
+        h41 -= g41 * h11;
+        g41 = 0;
+
+        // divide second row with g22
+        g23 /= g22;
+        g24 /= g22;
+        h21 /= g22;
+        h22 /= g22;
+        g22 = 1;
+
+        // make rest of second column go to zero
+        g33 -= g32 * g23;
+        g34 -= g32 * g24;
+        h31 -= g32 * h21;
+        h32 -= g32 * h22;
+        g32 = 0;
+
+        g43 -= g42 * g23;
+        g44 -= g42 * g24;
+        h41 -= g42 * h21;
+        h42 -= g42 * h22;
+        g42 = 0;
+
+        // divide 3rd row with g33
+        g34 /= g33;
+        h31 /= g33;
+        h32 /= g33;
+        h33 /= g33;
+        g33 = 1;
+
+        // make rest of 3rd column go to zero
+        g44 -= g43 * g34;
+        h41 -= g43 * h31;
+        h42 -= g43 * h32;
+        h43 -= g43 * h33;
+        g43 = 0;
+
+        // divide 4th row with g44
+        h41 /= g44;
+        h42 /= g44;
+        h43 /= g44;
+        h44 /= g44;
+        g44 = 1;
+
+        // second phase: going up
+
+        // make rest of 4th column go to zero
+        h31 -= g34 * h41;
+        h32 -= g34 * h42;
+        h33 -= g34 * h43;
+        h34 -= g34 * h44;
+        g34 = 0;
+
+        h21 -= g24 * h41;
+        h22 -= g24 * h42;
+        h23 -= g24 * h43;
+        h24 -= g24 * h44;
+        g24 = 0;
+
+        h11 -= g14 * h41;
+        h12 -= g14 * h42;
+        h13 -= g14 * h43;
+        h14 -= g14 * h44;
+        g14 = 0;
+
+        // make rest of 3rd column go to zero
+        h21 -= g23 * h31;
+        h22 -= g23 * h32;
+        h23 -= g23 * h33;
+        h24 -= g23 * h34;
+        g23 = 0;
+
+        h11 -= g13 * h31;
+        h12 -= g13 * h32;
+        h13 -= g13 * h33;
+        h14 -= g13 * h34;
+        g13 = 0;
+
+        // make rest of 2nd column go to zero
+        h11 -= g12 * h21;
+        h12 -= g12 * h22;
+        h13 -= g12 * h23;
+        h14 -= g12 * h24;
+        g12 = 0;
+
+        return Matrix.of(h11, h12, h13, h14,
+                h21, h22, h23, h24,
+                h31, h32, h33, h34,
+                h41, h42, h43, h44);
     }
 
     public static Matrix diag(float f) {
