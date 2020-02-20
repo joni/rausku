@@ -1,6 +1,6 @@
 package com.jsalonen.raytrace;
 
-import com.jsalonen.raytrace.scenes.Scene7;
+import com.jsalonen.raytrace.scenes.Scene6;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class Raytrace {
         int pixelHeight = camera.getPixelHeight();
 
         BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
-        BufferedImage debugimage = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
+
         for (int y = 0; y < pixelHeight; y++) {
             for (int x = 0; x < pixelWidth; x++) {
                 Ray ray = camera.getRayFromOriginToCanvas(x, y);
@@ -28,22 +28,22 @@ public class Raytrace {
                 Color color = scene.resolveRayColor(1, ray);
 
                 image.setRGB(x, y, color.toIntRGB());
-                Color debugcolor = scene.resolveRayColorDebug(1, ray, false);
-                debugimage.setRGB(x, y, debugcolor.toIntRGB());
             }
         }
 
-        SwingUtilities.invokeLater(() -> {
-                    JFrame frame = new JFrame();
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    JLabel label = new JLabel(new ImageIcon(image));
-                    label.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            Point point = e.getPoint();
-                            Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
+        scene.debug = true;
 
-                            scene.resolveRayColorDebug(1, ray, true);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JLabel label = new JLabel(new ImageIcon(image));
+            label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Point point = e.getPoint();
+                    Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
+
+                    scene.resolveRayColor(0, ray);
 
                             //System.exit(0);
                         }

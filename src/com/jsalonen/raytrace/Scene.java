@@ -4,6 +4,7 @@ import com.jsalonen.raytrace.geometry.Intercept;
 import com.jsalonen.raytrace.geometry.SceneObject;
 import com.jsalonen.raytrace.lighting.AmbientLight;
 import com.jsalonen.raytrace.lighting.DirectionalLight;
+import com.jsalonen.raytrace.math.Matrix;
 import com.jsalonen.raytrace.math.Vec;
 
 import java.util.ArrayList;
@@ -14,16 +15,43 @@ import static java.lang.Math.max;
 public abstract class Scene {
 
     public static final double INTERCEPT_NEAR = 1e-3;
-    protected List<SceneObject> objects = new ArrayList<>();
+    protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(1, 1, 1));
+    boolean debug = false;
+    private List<Matrix> transforms = new ArrayList<>();
     protected Camera camera = Camera.initialCamera();
-
-    protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, .5f).normalize(), Color.of(1, 1, 1));
+    private List<Matrix> inverseTransforms = new ArrayList<>();
+    private List<SceneObject> objects = new ArrayList<>();
     //    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 0).normalize(), Color.of(1, 1, 1));
     AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
 
+    protected void addObject(Matrix transform, SceneObject object) {
+        transforms.add(transform);
+        inverseTransforms.add(transform.inverse());
+        objects.add(object);
+    }
+
+    protected void addObject(SceneObject object) {
+        transforms.add(Matrix.eye());
+        inverseTransforms.add(Matrix.eye());
+        objects.add(object);
+    }
 
     boolean interceptsRay(Ray ray) {
-        return objects.stream().anyMatch(o -> o.getIntercept(ray) > INTERCEPT_NEAR);
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = inverseTransforms.get(i);
+//            Ray transform1 = ray;
+            Ray transform1 = transform.transform(ray);
+            Intercept intercept2 = object.getIntercept2(transform1);
+            float intercept = intercept2.intercept;
+            if (debug) {
+                System.out.printf("light ray %s\nintercept %d, %s\n", transform1, i, intercept2);
+            }
+            if (Float.isFinite(intercept) && intercept > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     Color resolveRayColorDebug(float reflectiveness, Ray ray, boolean debug) {
@@ -52,21 +80,29 @@ public abstract class Scene {
     Color resolveRayColor(float reflectiveness, Ray ray) {
 
         float closestIntercept = Float.POSITIVE_INFINITY;
-        SceneObject closestObject = null;
         Intercept interceptInfo = null;
+        int index = -1;
 
-        for (SceneObject object : objects) {
-            Intercept intercept2 = object.getIntercept2(ray);
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = inverseTransforms.get(i);
+            Ray transform1 = transform.transform(ray);
+//            Ray transform1 = ray;
+            Intercept intercept2 = object.getIntercept2(transform1);
             float intercept = intercept2.intercept;
             if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
+                index = i;
                 closestIntercept = intercept;
-                closestObject = object;
                 interceptInfo = intercept2;
             }
         }
 
-        if (closestObject != null) {
-            return getColorFromObject(reflectiveness, interceptInfo, ray, closestObject);
+        if (debug) {
+            System.out.printf("%d %s\n", index, interceptInfo);
+        }
+
+        if (interceptInfo != null) {
+            return getColorFromObject(reflectiveness, interceptInfo, ray, transforms.get(index), objects.get(index));
         }
 
         if (Vec.cos(directionalLight.getDirection(), ray.getDirection()) > .99) {
@@ -77,11 +113,12 @@ public abstract class Scene {
         return ambientLight.getColor().copy();
     }
 
-    private Color getColorFromObject(float reflectiveness, Intercept intercept, Ray ray, SceneObject sceneObject) {
+    private Color getColorFromObject(float reflectiveness, Intercept intercept, Ray ray, Matrix objectToWorld, SceneObject sceneObject) {
 
-        Vec interceptPoint = intercept.interceptPoint;
-
-        Vec normal = sceneObject.getNormal(ray, intercept);
+        Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
+        Vec normal = objectToWorld.transform(sceneObject.getNormal(ray, intercept));
+//        Vec interceptPoint = intercept.interceptPoint;
+//        Vec normal = sceneObject.getNormal(ray, intercept);
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.getColor().copy();

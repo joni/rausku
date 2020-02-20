@@ -3,6 +3,7 @@ package com.jsalonen.raytrace.scenes;
 import com.jsalonen.raytrace.Camera;
 import com.jsalonen.raytrace.Color;
 import com.jsalonen.raytrace.Scene;
+import com.jsalonen.raytrace.geometry.HorizontalPlane;
 import com.jsalonen.raytrace.geometry.Obj;
 import com.jsalonen.raytrace.lighting.DirectionalLight;
 import com.jsalonen.raytrace.math.Matrix;
@@ -15,18 +16,21 @@ import static com.jsalonen.raytrace.math.FloatMath.toRadians;
 public class Scene7 extends Scene {
     public Scene7() {
 
-        directionalLight = new DirectionalLight(Vec.of(1, -2, -1).normalize(), Color.of(1, 1, 1));
+        directionalLight = new DirectionalLight(Vec.of(.5f, -.75f, +.5f).normalize(), Color.of(1, 1, 1));
 
         camera = new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-15)), Matrix.translate(0, 10, 500)),
+                Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),
                 500, 500,
                 toRadians(45));
 
         try {
-            objects.add(new Obj("data/teapot.obj"));
+            addObject(
+                    Matrix.rotateY(toRadians(30)),
+                    new Obj("data/teapot.obj"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        addObject(new HorizontalPlane(-50f));
 
 //        Vec o = Vec.of(10, 10, -50);
 //        Vertex ov = Vertex.of(o, Vec.of(0, 0, -1));

@@ -16,6 +16,7 @@ public class Cube extends SceneObject {
     private Vec center;
 
     public Cube(Material material) {
+        this.center = Vec.origin();
         this.material = material;
     }
 

@@ -23,7 +23,7 @@ public class Vec {
     }
 
     /**
-     * Computes U + tV
+     * Computes tU + V
      */
     public static Vec mulAdd(float t, Vec u, Vec v) {
         return new Vec(u.x * t + v.x,

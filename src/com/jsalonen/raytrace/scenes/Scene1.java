@@ -19,11 +19,11 @@ public class Scene1 extends Scene {
         Sphere sphere4 = new Sphere(Vec.of(.0f, .8165f, 5.422f), .5f, Material.plastic(green, .5f));
         HorizontalPlane plane = new HorizontalPlane(-.5f);
 
-        objects.add(sphere);
-        objects.add(sphere2);
-        objects.add(sphere3);
-        objects.add(sphere4);
+        addObject(sphere);
+        addObject(sphere2);
+        addObject(sphere3);
+        addObject(sphere4);
 
-        objects.add(plane);
+        addObject(plane);
     }
 }

@@ -41,4 +41,12 @@ public class Ray {
     public Ray getRefracted(Vec normal, Vec interceptPoint, float indexOfRefraction) {
         return new Ray(interceptPoint, normal.refracted(direction, indexOfRefraction));
     }
+
+    @Override
+    public String toString() {
+        return "Ray{" +
+                "origin=" + origin +
+                ", direction=" + direction +
+                '}';
+    }
 }

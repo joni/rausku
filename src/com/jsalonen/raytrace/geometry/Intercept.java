@@ -12,4 +12,13 @@ public class Intercept {
         this.interceptPoint = interceptPoint;
         this.info = info;
     }
+
+    @Override
+    public String toString() {
+        return "Intercept{" +
+                "intercept=" + intercept +
+                ", interceptPoint=" + interceptPoint +
+                ", info=" + info +
+                '}';
+    }
 }
