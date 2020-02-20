@@ -5,6 +5,8 @@ import com.jsalonen.raytrace.Material;
 import com.jsalonen.raytrace.Ray;
 import com.jsalonen.raytrace.math.Vec;
 
+import static com.jsalonen.raytrace.Scene.INTERCEPT_NEAR;
+
 public class HorizontalPlane extends SceneObject {
     private float groundLevel;
 
@@ -19,7 +21,7 @@ public class HorizontalPlane extends SceneObject {
 
     public float getIntercept(Ray ray) {
         float intercept = (groundLevel - ray.getOrigin().y) / ray.getDirection().y;
-        if (intercept > 0) {
+        if (intercept > INTERCEPT_NEAR) {
             return intercept;
         } else {
             return Float.NaN;
@@ -32,6 +34,6 @@ public class HorizontalPlane extends SceneObject {
 
     @Override
     public Material getMaterial() {
-        return Material.plastic(Color.of(.24f, .5f, .2f), .3f);
+        return Material.plastic(Color.of(.24f, .5f, .2f), 0);
     }
 }

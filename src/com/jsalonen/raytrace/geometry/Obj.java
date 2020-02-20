@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import static com.jsalonen.raytrace.Scene.INTERCEPT_NEAR;
+
 public class Obj extends SceneObject {
 
     private List<Polygon> polygons;
@@ -42,7 +44,7 @@ public class Obj extends SceneObject {
         Polygon closestPolygon = null;
         for (Polygon polygon : polygons) {
             float intercept = polygon.getIntercept(ray);
-            if (Float.isFinite(intercept)) {
+            if (Float.isFinite(intercept) && intercept > INTERCEPT_NEAR) {
                 if (intercept < closestIntercept) {
                     closestIntercept = intercept;
                     closestPolygon = polygon;

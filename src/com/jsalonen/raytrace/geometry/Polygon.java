@@ -6,6 +6,8 @@ import com.jsalonen.raytrace.math.Vec;
 
 import java.util.List;
 
+import static com.jsalonen.raytrace.Scene.INTERCEPT_NEAR;
+
 public class Polygon {
 
     public final List<Vertex> vertices;
@@ -40,7 +42,17 @@ public class Polygon {
         // n.(direction*t+origin-v0)=0
         // t = n.(v0-origin)/(n.direction)
 
-        float planeIntercept = normal.dot(v0.sub(ray.getOrigin())) / normal.dot(ray.getDirection());
+        float nDotD = normal.dot(ray.getDirection());
+        if (nDotD > 0) {
+            // back face
+            return Float.NaN;
+        }
+
+        float planeIntercept = normal.dot(v0.sub(ray.getOrigin())) / nDotD;
+
+        if (planeIntercept < INTERCEPT_NEAR) {
+            return Float.NaN;
+        }
 
         // is the intercept inside the triangle?
 
@@ -100,5 +112,12 @@ public class Polygon {
                 u, vertices.get(1).normal,
                 v, vertices.get(2).normal)
                 .normalize();
+    }
+
+    @Override
+    public String toString() {
+        return "Polygon{" +
+                "normal=" + normal +
+                '}';
     }
 }
