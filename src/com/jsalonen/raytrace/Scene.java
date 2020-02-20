@@ -17,12 +17,11 @@ public abstract class Scene {
     public static final double INTERCEPT_NEAR = 1e-3;
     protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(1, 1, 1));
     boolean debug = false;
-    private List<Matrix> transforms = new ArrayList<>();
     protected Camera camera = Camera.initialCamera();
+    private List<Matrix> transforms = new ArrayList<>();
     private List<Matrix> inverseTransforms = new ArrayList<>();
     private List<SceneObject> objects = new ArrayList<>();
-    //    DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, 0).normalize(), Color.of(1, 1, 1));
-    AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
+    protected AmbientLight ambientLight = new AmbientLight(Color.of(.1f, .1f, .1f));
 
     protected void addObject(Matrix transform, SceneObject object) {
         transforms.add(transform);
@@ -40,7 +39,6 @@ public abstract class Scene {
         for (int i = 0; i < objects.size(); i++) {
             SceneObject object = objects.get(i);
             Matrix transform = inverseTransforms.get(i);
-//            Ray transform1 = ray;
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept2(transform1);
             float intercept = intercept2.intercept;
@@ -54,29 +52,6 @@ public abstract class Scene {
         return false;
     }
 
-    Color resolveRayColorDebug(float reflectiveness, Ray ray, boolean debug) {
-        float closestIntercept = Float.POSITIVE_INFINITY;
-        SceneObject closestObject = null;
-
-        for (SceneObject object : objects) {
-            float intercept = object.getIntercept(ray);
-            if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
-                closestIntercept = intercept;
-                closestObject = object;
-            }
-        }
-
-        if (closestObject != null) {
-            if (debug) {
-                System.out.printf("object %s\n", closestObject);
-            }
-            int hashCode = closestObject.hashCode();
-            return Color.of((0xff & (hashCode >>> 16)) / 255f, (0xff & (hashCode >>> 8)) / 255f, (0xff & (hashCode)) / 255f);
-        }
-
-        return Color.of(0, 0, 0);
-    }
-
     Color resolveRayColor(float reflectiveness, Ray ray) {
 
         float closestIntercept = Float.POSITIVE_INFINITY;
@@ -87,7 +62,6 @@ public abstract class Scene {
             SceneObject object = objects.get(i);
             Matrix transform = inverseTransforms.get(i);
             Ray transform1 = transform.transform(ray);
-//            Ray transform1 = ray;
             Intercept intercept2 = object.getIntercept2(transform1);
             float intercept = intercept2.intercept;
             if (intercept > INTERCEPT_NEAR && intercept < closestIntercept) {
@@ -117,17 +91,24 @@ public abstract class Scene {
 
         Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
         Vec normal = objectToWorld.transform(sceneObject.getNormal(ray, intercept));
-//        Vec interceptPoint = intercept.interceptPoint;
-//        Vec normal = sceneObject.getNormal(ray, intercept);
 
         Material material = sceneObject.getMaterial();
         Color light = ambientLight.getColor().copy();
 
         float directionalLightEnergy = max(0, normal.dot(directionalLight.getDirection()));
         if (directionalLightEnergy > 0) {
+//             check shadow
             Ray lightRay = directionalLight.getRay(interceptPoint);
+            if (debug) {
+                System.out.println("light ray: " + lightRay);
+            }
+
             if (!interceptsRay(lightRay)) {
                 light.add(directionalLight.getColor().copy().mul(directionalLightEnergy));
+            } else {
+                if (debug) {
+                    System.out.println("shadow");
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 package com.jsalonen.raytrace;
 
-import com.jsalonen.raytrace.scenes.Scene6;
+import com.jsalonen.raytrace.scenes.Scene7;
 
 import javax.swing.*;
 import java.awt.*;
