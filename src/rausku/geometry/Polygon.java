@@ -42,7 +42,7 @@ public class Polygon {
         // t = n.(v0-origin)/(n.direction)
 
         float nDotD = normal.dot(ray.getDirection());
-        if (nDotD > 0) {
+        if (nDotD > -1e-2) {
             // back face
             return Float.NaN;
         }
