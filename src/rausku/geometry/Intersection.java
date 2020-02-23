@@ -13,10 +13,10 @@ public class Intersection extends SceneObject {
     private SceneObject obj1;
     private SceneObject obj2;
 
-    public Intersection(Material material, Cube cube, Sphere sphere) {
+    public Intersection(Material material, SceneObject object1, SceneObject object2) {
         this.material = material;
-        obj1 = cube;
-        obj2 = sphere;
+        this.obj1 = object1;
+        this.obj2 = object2;
     }
 
     @Override

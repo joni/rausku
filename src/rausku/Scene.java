@@ -17,7 +17,7 @@ public abstract class Scene {
     public static final double INTERCEPT_NEAR = 1e-3;
 
     protected AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .25f, .3f));
-    protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.4, .4, .3));
+    protected DirectionalLight directionalLight = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.8f, .8f, .7f));
 
     protected Camera camera = Camera.initialCamera();
     private List<Matrix> transforms = new ArrayList<>();
