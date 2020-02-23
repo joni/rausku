@@ -30,6 +30,20 @@ public class Intersection extends SceneObject {
     }
 
     @Override
+    public Intercept getIntercept2(Ray ray) {
+        Intercept intercept1 = obj1.getIntercept2(ray);
+        Intercept intercept2 = obj2.getIntercept2(ray);
+        if (intercept1.isValid() && intercept2.isValid()) {
+            if (intercept1.intercept > intercept2.intercept) {
+                return new Intercept(intercept1.intercept, intercept1.interceptPoint, new IInfo(obj1, intercept1));
+            } else {
+                return new Intercept(intercept1.intercept, intercept2.interceptPoint, new IInfo(obj2, intercept2));
+            }
+        }
+        return Intercept.noIntercept();
+    }
+
+    @Override
     public float[] getIntercepts(Ray ray) {
         float[] intercepts = obj1.getIntercepts(ray);
         float[] intercepts1 = obj2.getIntercepts(ray);
@@ -39,17 +53,17 @@ public class Intersection extends SceneObject {
 
     @Override
     public Vec getNormal(Ray ray, Intercept interceptPoint) {
-        float intercept1 = obj1.getIntercept(ray);
-        float intercept2 = obj2.getIntercept(ray);
-        float max = max(intercept1, intercept2);
-        if (intercept1 == max) {
-            return obj1.getNormal(ray, interceptPoint);
-        } else if (intercept2 == max) {
-            return obj2.getNormal(ray, interceptPoint);
-        } else {
-            // should not happen
-            return null;
-        }
+        IInfo intercept = (IInfo) interceptPoint.info;
+        return intercept.object.getNormal(ray, intercept.intercept);
     }
 
+    private class IInfo {
+        private final SceneObject object;
+        private final Intercept intercept;
+
+        public IInfo(SceneObject object, Intercept intercept) {
+            this.object = object;
+            this.intercept = intercept;
+        }
+    }
 }

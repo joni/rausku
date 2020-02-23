@@ -64,6 +64,14 @@ public class Matrix {
         return EYE;
     }
 
+    public static Matrix mul(Matrix... transform) {
+        Matrix ret = eye();
+        for (Matrix matrix : transform) {
+            ret = mul(ret, matrix);
+        }
+        return ret;
+    }
+
     public Matrix transpose() {
         return Matrix.of(
                 f11, f21, f31, f41,

@@ -1,22 +1,39 @@
 package rausku.scenes;
 
+import rausku.Camera;
 import rausku.Color;
 import rausku.Material;
 import rausku.Scene;
 import rausku.geometry.*;
+import rausku.lighting.DirectionalLight;
+import rausku.math.Matrix;
 import rausku.math.Vec;
+
+import static rausku.math.FloatMath.toRadians;
 
 public class Scene5 extends Scene {
     public Scene5() {
-        Material plastic = Material.plastic(Color.of(1, 1, 1), .8f);
-        addObject(new Subtraction(plastic,
-                new Cube(Vec.of(.75f, 0, 0f), plastic),
-                new Sphere(Vec.of(.75f, 0, 0f), 1.4f, plastic)));
+        camera = new Camera(Matrix.mul(
+                Matrix.rotateY(toRadians(-30)),
+                Matrix.rotateX(toRadians(-30)),
+                Matrix.translate(0, 0, 15)),
+                500, 500,
+                toRadians(45));
 
-        addObject(new Intersection(plastic,
-                new Cube(Vec.of(-.75f, 0, 0f), plastic),
-                new Sphere(Vec.of(-.75f, 0, 0f), 1.2f, plastic)));
+        directionalLight = new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f));
 
-        addObject(new HorizontalPlane(-1));
+        Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .5f);
+
+        addObject(Matrix.translate(-1.25f, 0, 0),
+                new Subtraction(plastic,
+                        new Cube(null),
+                        new Sphere(Vec.origin(), 1.4f, null)));
+
+        addObject(Matrix.translate(+1.25f, 0, 0),
+                new Intersection(plastic,
+                        new Cube(null),
+                        new Sphere(Vec.origin(), 1.4f, null)));
+
+        addObject(new HorizontalPlane(-1.25f));
     }
 }

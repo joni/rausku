@@ -11,17 +11,10 @@ import static java.lang.Math.abs;
 
 public class Cube extends SceneObject {
 
-    public static final double bounds = 1.000001;
+    private static final double BOUNDS = 1.000001;
     private final Material material;
-    private Vec center;
 
     public Cube(Material material) {
-        this.center = Vec.origin();
-        this.material = material;
-    }
-
-    public Cube(Vec center, Material material) {
-        this.center = center;
         this.material = material;
     }
 
@@ -33,7 +26,6 @@ public class Cube extends SceneObject {
     @Override
     public Vec getNormal(Ray ray, Intercept intercept) {
         Vec interceptPoint = intercept.interceptPoint;
-        interceptPoint.sub(center);
         float absx = abs(interceptPoint.x);
         float absy = abs(interceptPoint.y);
         float absz = abs(interceptPoint.z);
@@ -51,7 +43,7 @@ public class Cube extends SceneObject {
 
     @Override
     public float[] getIntercepts(Ray ray) {
-        Vec rayOrigin = ray.getOrigin().sub(center);
+        Vec rayOrigin = ray.getOrigin();
         Vec rayDirection = ray.getDirection();
         float[] intercepts = {Float.NaN, Float.NaN};
         int index = 0;
@@ -76,7 +68,7 @@ public class Cube extends SceneObject {
 
     @Override
     public float getIntercept(Ray ray) {
-        ray.getOrigin().sub(center);
+        ray.getOrigin();
         float[] intercepts = {
                 (+1 - ray.getOrigin().x) / ray.getDirection().x,
                 (-1 - ray.getOrigin().x) / ray.getDirection().x,
@@ -103,6 +95,6 @@ public class Cube extends SceneObject {
             return false;
         }
         Vec interceptPoint = ray.apply(intercept);
-        return abs(interceptPoint.x) < bounds && abs(interceptPoint.y) < bounds && abs(interceptPoint.z) < bounds;
+        return abs(interceptPoint.x) < BOUNDS && abs(interceptPoint.y) < BOUNDS && abs(interceptPoint.z) < BOUNDS;
     }
 }
