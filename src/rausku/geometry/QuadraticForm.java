@@ -11,12 +11,22 @@ import static rausku.math.FloatMath.sqrt;
 public class QuadraticForm extends SceneObject {
     private final Matrix matrix;
     private final Matrix gradient;
+    private final boolean zeroIsInside;
     private Material material;
+
 
     public QuadraticForm(Matrix matrix, Material material) {
         this.matrix = matrix;
         this.gradient = Matrix.plus(matrix, matrix.transpose());
         this.material = material;
+        this.zeroIsInside = true;
+    }
+
+    public QuadraticForm(boolean zeroIsInside, Matrix matrix, Material material) {
+        this.matrix = matrix;
+        this.material = material;
+        this.gradient = Matrix.plus(matrix, matrix.transpose());
+        this.zeroIsInside = zeroIsInside;
     }
 
     @Override
@@ -32,7 +42,7 @@ public class QuadraticForm extends SceneObject {
 
         float A = v1.dot(transform1);
         float B = v1.dot(transform0) + v0.dot(transform1);
-        float C = v0.dot(transform0) - 1;
+        float C = v0.dot(transform0);
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
@@ -43,15 +53,15 @@ public class QuadraticForm extends SceneObject {
     }
 
     public float getIntercept(Ray ray) {
-        Vec v1 = ray.getDirection();
         Vec v0 = ray.getOrigin();
+        Vec v1 = ray.getDirection();
 
         Vec transform0 = matrix.transform(v0);
         Vec transform1 = matrix.transform(v1);
 
         float A = v1.dot(transform1);
         float B = v1.dot(transform0) + v0.dot(transform1);
-        float C = v0.dot(transform0) - 1;
+        float C = v0.dot(transform0);
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
@@ -68,7 +78,11 @@ public class QuadraticForm extends SceneObject {
     }
 
     public Vec getNormal(Ray ray, Intercept intercept) {
-        return gradient.transform(intercept.interceptPoint).normalize();
+        if (zeroIsInside) {
+            return gradient.transform(intercept.interceptPoint).normalize();
+        } else {
+            return gradient.transform(intercept.interceptPoint).mul(-1).normalize();
+        }
     }
 
     public Material getMaterial() {

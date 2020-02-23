@@ -101,7 +101,7 @@ public class Vec {
     }
 
     public static float dot(Vec v, Vec u) {
-        return v.x * u.x + v.y * u.y + v.z * u.z;
+        return v.x * u.x + v.y * u.y + v.z * u.z + v.w * u.w;
     }
 
     public float len() {
