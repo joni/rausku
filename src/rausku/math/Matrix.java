@@ -72,6 +72,15 @@ public class Matrix {
         return ret;
     }
 
+    public static Matrix diag(float e11, float e22, float e33, float e44) {
+        return Matrix.of(
+                e11, 0, 0, 0,
+                0, e22, 0, 0,
+                0, 0, e33, 0,
+                0, 0, 0, e44
+        );
+    }
+
     public Matrix transpose() {
         return Matrix.of(
                 f11, f21, f31, f41,
@@ -258,8 +267,17 @@ public class Matrix {
         );
     }
 
+    public static Matrix plus(Matrix a, Matrix b) {
+        return Matrix.of(
+                a.f11 + b.f11, a.f12 + b.f12, a.f13 + b.f13, a.f14 + b.f14,
+                a.f21 + b.f21, a.f22 + b.f22, a.f23 + b.f23, a.f24 + b.f24,
+                a.f31 + b.f31, a.f32 + b.f32, a.f33 + b.f33, a.f34 + b.f34,
+                a.f41 + b.f41, a.f42 + b.f42, a.f43 + b.f43, a.f44 + b.f44
+        );
+    }
+
     public static Matrix mul(Matrix a, Matrix b) {
-        return new Matrix(
+        return Matrix.of(
                 a.f11 * b.f11 + a.f12 * b.f21 + a.f13 * b.f31 + a.f14 * b.f41,
                 a.f11 * b.f12 + a.f12 * b.f22 + a.f13 * b.f32 + a.f14 * b.f42,
                 a.f11 * b.f13 + a.f12 * b.f23 + a.f13 * b.f33 + a.f14 * b.f43,
