@@ -1,6 +1,6 @@
 package rausku;
 
-import rausku.scenes.Scene8;
+import rausku.scenes.Scene2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ public class Raytrace {
 
     public static void main(String... args) {
 
-        Scene scene = new Scene8();
+        Scene scene = new Scene2();
 
         Camera camera = scene.getCamera();
 
@@ -34,16 +34,16 @@ public class Raytrace {
         scene.debug = true;
 
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JLabel label = new JLabel(new ImageIcon(image));
-            label.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    Point point = e.getPoint();
-                    Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
+                    JFrame frame = new JFrame();
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    JLabel label = new JLabel(new ImageIcon(image));
+                    label.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            Point point = e.getPoint();
+                            Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
 
-                    scene.resolveRayColor(0, ray);
+                            scene.resolveRayColor(1, ray);
 
                             //System.exit(0);
                         }
