@@ -4,13 +4,13 @@ import rausku.Material;
 import rausku.Ray;
 import rausku.math.Vec;
 
-public class Subtraction extends SceneObject {
+public class CSGSubtraction extends SceneObject {
 
     private final Material material;
     private final SceneObject obj1;
     private final SceneObject obj2;
 
-    public Subtraction(Material material, Cube cube, Sphere sphere) {
+    public CSGSubtraction(Material material, Cube cube, Sphere sphere) {
         this.material = material;
         obj1 = cube;
         obj2 = sphere;

@@ -25,12 +25,12 @@ public class Scene5 extends Scene {
         Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .5f);
 
         addObject(Matrix.translate(-1.25f, 0, 0),
-                new Subtraction(plastic,
+                new CSGSubtraction(plastic,
                         new Cube(null),
                         new Sphere(Vec.origin(), 1.4f, null)));
 
         addObject(Matrix.translate(+1.25f, 0, 0),
-                new Intersection(plastic,
+                new CSGIntersection(plastic,
                         new Cube(null),
                         new Sphere(Vec.origin(), 1.4f, null)));
 

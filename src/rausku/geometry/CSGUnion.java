@@ -7,13 +7,13 @@ import rausku.math.Vec;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class Intersection extends SceneObject {
+public class CSGUnion extends SceneObject {
 
     private final Material material;
     private SceneObject obj1;
     private SceneObject obj2;
 
-    public Intersection(Material material, SceneObject object1, SceneObject object2) {
+    public CSGUnion(Material material, SceneObject object1, SceneObject object2) {
         this.material = material;
         this.obj1 = object1;
         this.obj2 = object2;
@@ -26,7 +26,7 @@ public class Intersection extends SceneObject {
 
     @Override
     public float getIntercept(Ray ray) {
-        return max(obj1.getIntercept(ray), obj2.getIntercept(ray));
+        return min(obj1.getIntercept(ray), obj2.getIntercept(ray));
     }
 
     @Override
@@ -34,20 +34,24 @@ public class Intersection extends SceneObject {
         Intercept intercept1 = obj1.getIntercept2(ray);
         Intercept intercept2 = obj2.getIntercept2(ray);
         if (intercept1.isValid() && intercept2.isValid()) {
-            if (intercept1.intercept > intercept2.intercept) {
+            if (intercept1.intercept < intercept2.intercept) {
                 return new Intercept(intercept1.intercept, intercept1.interceptPoint, new IInfo(obj1, intercept1));
             } else {
                 return new Intercept(intercept1.intercept, intercept2.interceptPoint, new IInfo(obj2, intercept2));
             }
+        } else if (intercept1.isValid()) {
+            return new Intercept(intercept1.intercept, intercept1.interceptPoint, new IInfo(obj1, intercept1));
+        } else if (intercept2.isValid()) {
+            return new Intercept(intercept2.intercept, intercept2.interceptPoint, new IInfo(obj2, intercept2));
         }
         return Intercept.noIntercept();
     }
 
     @Override
     public float[] getIntercepts(Ray ray) {
-        float[] intercepts = obj1.getIntercepts(ray);
-        float[] intercepts1 = obj2.getIntercepts(ray);
-        float[] allIntercepts = {max(intercepts[0], intercepts1[0]), min(intercepts[1], intercepts1[1])};
+        float[] intercepts1 = obj1.getIntercepts(ray);
+        float[] intercepts2 = obj2.getIntercepts(ray);
+        float[] allIntercepts = {max(intercepts1[0], intercepts2[0]), min(intercepts1[1], intercepts2[1])};
         return allIntercepts;
     }
 
@@ -57,7 +61,7 @@ public class Intersection extends SceneObject {
         return intercept.object.getNormal(ray, intercept.intercept);
     }
 
-    private class IInfo {
+    private static class IInfo {
         private final SceneObject object;
         private final Intercept intercept;
 
