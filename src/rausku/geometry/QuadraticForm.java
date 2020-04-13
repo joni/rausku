@@ -12,12 +12,11 @@ public class QuadraticForm extends SceneObject {
     private final Matrix matrix;
     private final Matrix gradient;
     private final boolean zeroIsInside;
-    private Material material;
-
+    private final Material material;
 
     public QuadraticForm(Matrix matrix, Material material) {
         this.matrix = matrix;
-        this.gradient = Matrix.plus(matrix, matrix.transpose());
+        this.gradient = getGradient(matrix);
         this.material = material;
         this.zeroIsInside = true;
     }
@@ -25,8 +24,12 @@ public class QuadraticForm extends SceneObject {
     public QuadraticForm(boolean zeroIsInside, Matrix matrix, Material material) {
         this.matrix = matrix;
         this.material = material;
-        this.gradient = Matrix.plus(matrix, matrix.transpose());
+        this.gradient = getGradient(matrix);
         this.zeroIsInside = zeroIsInside;
+    }
+
+    private static Matrix getGradient(Matrix matrix) {
+        return Matrix.mul(Matrix.diag(1, 1, 1, 0), Matrix.plus(matrix, matrix.transpose()));
     }
 
     @Override
