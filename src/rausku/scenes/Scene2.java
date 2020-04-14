@@ -25,11 +25,6 @@ public class Scene2 extends Scene {
             }
         }
 
-//        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -2f),  Material.glass()));
-        addObject(new QuadraticForm(Matrix.diag(1f, 0f, 1f, -1f), Material.glass()));
-        addObject(new QuadraticForm(Matrix.diag(0f, 1f, 1f, -1f), Material.glass()));
-
-        addObject(new Unio);
-//        addObject(new Sphere(Vec.point(0, 0, 0), 1f, Material.glass()));
+        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -3f), Material.glass()));
     }
 }

@@ -1,8 +1,10 @@
 package rausku;
 
+import rausku.math.FloatMath;
 import rausku.math.Vec;
 
-import static java.lang.Math.*;
+import static rausku.math.FloatMath.*;
+
 
 public class MaterialX extends Material {
     public MaterialX(Color diffuseColor) {
@@ -12,8 +14,8 @@ public class MaterialX extends Material {
     @Override
     public Color getDiffuseColor(Vec interceptPoint) {
 
-        double baseValue = 4 * sqrt(pow(sin(interceptPoint.x * 10) + 1, 2) + pow(sin(interceptPoint.y * 10) + 1, 2) + pow(sin(interceptPoint.z * 10) + 1, 2));
-        double x = 1 / (1 + Math.exp(-Math.sin(baseValue * Math.PI / 2)));
+        float baseValue = 4 * sqrt(pow(sin(interceptPoint.x * 10) + 1, 2) + pow(sin(interceptPoint.y * 10) + 1, 2) + pow(sin(interceptPoint.z * 10) + 1, 2));
+        float x = 1 / (1 + exp(-sin(baseValue * FloatMath.PI / 2)));
 
         return Color.of(x, x, x);
     }

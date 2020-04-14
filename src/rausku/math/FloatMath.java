@@ -28,11 +28,19 @@ public class FloatMath {
         return ((float) Math.sqrt(x));
     }
 
+    public static float exp(float x) {
+        return ((float) Math.exp(x));
+    }
+
     public static float pow(float x, float y) {
         return ((float) Math.pow(x, y));
     }
 
     public static float abs(float x) {
         return Math.abs(x);
+    }
+
+    public static int ceil(float value) {
+        return (int) Math.ceil(value);
     }
 }

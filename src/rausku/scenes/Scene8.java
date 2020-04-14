@@ -1,9 +1,6 @@
 package rausku.scenes;
 
-import rausku.Camera;
-import rausku.Color;
-import rausku.Material;
-import rausku.Scene;
+import rausku.*;
 import rausku.geometry.HorizontalPlane;
 import rausku.geometry.QuadraticForm;
 import rausku.lighting.DirectionalLight;
@@ -22,11 +19,11 @@ public class Scene8 extends Scene {
 
         directionalLight = new DirectionalLight(Vec.of(1f, -1f, -1f).normalize(), Color.of(.8f, .8f, .7f));
 
-        Material material = Material.plastic(Color.of(.8f, .8f, .8f), .0f);
+        Material material = Material.plastic(Color.of(.8f, .8f, .8f), .7f);
 
         addObject(new QuadraticForm(Matrix.diag(1f, -.2f, 1f, -.1f), material));
         addObject(new QuadraticForm(Matrix.diag(.5f, 2f, .5f, -1f), material));
 
-        addObject(new HorizontalPlane(-.2f));
+        addObject(new HorizontalPlane(-.2f, new CheckerBoard(null)));
     }
 }

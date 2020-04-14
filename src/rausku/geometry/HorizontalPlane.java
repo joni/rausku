@@ -8,9 +8,15 @@ import rausku.math.Vec;
 
 public class HorizontalPlane extends SceneObject {
     private float groundLevel;
+    private Material material;
 
     public HorizontalPlane(float groundLevel) {
+        this(groundLevel, Material.plastic(Color.of(.24f, .5f, .2f), 0));
+    }
+
+    public HorizontalPlane(float groundLevel, Material material) {
         this.groundLevel = groundLevel;
+        this.material = material;
     }
 
     @Override
@@ -33,6 +39,6 @@ public class HorizontalPlane extends SceneObject {
 
     @Override
     public Material getMaterial() {
-        return Material.plastic(Color.of(.24f, .5f, .2f), 0);
+        return material;
     }
 }

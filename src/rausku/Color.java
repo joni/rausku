@@ -20,10 +20,6 @@ public class Color {
         return new Color(r, g, b);
     }
 
-    public static Color of(double v, double v1, double v2) {
-        return of(((float) v), ((float) v1), ((float) v2));
-    }
-
     public int toIntRGB() {
         int r = min(255, (int) (256 * (1 - exp(-this.r))));
         int g = min(255, (int) (256 * (1 - exp(-this.g))));

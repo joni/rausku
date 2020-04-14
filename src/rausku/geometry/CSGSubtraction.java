@@ -10,7 +10,7 @@ public class CSGSubtraction extends SceneObject {
     private final SceneObject obj1;
     private final SceneObject obj2;
 
-    public CSGSubtraction(Material material, Cube cube, Sphere sphere) {
+    public CSGSubtraction(Material material, SceneObject cube, SceneObject sphere) {
         this.material = material;
         obj1 = cube;
         obj2 = sphere;
