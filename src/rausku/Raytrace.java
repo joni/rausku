@@ -1,6 +1,6 @@
 package rausku;
 
-import rausku.scenes.Scene8;
+import rausku.scenes.Scene9;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,7 +15,7 @@ public class Raytrace {
 
     public static void main(String... args) {
 
-        Scene scene = new Scene8();
+        Scene scene = new Scene9();
 
         Camera camera = scene.getCamera();
 
