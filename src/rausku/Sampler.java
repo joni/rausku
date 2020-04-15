@@ -44,7 +44,7 @@ public interface Sampler {
                 for (int x = 0; x < pixelWidth; x++) {
                     Color[] colors = new Color[samplesPerPixel];
                     for (int i = 0; i < samplesPerPixel; i++) {
-                        Ray ray = camera.getRayFromOriginToCanvas(x + rnd.nextFloat(), y + rnd.nextFloat());
+                        Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
                         colors[i] = scene.resolveRayColor(1, ray);
                     }
                     image.setRGB(x, y, Color.average(colors).toIntRGB());
