@@ -33,9 +33,9 @@ public class Camera {
         return INITIAL;
     }
 
-    public Ray getRayFromOriginToCanvas(int x, int y) {
+    public Ray getRayFromOriginToCanvas(float x, float y) {
 
-        Vec imagePoint = Vec.of(x, y, -1, 1);
+        Vec imagePoint = Vec.point(x, y, -1);
 
         Vec origin = Vec.origin();
         Vec direction = projectionMatrix.transform(imagePoint)

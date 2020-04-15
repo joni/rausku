@@ -19,55 +19,44 @@ public class Raytrace {
 
         Camera camera = scene.getCamera();
 
-        int pixelWidth = camera.getPixelWidth();
-        int pixelHeight = camera.getPixelHeight();
+        Sampler sampler = new Sampler.RandomSubsampler(64);
 
-        BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
-
-        for (int y = 0; y < pixelHeight; y++) {
-            for (int x = 0; x < pixelWidth; x++) {
-                Ray ray = camera.getRayFromOriginToCanvas(x, y);
-
-                Color color = scene.resolveRayColor(1, ray);
-
-                image.setRGB(x, y, color.toIntRGB());
-            }
-        }
+        BufferedImage image = sampler.sample(scene, camera);
 
         scene.debug = true;
 
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JMenuBar menubar = new JMenuBar();
-            frame.setJMenuBar(menubar);
-            JMenu fileMenu = new JMenu("File");
-            menubar.add(fileMenu);
-            fileMenu.add("Save").addActionListener(actionEvent -> {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-                int save = fileChooser.showDialog(frame, "Save");
-                if (save == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        ImageIO.write(image, "PNG", fileChooser.getSelectedFile());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            fileMenu.add("Exit").addActionListener(actionEvent -> {
-                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            });
+                    JFrame frame = new JFrame();
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    JMenuBar menubar = new JMenuBar();
+                    frame.setJMenuBar(menubar);
+                    JMenu fileMenu = new JMenu("File");
+                    menubar.add(fileMenu);
+                    fileMenu.add("Save").addActionListener(actionEvent -> {
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+                        int save = fileChooser.showDialog(frame, "Save");
+                        if (save == JFileChooser.APPROVE_OPTION) {
+                            try {
+                                ImageIO.write(image, "PNG", fileChooser.getSelectedFile());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    fileMenu.add("Exit").addActionListener(actionEvent -> {
+                        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                    });
 
-            JLabel label = new JLabel(new ImageIcon(image));
-            label.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    Point point = e.getPoint();
-                    Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
-                    scene.resolveRayColor(1, ray);
-                }
-            });
+                    JLabel label = new JLabel(new ImageIcon(image));
+                    label.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            Point point = e.getPoint();
+                            Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
+                            scene.resolveRayColor(1, ray);
+                        }
+                    });
                     frame.add(label);
                     frame.pack();
                     frame.setVisible(true);

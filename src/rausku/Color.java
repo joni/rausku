@@ -20,6 +20,19 @@ public class Color {
         return new Color(r, g, b);
     }
 
+    public static Color average(Color[] colors) {
+        float r = 0;
+        float g = 0;
+        float b = 0;
+
+        for (Color color : colors) {
+            r += color.r;
+            g += color.g;
+            b += color.b;
+        }
+        return Color.of(r / colors.length, g / colors.length, b / colors.length);
+    }
+
     public int toIntRGB() {
         int r = min(255, (int) (256 * (1 - exp(-this.r))));
         int g = min(255, (int) (256 * (1 - exp(-this.g))));
@@ -45,6 +58,7 @@ public class Color {
     public Color mul(float c) {
         return new Color(r * c, g * c, b * c);
     }
+
 
     @Override
     public String toString() {
