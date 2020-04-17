@@ -2,80 +2,81 @@ package rausku;
 
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public interface Sampler {
-    BufferedImage sample(Scene scene, Camera camera);
+
+    void sample(Scene scene, Camera camera, BufferedImage image, int x, int y);
+
+    default BufferedImage createImage(Camera camera) {
+        int pixelWidth = camera.getPixelWidth();
+        int pixelHeight = camera.getPixelHeight();
+
+        return new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
+    }
 
     class Naive implements Sampler {
-        public BufferedImage sample(Scene scene, Camera camera) {
-            int pixelWidth = camera.getPixelWidth();
-            int pixelHeight = camera.getPixelHeight();
-
-            BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
-
-            for (int y = 0; y < pixelHeight; y++) {
-                for (int x = 0; x < pixelWidth; x++) {
-                    Ray ray = camera.getRayFromOriginToCanvas(x, y);
-                    Color color = scene.resolveRayColor(1, ray);
-                    image.setRGB(x, y, color.toIntRGB());
-                }
-            }
-            return image;
+        @Override
+        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+            Ray ray = camera.getRayFromOriginToCanvas(x, y);
+            Color color = scene.resolveRayColor(1, ray);
+            image.setRGB(x, y, color.toIntRGB());
         }
     }
 
-    class RandomSubsampler implements Sampler {
+    class GaussianRandomSubSampler implements Sampler {
 
-        private int samplesPerPixel;
+        private final int samplesPerPixel;
 
-        public RandomSubsampler(int samplesPerPixel) {
+        public GaussianRandomSubSampler(int samplesPerPixel) {
             this.samplesPerPixel = samplesPerPixel;
         }
 
-        public BufferedImage sample(Scene scene, Camera camera) {
-            int pixelWidth = camera.getPixelWidth();
-            int pixelHeight = camera.getPixelHeight();
+        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+            Random rnd = ThreadLocalRandom.current();
 
-            Random rnd = new Random();
-
-            BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
-
-            for (int y = 0; y < pixelHeight; y++) {
-                for (int x = 0; x < pixelWidth; x++) {
-                    Color[] colors = new Color[samplesPerPixel];
-                    for (int i = 0; i < samplesPerPixel; i++) {
-                        Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
-                        colors[i] = scene.resolveRayColor(1, ray);
-                    }
-                    image.setRGB(x, y, Color.average(colors).toIntRGB());
-                }
+            Color[] colors = new Color[samplesPerPixel];
+            for (int i = 0; i < samplesPerPixel; i++) {
+                Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
+                colors[i] = scene.resolveRayColor(1, ray);
             }
-            return image;
+            image.setRGB(x, y, Color.average(colors).toIntRGB());
+        }
+    }
+
+    class UniformRandomSubSampler implements Sampler {
+
+        private final int samplesPerPixel;
+
+        public UniformRandomSubSampler(int samplesPerPixel) {
+            this.samplesPerPixel = samplesPerPixel;
+        }
+
+        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+            Random rnd = ThreadLocalRandom.current();
+
+            Color[] colors = new Color[samplesPerPixel];
+            for (int i = 0; i < samplesPerPixel; i++) {
+                Ray ray = camera.getRayFromOriginToCanvas(x + rnd.nextFloat() - .5f, y + rnd.nextFloat() - .5f);
+                colors[i] = scene.resolveRayColor(1, ray);
+            }
+            image.setRGB(x, y, Color.average(colors).toIntRGB());
         }
     }
 
     class SubSampler implements Sampler {
 
-        public BufferedImage sample(Scene scene, Camera camera) {
-            int pixelWidth = camera.getPixelWidth();
-            int pixelHeight = camera.getPixelHeight();
-
-            BufferedImage image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
-
-            for (int y = 0; y < pixelHeight; y++) {
-                for (int x = 0; x < pixelWidth; x++) {
-                    Color[] colors = {
-                            getColor(scene, camera, x - .25f, y - .25f),
-                            getColor(scene, camera, x + .25f, y - .25f),
-                            getColor(scene, camera, x, y),
-                            getColor(scene, camera, x - .25f, y + .25f),
-                            getColor(scene, camera, x + .25f, y + .25f)
-                    };
-                    Color avg = Color.average(colors);
-                    image.setRGB(x, y, avg.toIntRGB());
-                }
-            }
-            return image;
+        @Override
+        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+            Color[] colors = {
+                    getColor(scene, camera, x - .25f, y - .25f),
+                    getColor(scene, camera, x + .25f, y - .25f),
+                    getColor(scene, camera, x, y),
+                    getColor(scene, camera, x - .25f, y + .25f),
+                    getColor(scene, camera, x + .25f, y + .25f)
+            };
+            Color avg = Color.average(colors);
+            image.setRGB(x, y, avg.toIntRGB());
         }
 
         private Color getColor(Scene scene, Camera camera, float x, float y) {

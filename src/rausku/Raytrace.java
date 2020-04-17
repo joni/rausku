@@ -1,6 +1,6 @@
 package rausku;
 
-import rausku.scenes.Scene9;
+import rausku.scenes.Scene7;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,23 +15,26 @@ public class Raytrace {
 
     public static void main(String... args) {
 
-        Scene scene = new Scene9();
+        Scene scene = new Scene7();
 
         Camera camera = scene.getCamera();
 
-        Sampler sampler = new Sampler.RandomSubsampler(64);
+        Sampler sampler = new Sampler.GaussianRandomSubSampler(1);
 
-        BufferedImage image = sampler.sample(scene, camera);
+        RenderStrategy renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.PerLineThreaded());
+//        RenderStrategy renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.SingleThreaded());
+
+        BufferedImage image = renderer.render(scene, camera, sampler);
 
         scene.debug = true;
 
         SwingUtilities.invokeLater(() -> {
-                    JFrame frame = new JFrame();
-                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    JMenuBar menubar = new JMenuBar();
-                    frame.setJMenuBar(menubar);
-                    JMenu fileMenu = new JMenu("File");
-                    menubar.add(fileMenu);
+            JFrame frame = new JFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JMenuBar menubar = new JMenuBar();
+            frame.setJMenuBar(menubar);
+            JMenu fileMenu = new JMenu("File");
+            menubar.add(fileMenu);
                     fileMenu.add("Save").addActionListener(actionEvent -> {
                         JFileChooser fileChooser = new JFileChooser();
                         fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
