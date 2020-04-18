@@ -143,7 +143,12 @@ public class Vec {
             t = 1 / r;
             s = t * dot + sqrt(1 - t * t * (1 - dot * dot));
         }
-        return mulAdd(-s, this, t, v);
+        if (Float.isFinite(s)) {
+            return mulAdd(-s, this, t, v);
+        } else {
+            // Total internal reflection
+            return null;
+        }
     }
 
     @Override

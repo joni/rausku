@@ -38,8 +38,14 @@ public class Ray {
         return new Ray(interceptPoint, normal.reflected(direction));
     }
 
-    public Ray getRefracted(Vec normal, Vec interceptPoint, float indexOfRefraction) {
-        return new Ray(interceptPoint, normal.refracted(direction, indexOfRefraction));
+    public Ray getTransmitted(Vec normal, Vec interceptPoint, float indexOfRefraction) {
+        Vec refracted = normal.refracted(direction, indexOfRefraction);
+        if (refracted == null) {
+            // Total internal reflection
+            return null;
+        } else {
+            return new Ray(interceptPoint, refracted);
+        }
     }
 
     @Override
