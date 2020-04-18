@@ -1,6 +1,10 @@
 package rausku;
 
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DirectColorModel;
+import java.awt.image.WritableRaster;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,7 +16,20 @@ public interface Sampler {
         int pixelWidth = camera.getPixelWidth();
         int pixelHeight = camera.getPixelHeight();
 
-        return new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_RGB);
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+//        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB);
+
+        DirectColorModel colorModel = new DirectColorModel(colorSpace, 32,
+                0x00ff0000,
+                0x0000ff00,
+                0x000000ff,
+                0xff000000,
+                false,
+                DataBuffer.TYPE_INT);
+
+        WritableRaster writableRaster = colorModel.createCompatibleWritableRaster(pixelWidth, pixelHeight);
+
+        return new BufferedImage(colorModel, writableRaster, false, null);
     }
 
     class Naive implements Sampler {
