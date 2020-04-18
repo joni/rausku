@@ -14,7 +14,7 @@ public class Obj extends SceneObject {
 
     private List<Polygon> polygons;
     private Material metallic = Material.metallic(Color.of(.8f, .8f, .8f), .2f);
-    private Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), 0);
+    private Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .3f);
 
     public Obj(List<Polygon> polygons) {
         this.polygons = polygons;

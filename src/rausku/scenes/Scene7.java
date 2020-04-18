@@ -1,6 +1,7 @@
 package rausku.scenes;
 
 import rausku.Camera;
+import rausku.CheckerBoard;
 import rausku.Color;
 import rausku.Scene;
 import rausku.geometry.HorizontalPlane;
@@ -29,7 +30,7 @@ public class Scene7 extends Scene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        addObject(new HorizontalPlane(-50f));
+        addObject(new HorizontalPlane(-50f, new CheckerBoard(50)));
 
     }
 }

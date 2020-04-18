@@ -7,9 +7,6 @@ import static rausku.math.FloatMath.*;
 
 
 public class MaterialX extends Material {
-    public MaterialX(Color diffuseColor) {
-        super(diffuseColor);
-    }
 
     @Override
     public Color getDiffuseColor(Vec interceptPoint) {

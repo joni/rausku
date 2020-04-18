@@ -62,11 +62,7 @@ public class Color {
 
     @Override
     public String toString() {
-        return "Color{" +
-                "r=" + r +
-                ", g=" + g +
-                ", b=" + b +
-                '}';
+        return String.format("Color{r=%s, g=%s, b=%s}", r, g, b);
     }
 
     @Override
