@@ -9,20 +9,20 @@ import java.util.function.IntConsumer;
 
 public interface RenderStrategy {
 
-    BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor);
+    BufferedImage render(RayTracer rayTracer, Camera camera, Sampler sampler, IntConsumer progressMonitor);
 
     class TimedStrategyDecorator implements RenderStrategy {
 
-        private RenderStrategy strategy;
+        private final RenderStrategy strategy;
 
         TimedStrategyDecorator(RenderStrategy strategy) {
             this.strategy = strategy;
         }
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
+        public BufferedImage render(RayTracer rayTracer, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
             long start = System.nanoTime();
-            BufferedImage image = strategy.render(scene, camera, sampler, progressMonitor);
+            BufferedImage image = strategy.render(rayTracer, camera, sampler, progressMonitor);
             long nanoTime = System.nanoTime() - start;
             System.out.printf("Rendering took %d micros = %d millis = %d seconds%n",
                     TimeUnit.NANOSECONDS.toMicros(nanoTime),
@@ -35,7 +35,7 @@ public interface RenderStrategy {
     class SingleThreaded implements RenderStrategy {
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
+        public BufferedImage render(RayTracer rayTracer, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
             int pixelWidth = camera.getPixelWidth();
             int pixelHeight = camera.getPixelHeight();
 
@@ -43,7 +43,7 @@ public interface RenderStrategy {
 
             for (int y = 0; y < pixelHeight; y++) {
                 for (int x = 0; x < pixelWidth; x++) {
-                    sampler.sample(scene, camera, image, x, y);
+                    sampler.sample(rayTracer, camera, image, x, y);
                 }
                 progressMonitor.accept(100 * (y + 1) / pixelHeight);
             }
@@ -62,7 +62,7 @@ public interface RenderStrategy {
         }
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
+        public BufferedImage render(RayTracer rayTracer, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
 
             int pixelHeight = camera.getPixelHeight();
             BufferedImage image = sampler.createImage(camera);
@@ -76,7 +76,7 @@ public interface RenderStrategy {
                 rowCallables.add(() -> {
                     int pixelWidth = camera.getPixelWidth();
                     for (int x = 0; x < pixelWidth; x++) {
-                        sampler.sample(scene, camera, image, x, finalY);
+                        sampler.sample(rayTracer, camera, image, x, finalY);
                     }
                     int row = rowCounter.incrementAndGet();
                     progressMonitor.accept(100 * row / pixelHeight);

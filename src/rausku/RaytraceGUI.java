@@ -18,20 +18,22 @@ import java.util.concurrent.ExecutionException;
 
 public class RaytraceGUI {
 
-
-    private final RenderStrategy.TimedStrategyDecorator renderer;
-    private final Scene scene;
+    private final RenderStrategy renderer;
+    private final RecursiveRayTracer rayTracer;
     private final Camera camera;
     private final Sampler sampler;
 
     public RaytraceGUI() {
-        scene = new Scene7();
+
+        Scene scene = new Scene7();
+
         camera = scene.getCamera();
+        rayTracer = new RecursiveRayTracer(scene);
 
-        sampler = new Sampler.GaussianRandomSubSampler(8);
-//        sampler = new Sampler.Naive();
+//        sampler = new Sampler.GaussianRandomSubSampler(8);
+        sampler = new Sampler.Naive();
 
-        renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.PerLineThreaded());
+        renderer = new RenderStrategy.PerLineThreaded();
     }
 
     public static void main(String... args) {
@@ -86,7 +88,7 @@ public class RaytraceGUI {
                 Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
                 ray.addDebug(String.format("Canvas coordinates x=%d y=%d", point.x, point.y));
                 ray.addDebug(String.format("%s", label));
-                scene.resolveRayColor(1, ray);
+                rayTracer.resolveRayColor(1, ray);
                 DefaultMutableTreeNode root = buildDebugTree(ray);
                 tree.setModel(new DefaultTreeModel(root));
                 tree.revalidate();
@@ -121,12 +123,12 @@ public class RaytraceGUI {
 
             @Override
             protected BufferedImage doInBackground() throws Exception {
-                return renderer.render(scene, camera, sampler, this::setProgress);
+                return renderer.render(rayTracer, camera, sampler, this::setProgress);
             }
 
             @Override
             protected void done() {
-                scene.debug = true;
+                rayTracer.setDebug(true);
                 try {
                     progressBar.setVisible(false);
                     label.setVisible(true);

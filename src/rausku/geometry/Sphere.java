@@ -2,7 +2,7 @@ package rausku.geometry;
 
 import rausku.Material;
 import rausku.Ray;
-import rausku.Scene;
+import rausku.RayTracer;
 import rausku.math.Vec;
 
 import static java.lang.Math.sqrt;
@@ -59,11 +59,11 @@ public class Sphere extends SceneObject {
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
             float intercept = (-B - (float) sqrt(determinant)) / (2 * A);
-            if (intercept > Scene.INTERCEPT_NEAR) {
+            if (intercept > RayTracer.INTERCEPT_NEAR) {
                 return intercept;
             }
             intercept = (-B + (float) sqrt(determinant)) / (2 * A);
-            if (intercept > Scene.INTERCEPT_NEAR) {
+            if (intercept > RayTracer.INTERCEPT_NEAR) {
                 return intercept;
             }
         }

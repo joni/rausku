@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public interface Sampler {
 
-    void sample(Scene scene, Camera camera, BufferedImage image, int x, int y);
+    void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y);
 
     default BufferedImage createImage(Camera camera) {
         int pixelWidth = camera.getPixelWidth();
@@ -34,9 +34,9 @@ public interface Sampler {
 
     class Naive implements Sampler {
         @Override
-        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+        public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Ray ray = camera.getRayFromOriginToCanvas(x, y);
-            Color color = scene.resolveRayColor(1, ray);
+            Color color = rayTracer.resolveRayColor(1, ray);
             image.setRGB(x, y, color.toIntRGB());
         }
     }
@@ -49,13 +49,13 @@ public interface Sampler {
             this.samplesPerPixel = samplesPerPixel;
         }
 
-        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+        public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Random rnd = ThreadLocalRandom.current();
 
             Color[] colors = new Color[samplesPerPixel];
             for (int i = 0; i < samplesPerPixel; i++) {
                 Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
-                colors[i] = scene.resolveRayColor(1, ray);
+                colors[i] = rayTracer.resolveRayColor(1, ray);
             }
             image.setRGB(x, y, Color.average(colors).toIntRGB());
         }
@@ -69,13 +69,13 @@ public interface Sampler {
             this.samplesPerPixel = samplesPerPixel;
         }
 
-        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+        public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Random rnd = ThreadLocalRandom.current();
 
             Color[] colors = new Color[samplesPerPixel];
             for (int i = 0; i < samplesPerPixel; i++) {
                 Ray ray = camera.getRayFromOriginToCanvas(x + rnd.nextFloat() - .5f, y + rnd.nextFloat() - .5f);
-                colors[i] = scene.resolveRayColor(1, ray);
+                colors[i] = rayTracer.resolveRayColor(1, ray);
             }
             image.setRGB(x, y, Color.average(colors).toIntRGB());
         }
@@ -84,21 +84,21 @@ public interface Sampler {
     class SubSampler implements Sampler {
 
         @Override
-        public void sample(Scene scene, Camera camera, BufferedImage image, int x, int y) {
+        public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Color[] colors = {
-                    getColor(scene, camera, x - .25f, y - .25f),
-                    getColor(scene, camera, x + .25f, y - .25f),
-                    getColor(scene, camera, x, y),
-                    getColor(scene, camera, x - .25f, y + .25f),
-                    getColor(scene, camera, x + .25f, y + .25f)
+                    getColor(rayTracer, camera, x - .25f, y - .25f),
+                    getColor(rayTracer, camera, x + .25f, y - .25f),
+                    getColor(rayTracer, camera, x, y),
+                    getColor(rayTracer, camera, x - .25f, y + .25f),
+                    getColor(rayTracer, camera, x + .25f, y + .25f)
             };
             Color avg = Color.average(colors);
             image.setRGB(x, y, avg.toIntRGB());
         }
 
-        private Color getColor(Scene scene, Camera camera, float x, float y) {
+        private Color getColor(RayTracer rayTracer, Camera camera, float x, float y) {
             Ray ray = camera.getRayFromOriginToCanvas(x, y);
-            return scene.resolveRayColor(1, ray);
+            return rayTracer.resolveRayColor(1, ray);
         }
     }
 }

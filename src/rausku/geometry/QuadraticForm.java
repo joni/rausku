@@ -2,7 +2,7 @@ package rausku.geometry;
 
 import rausku.Material;
 import rausku.Ray;
-import rausku.Scene;
+import rausku.RayTracer;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 
@@ -69,11 +69,11 @@ public class QuadraticForm extends SceneObject {
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
             float intercept = (-B - sqrt(determinant)) / (2 * A);
-            if (intercept > Scene.INTERCEPT_NEAR) {
+            if (intercept > RayTracer.INTERCEPT_NEAR) {
                 return intercept;
             }
             intercept = (-B + sqrt(determinant)) / (2 * A);
-            if (intercept > Scene.INTERCEPT_NEAR) {
+            if (intercept > RayTracer.INTERCEPT_NEAR) {
                 return intercept;
             }
         }

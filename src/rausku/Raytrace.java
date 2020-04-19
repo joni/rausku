@@ -13,6 +13,8 @@ public class Raytrace {
 
         Scene scene = new Scene7();
 
+        RayTracer rayTracer = new RecursiveRayTracer(scene);
+
         Camera camera = scene.getCamera();
 
         Sampler sampler = new Sampler.GaussianRandomSubSampler(64);
@@ -20,7 +22,7 @@ public class Raytrace {
 
         RenderStrategy renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.PerLineThreaded());
 
-        BufferedImage image = renderer.render(scene, camera, sampler, i -> {
+        BufferedImage image = renderer.render(rayTracer, camera, sampler, i -> {
             System.out.printf("\r%d%% ", i);
             System.out.flush();
         });
