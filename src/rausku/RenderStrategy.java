@@ -3,13 +3,13 @@ package rausku;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
 
 public interface RenderStrategy {
-    BufferedImage render(Scene scene, Camera camera, Sampler sampler);
+
+    BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor);
 
     class TimedStrategyDecorator implements RenderStrategy {
 
@@ -20,9 +20,9 @@ public interface RenderStrategy {
         }
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler) {
+        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
             long start = System.nanoTime();
-            BufferedImage image = strategy.render(scene, camera, sampler);
+            BufferedImage image = strategy.render(scene, camera, sampler, progressMonitor);
             long nanoTime = System.nanoTime() - start;
             System.out.printf("Rendering took %d micros = %d millis = %d seconds%n",
                     TimeUnit.NANOSECONDS.toMicros(nanoTime),
@@ -35,7 +35,7 @@ public interface RenderStrategy {
     class SingleThreaded implements RenderStrategy {
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler) {
+        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
             int pixelWidth = camera.getPixelWidth();
             int pixelHeight = camera.getPixelHeight();
 
@@ -45,6 +45,7 @@ public interface RenderStrategy {
                 for (int x = 0; x < pixelWidth; x++) {
                     sampler.sample(scene, camera, image, x, y);
                 }
+                progressMonitor.accept(100 * (y + 1) / pixelHeight);
             }
 
             return image;
@@ -56,16 +57,19 @@ public interface RenderStrategy {
         private final ExecutorService executorService;
 
         public PerLineThreaded() {
-            executorService = Executors.newFixedThreadPool(8);
+            int threads = Runtime.getRuntime().availableProcessors();
+            executorService = Executors.newFixedThreadPool(threads);
         }
 
         @Override
-        public BufferedImage render(Scene scene, Camera camera, Sampler sampler) {
+        public BufferedImage render(Scene scene, Camera camera, Sampler sampler, IntConsumer progressMonitor) {
 
             int pixelHeight = camera.getPixelHeight();
             BufferedImage image = sampler.createImage(camera);
 
-            List<Callable<Void>> rowCallables = new ArrayList<>();
+            List<Callable<Integer>> rowCallables = new ArrayList<>();
+
+            AtomicInteger rowCounter = new AtomicInteger(1);
 
             for (int y = 0; y < pixelHeight; y++) {
                 final int finalY = y;
@@ -74,12 +78,25 @@ public interface RenderStrategy {
                     for (int x = 0; x < pixelWidth; x++) {
                         sampler.sample(scene, camera, image, x, finalY);
                     }
-                    return null;
+                    int row = rowCounter.incrementAndGet();
+                    progressMonitor.accept(100 * row / pixelHeight);
+                    return finalY;
                 });
             }
 
             try {
-                executorService.invokeAll(rowCallables);
+                List<Future<Integer>> futures = executorService.invokeAll(rowCallables);
+                executorService.shutdown();
+
+                futures.forEach(f -> {
+                    try {
+                        // Check for exceptions
+                        f.get();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
             } catch (InterruptedException e) {
                 // rendering was interrupted - who would do such a thing!
                 e.printStackTrace();
