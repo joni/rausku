@@ -2,11 +2,16 @@ package rausku;
 
 import rausku.math.Vec;
 
-public class Ray {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Ray implements Debuggable {
 
     private final Vec origin;
     private final Vec direction;
     private final float velocity;
+
+    private final List<Object> debugInfo;
 
     public Ray(Vec origin, Vec direction) {
         this(origin, direction.normalize(), 1);
@@ -16,6 +21,8 @@ public class Ray {
         this.origin = origin;
         this.direction = direction;
         this.velocity = velocity;
+
+        this.debugInfo = new ArrayList<>(0);
     }
 
     public static Ray from(Vec origin, Vec canvasPoint) {
@@ -46,6 +53,16 @@ public class Ray {
         } else {
             return new Ray(interceptPoint, refracted);
         }
+    }
+
+    @Override
+    public void addDebug(Object debugInfo) {
+        this.debugInfo.add(debugInfo);
+    }
+
+    @Override
+    public List<Object> getDebugInfo() {
+        return debugInfo;
     }
 
     @Override
