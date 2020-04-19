@@ -13,14 +13,14 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene5 extends Scene {
     public Scene5() {
-        camera = new Camera(Matrix.mul(
+        setCamera(new Camera(Matrix.mul(
                 Matrix.rotateY(toRadians(-30)),
                 Matrix.rotateX(toRadians(-30)),
                 Matrix.translate(0, 0, 15)),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
 
-        directionalLight = new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f));
+        addDirectionalLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
 
         Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .5f);
 

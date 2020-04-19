@@ -12,12 +12,12 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene8 extends Scene {
     public Scene8() {
 
-        camera = new Camera(
+        setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 10)),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
 
-        directionalLight = new DirectionalLight(Vec.of(1f, -1f, -1f).normalize(), Color.of(.8f, .8f, .7f));
+        addDirectionalLight(new DirectionalLight(Vec.of(1f, -1f, -1f).normalize(), Color.of(.8f, .8f, .7f)));
 
         Material material = Material.plastic(Color.of(.8f, .8f, .8f), .7f);
 

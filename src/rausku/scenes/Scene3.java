@@ -18,9 +18,9 @@ public class Scene3 extends Scene {
         addObject(new Sphere(Vec.of(0, 0, 0f), 1.2f, Material.plastic(Color.of(.8f, .2f, .2f), .9f)));
         addObject(new HorizontalPlane(-1));
 
-        camera = new Camera(
+        setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 10)),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
     }
 }

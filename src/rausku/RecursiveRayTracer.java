@@ -2,8 +2,11 @@ package rausku;
 
 import rausku.geometry.Intercept;
 import rausku.geometry.SceneObject;
+import rausku.lighting.DirectionalLight;
 import rausku.math.Matrix;
 import rausku.math.Vec;
+
+import java.util.List;
 
 import static java.lang.Float.max;
 import static rausku.math.FloatMath.abs;
@@ -27,9 +30,10 @@ public class RecursiveRayTracer implements RayTracer {
     }
 
     boolean interceptsRay(Ray ray) {
-        for (int i = 0; i < scene.objects.size(); i++) {
-            SceneObject object = scene.objects.get(i);
-            Matrix transform = scene.inverseTransforms.get(i);
+        List<SceneObject> objects = scene.getObjects();
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = scene.getInverseTransforms().get(i);
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept2(transform1);
             float intercept = intercept2.intercept;
@@ -53,16 +57,17 @@ public class RecursiveRayTracer implements RayTracer {
             if (this.debug) {
                 addDebugString(ray, "Max depth reached");
             }
-            return scene.ambientLight.getColor();
+            return scene.getAmbientLight().getColor();
         }
 
         float closestIntercept = Float.POSITIVE_INFINITY;
         Intercept intercept = null;
         int index = -1;
 
-        for (int i = 0; i < scene.objects.size(); i++) {
-            SceneObject object = scene.objects.get(i);
-            Matrix transform = scene.inverseTransforms.get(i);
+        List<SceneObject> objects = scene.getObjects();
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = scene.getInverseTransforms().get(i);
             Ray transform1 = transform.transform(ray);
             Intercept objectIntercept = object.getIntercept2(transform1);
             float interceptValue = objectIntercept.intercept;
@@ -75,23 +80,25 @@ public class RecursiveRayTracer implements RayTracer {
 
         if (this.debug) {
             if (index >= 0) {
-                addDebugString(ray, "depth=%d object=%d[%s] %s", depth, index, scene.objects.get(index), intercept);
+                addDebugString(ray, "depth=%d object=%d[%s] %s", depth, index, objects.get(index), intercept);
             } else {
                 addDebugString(ray, "depth=%d no intercept", depth);
             }
         }
 
         if (intercept != null) {
-            return getColorFromObject(depth, reflectiveness, intercept, ray, scene.transforms.get(index), scene.objects.get(index));
+            return getColorFromObject(depth, reflectiveness, intercept, ray, scene.getTransforms().get(index), objects.get(index));
         }
 
         // Specular reflection of the light source itself when nothing is hit
-        if (Vec.cos(scene.directionalLight.getDirection(), ray.getDirection()) > .99) {
-            return scene.directionalLight.getColor().mul(10);
+        for (DirectionalLight light : scene.getLights()) {
+            if (light.intercepts(ray)) {
+                return light.getColor().mul(10);
+            }
         }
 
         // nothing hit
-        return scene.ambientLight.getColor();
+        return scene.getAmbientLight().getColor();
     }
 
     @Override
@@ -133,21 +140,23 @@ public class RecursiveRayTracer implements RayTracer {
         // Diffuse reflection
         // For diffuse reflection, for now we only consider light coming directly from light sources
         Material material = sceneObject.getMaterial();
-        Color light = scene.ambientLight.getColor();
-        float directionalLightEnergy = max(0, normal.dot(scene.directionalLight.getDirection()));
-        if (directionalLightEnergy > 0) {
-            // check shadow
-            Ray lightRay = scene.directionalLight.getRay(interceptPoint);
-            if (this.debug) {
-                addDebugString(ray, "shadow ray: %s", lightRay);
-                ray.addDebug(lightRay);
-            }
-
-            if (!interceptsRay(lightRay)) {
-                light = light.add(scene.directionalLight.getColor().mul(directionalLightEnergy));
-            } else {
+        Color light = scene.getAmbientLight().getColor();
+        for (DirectionalLight directionalLight : scene.getLights()) {
+            float directionalLightEnergy = max(0, normal.dot(directionalLight.getDirection()));
+            if (directionalLightEnergy > 0) {
+                // check shadow
+                Ray lightRay = directionalLight.getRay(interceptPoint);
                 if (this.debug) {
-                    addDebugString(ray, "shadow");
+                    addDebugString(ray, "shadow ray: %s", lightRay);
+                    ray.addDebug(lightRay);
+                }
+
+                if (!interceptsRay(lightRay)) {
+                    light = light.add(directionalLight.getColor().mul(directionalLightEnergy));
+                } else {
+                    if (this.debug) {
+                        addDebugString(ray, "shadow");
+                    }
                 }
             }
         }

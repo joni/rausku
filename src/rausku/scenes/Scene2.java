@@ -14,10 +14,10 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene2 extends Scene {
 
     public Scene2() {
-        camera = new Camera(
+        setCamera(new Camera(
                 Matrix.translate(0, 0, 10),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
 
         for (int i = -5; i <= 5; i++) {
             for (int j = -5; j <= 5; j++) {

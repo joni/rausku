@@ -9,7 +9,7 @@ public class DirectionalLight {
     private Color color;
 
     public DirectionalLight(Vec direction, Color color) {
-        this.towardsLight = direction.mul(-1);
+        this.towardsLight = direction.normalize().mul(-1);
         this.color = color;
     }
 
@@ -23,5 +23,9 @@ public class DirectionalLight {
 
     public Color getColor() {
         return color;
+    }
+
+    public boolean intercepts(Ray ray) {
+        return Vec.cos(getDirection(), ray.getDirection()) > .99;
     }
 }

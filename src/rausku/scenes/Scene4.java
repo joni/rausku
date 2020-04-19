@@ -16,10 +16,10 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene4 extends Scene {
     public Scene4() {
 
-        camera = new Camera(
+        setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 20)),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
 
         Material plastic = Material.plastic(Color.of(1, 1, 1), .8f);
         addObject(new CSGIntersection(plastic,

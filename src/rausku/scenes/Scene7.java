@@ -14,12 +14,12 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene7 extends Scene {
     public Scene7() {
 
-        directionalLight = new DirectionalLight(Vec.of(.5f, -.75f, +.5f).normalize(), Color.of(1f, 1f, 1f));
+        addDirectionalLight(new DirectionalLight(Vec.of(.5f, -.75f, +.5f), Color.of(1f, 1f, 1f)));
 
-        camera = new Camera(
+        setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),
                 500, 500,
-                toRadians(45));
+                toRadians(45)));
 
         Material whiteCeramic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
 
