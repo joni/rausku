@@ -14,7 +14,7 @@ public class Material {
      */
     private Color reflectiveColor;
     private float reflectiveness;
-    private float indexOfRefraction;
+    private float indexOfRefraction = 1;
 
     protected Material() {
     }

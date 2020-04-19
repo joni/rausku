@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.Color;
 import rausku.Material;
 import rausku.Ray;
 import rausku.Scene;
@@ -12,15 +11,16 @@ import java.util.List;
 
 public class Obj extends SceneObject {
 
+    private final Material material;
     private List<Polygon> polygons;
-    private Material metallic = Material.metallic(Color.of(.8f, .8f, .8f), .2f);
-    private Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .3f);
 
-    public Obj(List<Polygon> polygons) {
+    public Obj(List<Polygon> polygons, Material material) {
         this.polygons = polygons;
+        this.material = material;
     }
 
-    public Obj(String fileName) throws IOException {
+    public Obj(String fileName, Material material) throws IOException {
+        this.material = material;
         try (FileInputStream fileInputStream = new FileInputStream(fileName)) {
             this.polygons = new OBJLoader().parse(fileInputStream);
         }
@@ -34,7 +34,7 @@ public class Obj extends SceneObject {
 
     @Override
     public Material getMaterial() {
-        return plastic;
+        return material;
     }
 
     @Override

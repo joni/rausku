@@ -12,7 +12,6 @@ public class CheckerBoard extends Material {
     }
 
     public CheckerBoard(float scale) {
-
         this.scale = scale;
     }
 

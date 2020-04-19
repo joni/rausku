@@ -1,9 +1,6 @@
 package rausku.scenes;
 
-import rausku.Camera;
-import rausku.CheckerBoard;
-import rausku.Color;
-import rausku.Scene;
+import rausku.*;
 import rausku.geometry.HorizontalPlane;
 import rausku.geometry.Obj;
 import rausku.lighting.DirectionalLight;
@@ -17,20 +14,22 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene7 extends Scene {
     public Scene7() {
 
-        directionalLight = new DirectionalLight(Vec.of(.5f, -.75f, +.5f).normalize(), Color.of(.8f, .8f, .8f));
+        directionalLight = new DirectionalLight(Vec.of(.5f, -.75f, +.5f).normalize(), Color.of(1f, 1f, 1f));
 
         camera = new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),
                 500, 500,
                 toRadians(45));
 
+        Material whiteCeramic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
+
         try {
-            Obj teapot = new Obj("data/teapot.obj");
+            Obj teapot = new Obj("data/teapot.obj", whiteCeramic);
             addObject(Matrix.rotateY(toRadians(30)), teapot);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        addObject(new HorizontalPlane(-50f, new CheckerBoard(50)));
+        addObject(new HorizontalPlane(-49.0001f, new CheckerBoard(50)));
 
     }
 }
