@@ -1,6 +1,7 @@
-package rausku;
+package rausku.material;
 
 import rausku.geometry.Intercept;
+import rausku.lighting.Color;
 import rausku.math.Vec;
 
 public class Material {

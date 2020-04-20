@@ -1,7 +1,7 @@
 package rausku.geometry;
 
-import rausku.Material;
-import rausku.Ray;
+import rausku.material.Material;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class CSGSubtraction extends SceneObject {

@@ -1,7 +1,5 @@
 package rausku.lighting;
 
-import rausku.Color;
-
 public class AmbientLight {
     private Color color;
 

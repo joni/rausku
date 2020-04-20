@@ -1,6 +1,6 @@
-package rausku;
+package rausku.math;
 
-import rausku.math.Vec;
+import rausku.Debuggable;
 
 import java.util.ArrayList;
 import java.util.List;

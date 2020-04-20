@@ -1,9 +1,8 @@
 package rausku.geometry;
 
-import rausku.Color;
-import rausku.Material;
-import rausku.Ray;
-import rausku.RayTracer;
+import rausku.lighting.Color;
+import rausku.material.Material;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class HalfSpace extends SceneObject {
@@ -27,7 +26,7 @@ public class HalfSpace extends SceneObject {
     public float getIntercept(Ray ray) {
         // v.(dt+o) = 0  <=> (v.d)t = - v.o  <=> t = -v.o/v.d
         float intercept = -Vec.dot(v, ray.getOrigin()) / Vec.dot(v, ray.getDirection());
-        if (intercept > RayTracer.INTERCEPT_NEAR) {
+        if (intercept > SceneObject.INTERCEPT_NEAR) {
             return intercept;
         } else {
             return Float.NaN;

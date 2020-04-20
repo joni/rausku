@@ -1,13 +1,12 @@
 package rausku.scenes;
 
-import rausku.Camera;
-import rausku.Color;
-import rausku.Material;
-import rausku.Scene;
+import rausku.algorithm.Camera;
 import rausku.geometry.CSGIntersection;
 import rausku.geometry.Cube;
 import rausku.geometry.HorizontalPlane;
 import rausku.geometry.Sphere;
+import rausku.lighting.Color;
+import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 

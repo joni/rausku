@@ -1,9 +1,12 @@
 package rausku.scenes;
 
-import rausku.*;
+import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
 import rausku.geometry.QuadraticForm;
+import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
+import rausku.material.CheckerBoard;
+import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 

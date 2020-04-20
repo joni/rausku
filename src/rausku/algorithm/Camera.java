@@ -1,7 +1,8 @@
-package rausku;
+package rausku.algorithm;
 
 import rausku.math.FloatMath;
 import rausku.math.Matrix;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.tan;
@@ -13,7 +14,7 @@ public class Camera {
     private final Matrix cameraMatrix;
     private final int pixelHeight;
     private final int pixelWidth;
-    private Matrix projectionMatrix;
+    private final Matrix projectionMatrix;
 
     public Camera(Matrix cameraMatrix, int imageWidth, int imageHeight, float angleOfView) {
         this.cameraMatrix = cameraMatrix;
@@ -22,8 +23,8 @@ public class Camera {
         float scaleFactor = Math.min(imageWidth, imageHeight) / tan(angleOfView / 2);
 
         projectionMatrix = Matrix.of(
-                +1, +0, +0, -pixelWidth / 2,
-                +0, -1, +0, pixelHeight / 2,
+                +1, +0, +0, -pixelWidth / 2f,
+                +0, -1, +0, pixelHeight / 2f,
                 +0, +0, scaleFactor, 0,
                 +0, +0, +0, scaleFactor
         );

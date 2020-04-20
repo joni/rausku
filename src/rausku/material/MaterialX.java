@@ -1,5 +1,6 @@
-package rausku;
+package rausku.material;
 
+import rausku.lighting.Color;
 import rausku.math.FloatMath;
 import rausku.math.Vec;
 

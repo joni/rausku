@@ -1,4 +1,4 @@
-package rausku;
+package rausku.algorithm;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public interface RenderStrategy {
 
         private final RenderStrategy strategy;
 
-        TimedStrategyDecorator(RenderStrategy strategy) {
+        public TimedStrategyDecorator(RenderStrategy strategy) {
             this.strategy = strategy;
         }
 

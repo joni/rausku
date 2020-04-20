@@ -1,4 +1,4 @@
-package rausku;
+package rausku.lighting;
 
 import java.util.Objects;
 
@@ -40,11 +40,11 @@ public class Color {
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public Color mulAdd(float directionalLightEnergy, Color color, Color color1) {
-        this.r = this.r * directionalLightEnergy * color.r + color1.r;
-        this.g = this.g * directionalLightEnergy * color.g + color1.g;
-        this.b = this.b * directionalLightEnergy * color.b + color1.b;
-        return this;
+    public Color mulAdd(float scalar, Color color) {
+        float r = scalar * this.r + color.r;
+        float g = scalar * this.g + color.g;
+        float b = scalar * this.b + color.b;
+        return Color.of(r, g, b);
     }
 
     public Color add(Color color) {

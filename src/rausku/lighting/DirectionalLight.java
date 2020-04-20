@@ -1,7 +1,6 @@
 package rausku.lighting;
 
-import rausku.Color;
-import rausku.Ray;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class DirectionalLight {

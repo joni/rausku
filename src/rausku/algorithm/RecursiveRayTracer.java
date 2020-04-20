@@ -1,10 +1,14 @@
-package rausku;
+package rausku.algorithm;
 
 import rausku.geometry.Intercept;
 import rausku.geometry.SceneObject;
+import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
+import rausku.material.Material;
 import rausku.math.Matrix;
+import rausku.math.Ray;
 import rausku.math.Vec;
+import rausku.scenes.Scene;
 
 import java.util.List;
 
@@ -71,7 +75,7 @@ public class RecursiveRayTracer implements RayTracer {
             Ray transform1 = transform.transform(ray);
             Intercept objectIntercept = object.getIntercept2(transform1);
             float interceptValue = objectIntercept.intercept;
-            if (interceptValue > INTERCEPT_NEAR && interceptValue < closestIntercept) {
+            if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
                 index = i;
                 closestIntercept = interceptValue;
                 intercept = objectIntercept;
@@ -113,14 +117,7 @@ public class RecursiveRayTracer implements RayTracer {
             ray.addDebug(reflected);
         }
         return resolveRayColor(depth + 1, reflectiveness * material.getReflectiveness(), reflected)
-                .mul(material.getReflectiveness())
                 .mul(material.getReflectiveColor());
-    }
-
-    void addDebugString(Ray ray, String messageFormat, Object... args) {
-        String message = String.format(messageFormat, args);
-        ray.addDebug(message);
-        System.out.println(message);
     }
 
     private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, Matrix objectToWorld, SceneObject sceneObject) {
@@ -152,7 +149,7 @@ public class RecursiveRayTracer implements RayTracer {
                 }
 
                 if (!interceptsRay(lightRay)) {
-                    light = light.add(directionalLight.getColor().mul(directionalLightEnergy));
+                    light = directionalLight.getColor().mulAdd(directionalLightEnergy, light);
                 } else {
                     if (this.debug) {
                         addDebugString(ray, "shadow");
@@ -173,7 +170,7 @@ public class RecursiveRayTracer implements RayTracer {
             // Specular reflection only
             if (material.getReflectiveness() > 0) {
                 Color reflectedLight = getSpecularReflection(depth, reflectiveness, ray, interceptPoint, normal, material);
-                objectColor = objectColor.add(reflectedLight);
+                objectColor = reflectedLight.mulAdd(material.getReflectiveness(), objectColor);
             }
 
         } else {
@@ -191,7 +188,7 @@ public class RecursiveRayTracer implements RayTracer {
             if (normal.dot(ray.getDirection()) < 0 && material.getReflectiveness() > 0) {
                 Color reflectedLight = getSpecularReflection(depth, reflectiveness * reflectionCoeff, ray, interceptPoint, normal, material)
                         .mul(reflectionCoeff);
-                objectColor = objectColor.add(reflectedLight);
+                objectColor = reflectedLight.mulAdd(reflectiveness * material.getReflectiveness(), objectColor);
             }
 
             // Light transmitted through the surface
@@ -201,14 +198,18 @@ public class RecursiveRayTracer implements RayTracer {
             }
             if (transmitted != null) {
                 ray.addDebug(transmitted);
-                Color transmittedLight = resolveRayColor(depth + 1, reflectiveness * (1 - reflectionCoeff), transmitted)
-                        .mul(1 - reflectionCoeff);
+                Color transmittedLight = resolveRayColor(depth + 1, reflectiveness * (1 - reflectionCoeff), transmitted);
 
-                objectColor = objectColor.add(transmittedLight);
+                objectColor = transmittedLight.mulAdd(1 - reflectionCoeff, objectColor);
             }
 
         }
 
         return objectColor;
+    }
+
+    void addDebugString(Ray ray, String messageFormat, Object... args) {
+        String message = String.format(messageFormat, args);
+        ray.addDebug(message);
     }
 }

@@ -1,7 +1,5 @@
 package rausku.math;
 
-import rausku.Ray;
-
 import java.util.Objects;
 import java.util.Random;
 

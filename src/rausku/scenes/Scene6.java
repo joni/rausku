@@ -1,8 +1,11 @@
 package rausku.scenes;
 
-import rausku.*;
+import rausku.algorithm.Camera;
 import rausku.geometry.BumpySphere;
 import rausku.geometry.Sphere;
+import rausku.lighting.Color;
+import rausku.material.Material;
+import rausku.material.MaterialX;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 

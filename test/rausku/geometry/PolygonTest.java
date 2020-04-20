@@ -1,8 +1,8 @@
 package rausku.geometry;
 
 import org.testng.annotations.Test;
-import rausku.Color;
-import rausku.Ray;
+import rausku.lighting.Color;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 import static org.testng.Assert.assertEquals;

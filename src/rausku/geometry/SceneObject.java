@@ -1,10 +1,12 @@
 package rausku.geometry;
 
-import rausku.Material;
-import rausku.Ray;
+import rausku.material.Material;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 public abstract class SceneObject {
+    public static final double INTERCEPT_NEAR = 1e-3;
+
     public abstract Vec getNormal(Ray ray, Intercept interceptPoint);
 
     public abstract Material getMaterial();

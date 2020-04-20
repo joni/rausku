@@ -1,8 +1,7 @@
 package rausku.geometry;
 
-import rausku.Color;
-import rausku.Ray;
-import rausku.RayTracer;
+import rausku.lighting.Color;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 import java.util.List;
@@ -49,7 +48,7 @@ public class Polygon {
 
         float planeIntercept = normal.dot(v0.sub(ray.getOrigin())) / nDotD;
 
-        if (planeIntercept < RayTracer.INTERCEPT_NEAR) {
+        if (planeIntercept < SceneObject.INTERCEPT_NEAR) {
             return Float.NaN;
         }
 

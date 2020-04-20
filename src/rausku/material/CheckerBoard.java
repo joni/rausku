@@ -1,5 +1,6 @@
-package rausku;
+package rausku.material;
 
+import rausku.lighting.Color;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.ceil;

@@ -1,5 +1,7 @@
 package rausku;
 
+import rausku.algorithm.*;
+import rausku.scenes.Scene;
 import rausku.scenes.Scene7;
 
 import javax.imageio.ImageIO;

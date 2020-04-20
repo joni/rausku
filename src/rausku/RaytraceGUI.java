@@ -1,6 +1,12 @@
 package rausku;
 
-import rausku.scenes.Scene7;
+import rausku.algorithm.Camera;
+import rausku.algorithm.RecursiveRayTracer;
+import rausku.algorithm.RenderStrategy;
+import rausku.algorithm.Sampler;
+import rausku.math.Ray;
+import rausku.scenes.Scene;
+import rausku.scenes.Scene2;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,7 +31,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene7();
+        Scene scene = new Scene2();
 
         camera = scene.getCamera();
         rayTracer = new RecursiveRayTracer(scene);
@@ -44,7 +50,9 @@ public class RaytraceGUI {
     }
 
     private void createGUI() {
-        JLabel label = new JLabel();
+        JLabel imageLabel = new JLabel();
+        imageLabel.setVisible(false);
+
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JMenuBar menubar = new JMenuBar();
@@ -57,7 +65,7 @@ public class RaytraceGUI {
             int save = fileChooser.showDialog(frame, "Save");
             if (save == JFileChooser.APPROVE_OPTION) {
                 try {
-                    Image image = ((ImageIcon) label.getIcon()).getImage();
+                    Image image = ((ImageIcon) imageLabel.getIcon()).getImage();
                     ImageIO.write((RenderedImage) image, "PNG", fileChooser.getSelectedFile());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -69,25 +77,23 @@ public class RaytraceGUI {
         });
 
         JProgressBar progressBar = new JProgressBar(0, 100);
+        progressBar.setPreferredSize(new Dimension(camera.getPixelWidth(), 20));
 
         JPanel middlePanel = new JPanel();
-        middlePanel.setPreferredSize(new Dimension(camera.getPixelWidth(), camera.getPixelHeight()));
         middlePanel.add(progressBar);
-        middlePanel.add(label);
-        label.setVisible(false);
+        middlePanel.add(imageLabel);
 
         JTree tree = new JTree();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Ray tree");
         TreeModel treeModel = new DefaultTreeModel(root);
         tree.setModel(treeModel);
 
-        label.addMouseListener(new MouseAdapter() {
+        imageLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point point = e.getPoint();
                 Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
                 ray.addDebug(String.format("Canvas coordinates x=%d y=%d", point.x, point.y));
-                ray.addDebug(String.format("%s", label));
                 rayTracer.resolveRayColor(1, ray);
                 DefaultMutableTreeNode root = buildDebugTree(ray);
                 tree.setModel(new DefaultTreeModel(root));
@@ -131,8 +137,8 @@ public class RaytraceGUI {
                 rayTracer.setDebug(true);
                 try {
                     progressBar.setVisible(false);
-                    label.setVisible(true);
-                    label.setIcon(new ImageIcon(get()));
+                    imageLabel.setVisible(true);
+                    imageLabel.setIcon(new ImageIcon(get()));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

@@ -1,4 +1,7 @@
-package rausku;
+package rausku.algorithm;
+
+import rausku.lighting.Color;
+import rausku.math.Ray;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;

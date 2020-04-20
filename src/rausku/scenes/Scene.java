@@ -1,7 +1,9 @@
-package rausku;
+package rausku.scenes;
 
+import rausku.algorithm.Camera;
 import rausku.geometry.SceneObject;
 import rausku.lighting.AmbientLight;
+import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.math.Matrix;
 import rausku.math.Vec;

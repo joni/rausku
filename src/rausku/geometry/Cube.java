@@ -1,8 +1,7 @@
 package rausku.geometry;
 
-import rausku.Material;
-import rausku.Ray;
-import rausku.RayTracer;
+import rausku.material.Material;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 import java.util.Arrays;
@@ -91,7 +90,7 @@ public class Cube extends SceneObject {
     }
 
     private boolean isOk(Ray ray, float intercept) {
-        if (intercept < RayTracer.INTERCEPT_NEAR) {
+        if (intercept < SceneObject.INTERCEPT_NEAR) {
             return false;
         }
         Vec interceptPoint = ray.apply(intercept);

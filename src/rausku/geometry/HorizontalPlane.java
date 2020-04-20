@@ -1,9 +1,8 @@
 package rausku.geometry;
 
-import rausku.Color;
-import rausku.Material;
-import rausku.Ray;
-import rausku.RayTracer;
+import rausku.lighting.Color;
+import rausku.material.Material;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class HorizontalPlane extends SceneObject {
@@ -26,7 +25,7 @@ public class HorizontalPlane extends SceneObject {
 
     public float getIntercept(Ray ray) {
         float intercept = (groundLevel - ray.getOrigin().y) / ray.getDirection().y;
-        if (intercept > RayTracer.INTERCEPT_NEAR) {
+        if (intercept > SceneObject.INTERCEPT_NEAR) {
             return intercept;
         } else {
             return Float.NaN;

@@ -1,10 +1,9 @@
 package rausku.scenes;
 
-import rausku.Color;
-import rausku.Material;
-import rausku.Scene;
 import rausku.geometry.HorizontalPlane;
 import rausku.geometry.Sphere;
+import rausku.lighting.Color;
+import rausku.material.Material;
 import rausku.math.Vec;
 
 public class Scene1 extends Scene {
