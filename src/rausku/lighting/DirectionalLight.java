@@ -27,11 +27,6 @@ public class DirectionalLight implements LightSource {
     }
 
     @Override
-    public float getMaxIntercept(Ray lightRay) {
-        return Float.POSITIVE_INFINITY;
-    }
-
-    @Override
     public boolean intercepts(Ray ray) {
         return Vec.cos(getDirection(), ray.getDirection()) > .99;
     }

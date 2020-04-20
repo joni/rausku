@@ -27,9 +27,4 @@ public class PointLight implements LightSource {
     public Color getColor() {
         return color;
     }
-
-    @Override
-    public float getMaxIntercept(Ray lightRay) {
-        return position.sub(lightRay.getOrigin()).len();
-    }
 }

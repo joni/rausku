@@ -9,6 +9,4 @@ public interface LightSource {
     boolean intercepts(Ray ray);
 
     Color getColor();
-
-    float getMaxIntercept(Ray lightRay);
 }

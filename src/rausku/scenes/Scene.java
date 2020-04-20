@@ -15,6 +15,8 @@ import java.util.List;
 
 public abstract class Scene {
 
+    private static final DirectionalLight DEFAULT_LIGHT = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.8f, .8f, .7f));
+
     private AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .25f, .3f));
     private List<LightSource> lights = new ArrayList<>();
 
@@ -49,7 +51,7 @@ public abstract class Scene {
 
     public Collection<LightSource> getLights() {
         if (lights.isEmpty()) {
-            return List.of(new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.8f, .8f, .7f)));
+            return List.of(DEFAULT_LIGHT);
         }
         return lights;
     }

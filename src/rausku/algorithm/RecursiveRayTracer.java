@@ -11,30 +11,32 @@ import rausku.math.Vec;
 import rausku.scenes.Scene;
 
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
-import static java.lang.Float.max;
 import static rausku.math.FloatMath.abs;
 import static rausku.math.FloatMath.pow;
 
 public class RecursiveRayTracer implements RayTracer {
 
-    private static final int MAX_DEPTH = 100;
-
     private final Scene scene;
+    private final Params params;
 
+    private final int maxDepth;
+    private boolean softShadows;
     private boolean debug;
 
-    public RecursiveRayTracer(Scene scene) {
+    public RecursiveRayTracer(Scene scene, Params params) {
         this.scene = scene;
-        debug = false;
+        this.params = params;
+        this.maxDepth = params.maxDepth;
+        this.softShadows = params.softShadows;
+        this.debug = false;
     }
 
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
 
-    boolean interceptsRay(Ray ray, float maxDistance) {
+    boolean interceptsRay(Ray ray) {
         List<SceneObject> objects = scene.getObjects();
         for (int i = 0; i < objects.size(); i++) {
             SceneObject object = objects.get(i);
@@ -42,7 +44,7 @@ public class RecursiveRayTracer implements RayTracer {
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
-            if (Float.isFinite(intercept) && intercept > 0 && intercept < maxDistance) {
+            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.getBound()) {
                 if (this.debug) {
                     ray.addDebug(String.format("light ray %s", transform1));
                     ray.addDebug(String.format("intercept %d, %s", i, intercept2));
@@ -58,7 +60,7 @@ public class RecursiveRayTracer implements RayTracer {
 
     Color resolveRayColor(int depth, float reflectiveness, Ray ray) {
 
-        if (depth > MAX_DEPTH) {
+        if (depth > maxDepth) {
             if (this.debug) {
                 addDebugString(ray, "Max depth reached");
             }
@@ -142,16 +144,16 @@ public class RecursiveRayTracer implements RayTracer {
 
         for (LightSource lightSource : scene.getLights()) {
             Ray lightRay = lightSource.getRay(interceptPoint);
-            float directionalLightEnergy = max(0, normal.dot(lightRay.getDirection()));
-            if (directionalLightEnergy > 0) {
+            float diffuseReflectionEnergy = normal.dot(lightRay.getDirection());
+            if (diffuseReflectionEnergy > 0) {
                 // check shadow
                 if (this.debug) {
                     addDebugString(ray, "shadow ray: %s", lightRay);
                     ray.addDebug(lightRay);
                 }
 
-                float shadowProbability = getShadowProbability(lightSource, lightRay);
-                light = lightSource.getColor().mulAdd(directionalLightEnergy * (1 - shadowProbability), light);
+                float shadowProbability = getShadowProbability(lightRay);
+                light = lightSource.getColor().mulAdd(diffuseReflectionEnergy * (1 - shadowProbability), light);
             }
         }
 
@@ -205,12 +207,10 @@ public class RecursiveRayTracer implements RayTracer {
         return objectColor;
     }
 
-    private float getShadowProbability(LightSource lightSource, Ray lightRay) {
-
-        boolean softShadows = true;
+    private float getShadowProbability(Ray lightRay) {
 
         if (!softShadows) {
-            if (interceptsRay(lightRay, lightSource.getMaxIntercept(lightRay))) {
+            if (interceptsRay(lightRay)) {
                 return 1;
             } else {
                 if (this.debug) {
@@ -219,15 +219,13 @@ public class RecursiveRayTracer implements RayTracer {
                 return 0;
             }
         } else {
-            ThreadLocalRandom rnd = ThreadLocalRandom.current();
 
-            int shadowRays = 8;
+            int shadowRays = 4;
             int shadowCount = 0;
 
             for (int i = 0; i < shadowRays; i++) {
-                Vec rndVec = Vec.of(rnd.nextFloat() - .5f, rnd.nextFloat() - .5f, rnd.nextFloat() - .5f).mul(.1f);
-                Ray newLightRay = Ray.fromOriginDirection(lightRay.getOrigin(), lightRay.getDirection().add(rndVec));
-                if (interceptsRay(newLightRay, lightSource.getMaxIntercept(lightRay))) {
+                Ray newLightRay = lightRay.jitterDirection();
+                if (interceptsRay(newLightRay)) {
                     shadowCount++;
                 }
             }
@@ -239,5 +237,20 @@ public class RecursiveRayTracer implements RayTracer {
     void addDebugString(Ray ray, String messageFormat, Object... args) {
         String message = String.format(messageFormat, args);
         ray.addDebug(message);
+    }
+
+    public static class Params {
+        private int maxDepth = 10;
+        private boolean softShadows = false;
+
+        public Params withMaxDepth(int maxDepth) {
+            this.maxDepth = maxDepth;
+            return this;
+        }
+
+        public Params withSoftShadows(boolean softShadows) {
+            this.softShadows = softShadows;
+            return this;
+        }
     }
 }

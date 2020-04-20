@@ -4,33 +4,36 @@ import rausku.Debuggable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Ray implements Debuggable {
 
     private final Vec origin;
     private final Vec direction;
-    private final float velocity;
+    private final float bound;
 
     private final List<Object> debugInfo;
 
     private Ray(Vec origin, Vec direction) {
-        this(origin, direction.normalize(), 1);
+        this(origin, direction, Float.POSITIVE_INFINITY);
     }
 
-    public Ray(Vec origin, Vec direction, float velocity) {
+    private Ray(Vec origin, Vec direction, float bound) {
         this.origin = origin;
         this.direction = direction;
-        this.velocity = velocity;
+        this.bound = bound;
 
         this.debugInfo = new ArrayList<>(0);
     }
 
     public static Ray fromOriginDirection(Vec origin, Vec direction) {
-        return new Ray(origin, direction);
+        return new Ray(origin, direction.normalize());
     }
 
     public static Ray fromStartEnd(Vec startPoint, Vec endPoint) {
-        return new Ray(startPoint, endPoint.sub(startPoint));
+        Vec direction = endPoint.sub(startPoint);
+        float len = direction.len();
+        return new Ray(startPoint, direction.div(len), len);
     }
 
     public Vec getDirection() {
@@ -39,6 +42,10 @@ public class Ray implements Debuggable {
 
     public Vec getOrigin() {
         return origin;
+    }
+
+    public float getBound() {
+        return bound;
     }
 
     public Vec apply(float t) {
@@ -71,6 +78,12 @@ public class Ray implements Debuggable {
 
     @Override
     public String toString() {
-        return String.format("Ray{origin=%s, direction=%s, velocity=%s}", origin, direction, velocity);
+        return String.format("Ray{origin=%s, direction=%s, bound=%s}", origin, direction, bound);
+    }
+
+    public Ray jitterDirection() {
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
+        Vec rndVec = Vec.of(rnd.nextFloat() - .5f, rnd.nextFloat() - .5f, rnd.nextFloat() - .5f).mul(.1f);
+        return new Ray(origin, direction.add(rndVec).normalize(), bound);
     }
 }

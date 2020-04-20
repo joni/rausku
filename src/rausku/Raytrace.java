@@ -2,7 +2,7 @@ package rausku;
 
 import rausku.algorithm.*;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene7;
+import rausku.scenes.Scene7_Teapot;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,9 +13,9 @@ public class Raytrace {
 
     public static void main(String... args) {
 
-        Scene scene = new Scene7();
+        Scene scene = new Scene7_Teapot();
 
-        RayTracer rayTracer = new RecursiveRayTracer(scene);
+        RayTracer rayTracer = new RecursiveRayTracer(scene, new RecursiveRayTracer.Params());
 
         Camera camera = scene.getCamera();
 
