@@ -9,4 +9,6 @@ public interface LightSource {
     boolean intercepts(Ray ray);
 
     Color getColor();
+
+    float getIntensity(Vec interceptPoint);
 }

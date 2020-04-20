@@ -17,6 +17,7 @@ import static rausku.math.FloatMath.pow;
 
 public class RecursiveRayTracer implements RayTracer {
 
+    public static final float MIN_INTENSITY = 1e-6f;
     private final Scene scene;
     private final Params params;
 
@@ -143,6 +144,11 @@ public class RecursiveRayTracer implements RayTracer {
         Color light = scene.getAmbientLight().getColor();
 
         for (LightSource lightSource : scene.getLights()) {
+            float intensity = lightSource.getIntensity(interceptPoint);
+            if (intensity <= MIN_INTENSITY) {
+                // No light from this light source
+                continue;
+            }
             Ray lightRay = lightSource.getRay(interceptPoint);
             float diffuseReflectionEnergy = normal.dot(lightRay.getDirection());
             if (diffuseReflectionEnergy > 0) {
@@ -153,7 +159,7 @@ public class RecursiveRayTracer implements RayTracer {
                 }
 
                 float shadowProbability = getShadowProbability(lightRay);
-                light = lightSource.getColor().mulAdd(diffuseReflectionEnergy * (1 - shadowProbability), light);
+                light = lightSource.getColor().mulAdd(intensity * diffuseReflectionEnergy * (1 - shadowProbability), light);
             }
         }
 

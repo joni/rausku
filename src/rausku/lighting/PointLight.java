@@ -27,4 +27,10 @@ public class PointLight implements LightSource {
     public Color getColor() {
         return color;
     }
+
+    @Override
+    public float getIntensity(Vec interceptPoint) {
+        // TODO intensity should decrease as distance increases
+        return 1;
+    }
 }
