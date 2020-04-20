@@ -17,7 +17,7 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene7 extends Scene {
     public Scene7() {
 
-        addDirectionalLight(new DirectionalLight(Vec.of(.5f, -.75f, +.5f), Color.of(1f, 1f, 1f)));
+        addLight(new DirectionalLight(Vec.of(.5f, -.75f, +.5f), Color.of(1f, 1f, 1f)));
 
         setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),

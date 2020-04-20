@@ -329,7 +329,7 @@ public class Matrix {
     }
 
     public Ray transform(Ray ray) {
-        return Ray.from(transform(ray.getOrigin()), transform(ray.getDirection()));
+        return Ray.fromOriginDirection(transform(ray.getOrigin()), transform(ray.getDirection()));
     }
 
     @Override

@@ -6,7 +6,7 @@ import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene5;
+import rausku.scenes.Scene11_PointLight;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene5();
+        Scene scene = new Scene11_PointLight();
 
         camera = scene.getCamera();
         rayTracer = new RecursiveRayTracer(scene);

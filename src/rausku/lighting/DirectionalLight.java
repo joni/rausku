@@ -3,7 +3,7 @@ package rausku.lighting;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class DirectionalLight {
+public class DirectionalLight implements LightSource {
     private Vec towardsLight;
     private Color color;
 
@@ -12,18 +12,26 @@ public class DirectionalLight {
         this.color = color;
     }
 
+    @Override
     public Ray getRay(Vec origin) {
-        return new Ray(origin, towardsLight);
+        return Ray.fromOriginDirection(origin, towardsLight);
     }
 
     public Vec getDirection() {
         return towardsLight;
     }
 
+    @Override
     public Color getColor() {
         return color;
     }
 
+    @Override
+    public float getMaxIntercept(Ray lightRay) {
+        return Float.POSITIVE_INFINITY;
+    }
+
+    @Override
     public boolean intercepts(Ray ray) {
         return Vec.cos(getDirection(), ray.getDirection()) > .99;
     }

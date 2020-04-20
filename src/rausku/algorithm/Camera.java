@@ -43,7 +43,7 @@ public class Camera {
                 .toCanonical()
                 .sub(origin);
 
-        return cameraMatrix.transform(Ray.from(origin, direction));
+        return cameraMatrix.transform(Ray.fromOriginDirection(origin, direction));
     }
 
     public int getPixelWidth() {

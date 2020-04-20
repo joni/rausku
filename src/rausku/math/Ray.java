@@ -13,7 +13,7 @@ public class Ray implements Debuggable {
 
     private final List<Object> debugInfo;
 
-    public Ray(Vec origin, Vec direction) {
+    private Ray(Vec origin, Vec direction) {
         this(origin, direction.normalize(), 1);
     }
 
@@ -25,8 +25,12 @@ public class Ray implements Debuggable {
         this.debugInfo = new ArrayList<>(0);
     }
 
-    public static Ray from(Vec origin, Vec canvasPoint) {
-        return new Ray(origin, canvasPoint);
+    public static Ray fromOriginDirection(Vec origin, Vec direction) {
+        return new Ray(origin, direction);
+    }
+
+    public static Ray fromStartEnd(Vec startPoint, Vec endPoint) {
+        return new Ray(startPoint, endPoint.sub(startPoint));
     }
 
     public Vec getDirection() {

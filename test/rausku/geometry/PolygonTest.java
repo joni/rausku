@@ -13,7 +13,7 @@ public class PolygonTest {
     public void intersectTest2D() {
         Polygon polygon = new Polygon(Vec.of(-1, -1, 0), Vec.of(1, 0, 0), Vec.of(0, 1, 0));
 
-        Ray r = new Ray(Vec.of(.25f, .25f, -1), Vec.of(0, 0, 1));
+        Ray r = Ray.fromOriginDirection(Vec.of(.25f, .25f, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 0));
         assertEquals(polygon.v1, Vec.of(2f, 1f, 0));
@@ -25,7 +25,7 @@ public class PolygonTest {
     public void intersectTest3D() {
         Polygon polygon = new Polygon(Vec.of(-1, -1, 1), Vec.of(1, -1, 1), Vec.of(0, 1, -1));
 
-        Ray r = new Ray(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
+        Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
         assertEquals(polygon.v1, Vec.of(2f, 0f, 0f));
@@ -37,7 +37,7 @@ public class PolygonTest {
     public void intersectTest3D_2() {
         Polygon polygon = new Polygon(Vec.of(-1, -1, 1), Vec.of(1, 0, -1), Vec.of(-1, 1, 1));
 
-        Ray r = new Ray(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
+        Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
         assertEquals(polygon.v1, Vec.of(2f, 1f, -2f));
@@ -49,7 +49,7 @@ public class PolygonTest {
     public void intersectTest3D_3() {
         Polygon polygon = new Polygon(Vec.of(-.5f, -.5f, 1), Vec.of(1, 0, -1), Vec.of(0, 1, -1));
 
-        Ray r = new Ray(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
+        Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.getIntercept(r), 1, 1e-6);
     }

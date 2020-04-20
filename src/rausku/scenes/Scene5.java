@@ -19,7 +19,7 @@ public class Scene5 extends Scene {
                 500, 500,
                 toRadians(45)));
 
-        addDirectionalLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
+        addLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
 
         Material plastic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
 

@@ -5,6 +5,7 @@ import rausku.geometry.SceneObject;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
+import rausku.lighting.LightSource;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public abstract class Scene {
 
     private AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .25f, .3f));
-    private List<DirectionalLight> directionalLight = new ArrayList<>();
+    private List<LightSource> lights = new ArrayList<>();
 
     private Camera camera = Camera.initialCamera();
     private List<Matrix> transforms = new ArrayList<>();
@@ -46,15 +47,15 @@ public abstract class Scene {
         return ambientLight;
     }
 
-    public Collection<DirectionalLight> getLights() {
-        if (directionalLight.isEmpty()) {
+    public Collection<LightSource> getLights() {
+        if (lights.isEmpty()) {
             return List.of(new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.8f, .8f, .7f)));
         }
-        return directionalLight;
+        return lights;
     }
 
-    protected void addDirectionalLight(DirectionalLight directionalLight) {
-        this.directionalLight.add(directionalLight);
+    protected void addLight(LightSource lightSource) {
+        this.lights.add(lightSource);
     }
 
     public List<Matrix> getTransforms() {
