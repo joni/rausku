@@ -14,20 +14,21 @@ import java.io.IOException;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene7 extends Scene {
-    public Scene7() {
+public class Scene7_Teapot extends Scene {
+    {
 
-        addLight(new DirectionalLight(Vec.of(.5f, -.75f, +.5f), Color.of(1f, 1f, 1f)));
+        addLight(new DirectionalLight(Vec.of(+1f, -2f, +1f), Color.of(1f, 1f, 1f)));
+        addLight(new DirectionalLight(Vec.of(-1f, -2f, -1f), Color.of(1f, 1f, 1f)));
 
         setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),
                 500, 500,
                 toRadians(45)));
 
-        Material whiteCeramic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
+        Material creamCeramic = Material.plastic(Color.of(1f, .9f, .8f), .1f);
 
         try {
-            Obj teapot = new Obj("data/teapot.obj", whiteCeramic);
+            Obj teapot = new Obj("data/teapot.obj", creamCeramic);
             addObject(Matrix.rotateY(toRadians(30)), teapot);
         } catch (IOException e) {
             e.printStackTrace();

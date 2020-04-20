@@ -7,8 +7,7 @@ import rausku.material.Material;
 import rausku.math.Vec;
 
 public class Scene1 extends Scene {
-
-    public Scene1() {
+    {
         Color red = Color.of(.9f, .2f, .2f);
         Color green = Color.of(.2f, .9f, .2f);
         Color blue = Color.of(.2f, .2f, .9f);

@@ -33,12 +33,12 @@ public class Material {
 
     public static Material plastic(Color color, float reflectiveness) {
         // "Plastic" is covered by a thin, glossy reflective film that reflects the spectrum uniformly
-        return new Material(color.mul(1 - reflectiveness), Color.of(1, 1, 1).mul(reflectiveness), reflectiveness);
+        return new Material(color, Color.of(1, 1, 1), reflectiveness);
     }
 
     public static Material metallic(Color color, float reflectiveness) {
         // Metals are highly reflective but may absorb some wavelengths (think copper, gold)
-        return new Material(color.mul(1 - reflectiveness), color.mul(reflectiveness), reflectiveness);
+        return new Material(color, color, reflectiveness);
     }
 
     public static Material glass() {
