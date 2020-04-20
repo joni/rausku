@@ -24,6 +24,7 @@ public class Scene4 extends Scene {
         addObject(new CSGIntersection(plastic,
                 new Cube(plastic),
                 new Sphere(Vec.of(0, 0, 0f), 1.2f, plastic)));
+
         addObject(new HorizontalPlane(-1));
     }
 }

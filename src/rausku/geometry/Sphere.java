@@ -6,7 +6,7 @@ import rausku.math.Vec;
 
 import static java.lang.Math.sqrt;
 
-public class Sphere extends SceneObject {
+public class Sphere implements CSGObject, SceneObject {
     private Vec center;
     private float radius;
     private Material material;
@@ -18,11 +18,11 @@ public class Sphere extends SceneObject {
     }
 
     public boolean intersectsRay(Ray ray) {
-        return getIntercept(ray) > 1e-6;
+        return getIntercept0(ray) > 1e-6;
     }
 
     @Override
-    public float[] getIntercepts(Ray ray) {
+    public float[] getAllIntercepts(Ray ray) {
         float[] floats = {Float.NaN, Float.NaN};
 
         Vec a = ray.getDirection();
@@ -43,7 +43,12 @@ public class Sphere extends SceneObject {
         return floats;
     }
 
-    public float getIntercept(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
+        float intercept = getIntercept0(ray);
+        return new Intercept(intercept, ray.apply(intercept), null);
+    }
+
+    private float getIntercept0(Ray ray) {
         Vec a = ray.getDirection();
         Vec b = ray.getOrigin();
         Vec c = this.center;

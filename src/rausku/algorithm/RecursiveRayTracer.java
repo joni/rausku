@@ -39,7 +39,7 @@ public class RecursiveRayTracer implements RayTracer {
             SceneObject object = objects.get(i);
             Matrix transform = scene.getInverseTransforms().get(i);
             Ray transform1 = transform.transform(ray);
-            Intercept intercept2 = object.getIntercept2(transform1);
+            Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
             if (Float.isFinite(intercept) && intercept > 0) {
                 if (this.debug) {
@@ -73,7 +73,7 @@ public class RecursiveRayTracer implements RayTracer {
             SceneObject object = objects.get(i);
             Matrix transform = scene.getInverseTransforms().get(i);
             Ray transform1 = transform.transform(ray);
-            Intercept objectIntercept = object.getIntercept2(transform1);
+            Intercept objectIntercept = object.getIntercept(transform1);
             float interceptValue = objectIntercept.intercept;
             if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
                 index = i;

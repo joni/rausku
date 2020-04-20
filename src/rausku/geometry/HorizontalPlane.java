@@ -5,7 +5,7 @@ import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class HorizontalPlane extends SceneObject {
+public class HorizontalPlane implements CSGObject, SceneObject {
     private float groundLevel;
     private Material material;
 
@@ -19,11 +19,16 @@ public class HorizontalPlane extends SceneObject {
     }
 
     @Override
-    public float[] getIntercepts(Ray ray) {
-        return new float[]{getIntercept(ray)};
+    public float[] getAllIntercepts(Ray ray) {
+        return new float[]{getIntercept0(ray)};
     }
 
-    public float getIntercept(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
+        float intercept = getIntercept0(ray);
+        return new Intercept(intercept, ray.apply(intercept), null);
+    }
+
+    private float getIntercept0(Ray ray) {
         float intercept = (groundLevel - ray.getOrigin().y) / ray.getDirection().y;
         if (intercept > SceneObject.INTERCEPT_NEAR) {
             return intercept;

@@ -21,18 +21,18 @@ public class Scene5 extends Scene {
 
         addDirectionalLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
 
-        Material plastic = Material.plastic(Color.of(.8f, .8f, .8f), .5f);
+        Material plastic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
 
         addObject(Matrix.translate(-1.25f, 0, 0),
                 new CSGSubtraction(plastic,
                         new Cube(null),
-                        new Sphere(Vec.origin(), 1.4f, null)));
+                        new Sphere(Vec.origin(), 1.33f, null)));
 
         addObject(Matrix.translate(+1.25f, 0, 0),
                 new CSGIntersection(plastic,
                         new Cube(null),
-                        new Sphere(Vec.origin(), 1.4f, null)));
+                        new Sphere(Vec.origin(), 1.33f, null)));
 
-        addObject(new HorizontalPlane(-1.25f));
+        addObject(new HorizontalPlane(-1.001f));
     }
 }

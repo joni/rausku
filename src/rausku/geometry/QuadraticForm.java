@@ -7,7 +7,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.sqrt;
 
-public class QuadraticForm extends SceneObject {
+public class QuadraticForm implements CSGObject, SceneObject {
     private final Matrix matrix;
     private final Matrix gradient;
     private final boolean zeroIsInside;
@@ -32,7 +32,7 @@ public class QuadraticForm extends SceneObject {
     }
 
     @Override
-    public float[] getIntercepts(Ray ray) {
+    public float[] getAllIntercepts(Ray ray) {
 
         float[] floats = {Float.NaN, Float.NaN};
 
@@ -54,7 +54,7 @@ public class QuadraticForm extends SceneObject {
         return floats;
     }
 
-    public float getIntercept(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
         Vec v0 = ray.getOrigin();
         Vec v1 = ray.getDirection();
 
@@ -69,14 +69,14 @@ public class QuadraticForm extends SceneObject {
         if (determinant > 0) {
             float intercept = (-B - sqrt(determinant)) / (2 * A);
             if (intercept > SceneObject.INTERCEPT_NEAR) {
-                return intercept;
+                return new Intercept(intercept, ray.apply(intercept), null);
             }
             intercept = (-B + sqrt(determinant)) / (2 * A);
             if (intercept > SceneObject.INTERCEPT_NEAR) {
-                return intercept;
+                return new Intercept(intercept, ray.apply(intercept), null);
             }
         }
-        return Float.NaN;
+        return Intercept.noIntercept();
     }
 
     public Vec getNormal(Ray ray, Intercept intercept) {

@@ -26,10 +26,6 @@ public class Intercept {
 
     @Override
     public String toString() {
-        return "Intercept{" +
-                "intercept=" + intercept +
-                ", interceptPoint=" + interceptPoint +
-                ", info=" + info +
-                '}';
+        return String.format("Intercept{intercept=%s, interceptPoint=%s, info=%s}", intercept, interceptPoint, info);
     }
 }

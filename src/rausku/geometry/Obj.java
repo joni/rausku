@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-public class Obj extends SceneObject {
+public class Obj implements SceneObject {
 
     private final Material material;
     private List<Polygon> polygons;
@@ -37,7 +37,7 @@ public class Obj extends SceneObject {
     }
 
     @Override
-    public Intercept getIntercept2(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
         float closestIntercept = Float.POSITIVE_INFINITY;
         Polygon closestPolygon = null;
         for (Polygon polygon : polygons) {
@@ -50,15 +50,5 @@ public class Obj extends SceneObject {
             }
         }
         return new Intercept(closestIntercept, ray.apply(closestIntercept), closestPolygon);
-    }
-
-    @Override
-    public float getIntercept(Ray ray) {
-        return getIntercept2(ray).intercept;
-    }
-
-    @Override
-    public float[] getIntercepts(Ray ray) {
-        return new float[0];
     }
 }

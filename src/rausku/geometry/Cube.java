@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static java.lang.Math.abs;
 
-public class Cube extends SceneObject {
+public class Cube implements CSGObject, SceneObject {
 
     private static final double BOUNDS = 1.000001;
     private final Material material;
@@ -41,7 +41,7 @@ public class Cube extends SceneObject {
     }
 
     @Override
-    public float[] getIntercepts(Ray ray) {
+    public float[] getAllIntercepts(Ray ray) {
         Vec rayOrigin = ray.getOrigin();
         Vec rayDirection = ray.getDirection();
         float[] intercepts = {Float.NaN, Float.NaN};
@@ -65,8 +65,8 @@ public class Cube extends SceneObject {
         return intercepts;
     }
 
-    @Override
-    public float getIntercept(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
+        float intercept;
         ray.getOrigin();
         float[] intercepts = {
                 (+1 - ray.getOrigin().x) / ray.getDirection().x,
@@ -77,22 +77,20 @@ public class Cube extends SceneObject {
                 (-1 - ray.getOrigin().z) / ray.getDirection().z,
         };
         float closestIntercept = Float.POSITIVE_INFINITY;
-        for (float intercept : intercepts) {
-            if (isOk(ray, intercept) && intercept < closestIntercept) {
-                closestIntercept = intercept;
+        for (float intercept1 : intercepts) {
+            if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 < SceneObject.INTERCEPT_NEAR) {
+                closestIntercept = intercept1;
             }
         }
         if (Float.isFinite(closestIntercept)) {
-            return closestIntercept;
+            intercept = closestIntercept;
         } else {
-            return Float.NaN;
+            intercept = Float.NaN;
         }
+        return new Intercept(intercept, ray.apply(intercept), null);
     }
 
     private boolean isOk(Ray ray, float intercept) {
-        if (intercept < SceneObject.INTERCEPT_NEAR) {
-            return false;
-        }
         Vec interceptPoint = ray.apply(intercept);
         return abs(interceptPoint.x) < BOUNDS && abs(interceptPoint.y) < BOUNDS && abs(interceptPoint.z) < BOUNDS;
     }
