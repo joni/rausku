@@ -11,6 +11,7 @@ import rausku.math.Vec;
 import rausku.scenes.Scene;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Float.max;
 import static rausku.math.FloatMath.abs;
@@ -148,13 +149,17 @@ public class RecursiveRayTracer implements RayTracer {
                     ray.addDebug(lightRay);
                 }
 
-                if (!interceptsRay(lightRay)) {
-                    light = directionalLight.getColor().mulAdd(directionalLightEnergy, light);
-                } else {
-                    if (this.debug) {
-                        addDebugString(ray, "shadow");
-                    }
-                }
+                float shadowProbability = getShadowProbability(lightRay);
+                light = directionalLight.getColor().mulAdd(directionalLightEnergy * (1 - shadowProbability), light);
+
+//
+//                if (!interceptsRay(lightRay)) {
+//                    light = directionalLight.getColor().mulAdd(directionalLightEnergy, light);
+//                } else {
+//                    if (this.debug) {
+//                        addDebugString(ray, "shadow");
+//                    }
+//                }
             }
         }
 
@@ -206,6 +211,24 @@ public class RecursiveRayTracer implements RayTracer {
         }
 
         return objectColor;
+    }
+
+    private float getShadowProbability(Ray lightRay) {
+
+        ThreadLocalRandom rnd = ThreadLocalRandom.current();
+
+        int shadowRays = 8;
+        int shadowCount = 0;
+
+        for (int i = 0; i < shadowRays; i++) {
+            Vec rndVec = Vec.of(rnd.nextFloat() - .5f, rnd.nextFloat() - .5f, rnd.nextFloat() - .5f).mul(.1f);
+            Ray newLightRay = new Ray(lightRay.getOrigin(), lightRay.getDirection().add(rndVec));
+            if (interceptsRay(newLightRay)) {
+                shadowCount++;
+            }
+        }
+
+        return (float) shadowCount / shadowRays;
     }
 
     void addDebugString(Ray ray, String messageFormat, Object... args) {

@@ -72,9 +72,7 @@ public class RaytraceGUI {
                 }
             }
         });
-        fileMenu.add("Exit").addActionListener(actionEvent -> {
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-        });
+        fileMenu.add("Exit").addActionListener(actionEvent -> frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));
 
         JProgressBar progressBar = new JProgressBar(0, 100);
         progressBar.setPreferredSize(new Dimension(camera.getPixelWidth(), 20));
@@ -128,7 +126,7 @@ public class RaytraceGUI {
         SwingWorker<BufferedImage, Void> worker = new SwingWorker<>() {
 
             @Override
-            protected BufferedImage doInBackground() throws Exception {
+            protected BufferedImage doInBackground() {
                 return renderer.render(rayTracer, camera, sampler, this::setProgress);
             }
 
@@ -139,9 +137,7 @@ public class RaytraceGUI {
                     progressBar.setVisible(false);
                     imageLabel.setVisible(true);
                     imageLabel.setIcon(new ImageIcon(get()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
