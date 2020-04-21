@@ -5,7 +5,7 @@ import rausku.geometry.HorizontalPlane;
 import rausku.geometry.Obj;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
-import rausku.material.CheckerBoard;
+import rausku.material.Ginham;
 import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
@@ -33,7 +33,7 @@ public class Scene7_Teapot extends Scene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        addObject(new HorizontalPlane(-49.0001f, new CheckerBoard(50)));
+        addObject(new HorizontalPlane(-49.0001f, new Ginham(10, Color.of(.75f, .5f, .5f))));
 
     }
 }

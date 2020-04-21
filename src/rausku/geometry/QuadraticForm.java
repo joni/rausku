@@ -5,6 +5,8 @@ import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
+import java.util.Arrays;
+
 import static rausku.math.FloatMath.sqrt;
 
 public class QuadraticForm implements CSGObject, SceneObject {
@@ -48,8 +50,9 @@ public class QuadraticForm implements CSGObject, SceneObject {
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
-            floats[0] = (-B - sqrt(determinant)) / (2 * A);
-            floats[1] = (-B + sqrt(determinant)) / (2 * A);
+            float sqrt = Math.copySign(sqrt(determinant), A);
+            floats[0] = (-B - sqrt) / (2 * A);
+            floats[1] = (-B + sqrt) / (2 * A);
         }
         return floats;
     }
@@ -67,11 +70,12 @@ public class QuadraticForm implements CSGObject, SceneObject {
 
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
-            float intercept = (-B - sqrt(determinant)) / (2 * A);
+            float sqrtDeterminant = Math.copySign(sqrt(determinant), A);
+            float intercept = (-B - sqrtDeterminant) / (2 * A);
             if (intercept > SceneObject.INTERCEPT_NEAR) {
                 return new Intercept(intercept, ray.apply(intercept), null);
             }
-            intercept = (-B + sqrt(determinant)) / (2 * A);
+            intercept = (-B + sqrtDeterminant) / (2 * A);
             if (intercept > SceneObject.INTERCEPT_NEAR) {
                 return new Intercept(intercept, ray.apply(intercept), null);
             }
@@ -83,7 +87,7 @@ public class QuadraticForm implements CSGObject, SceneObject {
         if (zeroIsInside) {
             return gradient.transform(intercept.interceptPoint).normalize();
         } else {
-            return gradient.transform(intercept.interceptPoint).mul(-1).normalize();
+            return gradient.transform(intercept.interceptPoint).normalize().mul(-1);
         }
     }
 

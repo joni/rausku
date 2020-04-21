@@ -12,8 +12,8 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene8 extends Scene {
-    public Scene8() {
+public class Scene8_QuadraticForms extends Scene {
+    {
 
         setCamera(new Camera(
                 Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 10)),
@@ -27,6 +27,6 @@ public class Scene8 extends Scene {
         addObject(new QuadraticForm(Matrix.diag(1f, -.2f, 1f, -.1f), material));
         addObject(new QuadraticForm(Matrix.diag(.5f, 2f, .5f, -1f), material));
 
-        addObject(new HorizontalPlane(-.2f, new CheckerBoard(null)));
+        addObject(new HorizontalPlane(-.2f, new CheckerBoard(1)));
     }
 }

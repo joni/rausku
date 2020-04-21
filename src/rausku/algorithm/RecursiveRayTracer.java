@@ -47,7 +47,7 @@ public class RecursiveRayTracer implements RayTracer {
             float intercept = intercept2.intercept;
             if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.getBound()) {
                 if (this.debug) {
-                    ray.addDebug(String.format("light ray %s", transform1));
+                    ray.addDebug(transform1);
                     ray.addDebug(String.format("intercept %d, %s", i, intercept2));
                 }
                 return true;
@@ -77,6 +77,9 @@ public class RecursiveRayTracer implements RayTracer {
             SceneObject object = objects.get(i);
             Matrix transform = scene.getInverseTransforms().get(i);
             Ray transform1 = transform.transform(ray);
+            if (debug) {
+                ray.addDebug(transform1);
+            }
             Intercept objectIntercept = object.getIntercept(transform1);
             float interceptValue = objectIntercept.intercept;
             if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
@@ -150,6 +153,9 @@ public class RecursiveRayTracer implements RayTracer {
                 continue;
             }
             Ray lightRay = lightSource.getRay(interceptPoint);
+            if (debug) {
+                ray.addDebug(lightRay);
+            }
             float diffuseReflectionEnergy = normal.dot(lightRay.getDirection());
             if (diffuseReflectionEnergy > 0) {
                 // check shadow
