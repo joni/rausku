@@ -33,6 +33,6 @@ public class DirectionalLight implements LightSource {
 
     @Override
     public boolean intercepts(Ray ray) {
-        return Vec.cos(getDirection(), ray.getDirection()) > .99;
+        return Vec.cos(getDirection(), ray.direction) > .99;
     }
 }

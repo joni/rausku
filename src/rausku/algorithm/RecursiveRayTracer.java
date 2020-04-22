@@ -45,7 +45,7 @@ public class RecursiveRayTracer implements RayTracer {
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
-            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.getBound()) {
+            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.bound) {
                 if (this.debug) {
                     ray.addDebug(transform1);
                     ray.addDebug(String.format("intercept %d, %s", i, intercept2));
@@ -156,7 +156,7 @@ public class RecursiveRayTracer implements RayTracer {
             if (debug) {
                 ray.addDebug(lightRay);
             }
-            float diffuseReflectionEnergy = normal.dot(lightRay.getDirection());
+            float diffuseReflectionEnergy = normal.dot(lightRay.direction);
             if (diffuseReflectionEnergy > 0) {
                 // check shadow
                 if (this.debug) {
@@ -189,14 +189,14 @@ public class RecursiveRayTracer implements RayTracer {
             // Light passing through a surface breaks down to absorbed, transmitted, and reflected light
             // mix according to the coefficient of reflection
             float R0 = pow((1 - material.getIndexOfRefraction()) / (1 + material.getIndexOfRefraction()), 2);
-            float reflectionCoeff = R0 + (1 - R0) * pow(1 - abs(Vec.cos(normal, ray.getDirection())), 5);
+            float reflectionCoeff = R0 + (1 - R0) * pow(1 - abs(Vec.cos(normal, ray.direction)), 5);
             if (this.debug) {
                 addDebugString(ray, "reflection coeff %f", reflectionCoeff);
             }
 
             // Specular reflection
             // Ignore internal reflection for now, easily becomes infinite loop
-            if (normal.dot(ray.getDirection()) < 0 && material.getReflectiveness() > 0) {
+            if (normal.dot(ray.direction) < 0 && material.getReflectiveness() > 0) {
                 Color reflectedLight = getSpecularReflection(depth, reflectiveness * reflectionCoeff, ray, interceptPoint, normal, material)
                         .mul(reflectionCoeff);
                 objectColor = reflectedLight.mulAdd(reflectiveness * material.getReflectiveness(), objectColor);

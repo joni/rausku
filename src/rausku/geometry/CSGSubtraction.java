@@ -27,23 +27,51 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         float[] obj1Intercepts = obj1.getAllIntercepts(ray);
         float[] obj2Intercepts = obj2.getAllIntercepts(ray);
 
-        if (!Float.isFinite(obj2Intercepts[0]) || obj1Intercepts[0] < obj2Intercepts[0]) {
-            intercept = obj1Intercepts[0];
-            return new Intercept(intercept, ray.apply(intercept), obj1);
+        boolean inObj1 = false;
+        boolean inObj2 = false;
 
-        } else if (obj2Intercepts[1] < obj1Intercepts[1]) {
-            intercept = obj2Intercepts[1];
-            return new Intercept(intercept, ray.apply(intercept), obj2);
+        int obj1Index = 0;
+        int obj2Index = 0;
+
+        while (obj1Index < obj1Intercepts.length && obj2Index < obj2Intercepts.length) {
+            if (obj1Intercepts[obj1Index] < obj2Intercepts[obj2Index]) {
+                intercept = obj1Intercepts[obj1Index];
+                // change in obj1. Are we entering or exiting?
+                inObj1 = !inObj1;
+                if (inObj1 && !inObj2 && intercept > 0) {
+                    return new Intercept(intercept, ray.apply(intercept), obj1);
+                }  // no change
+                obj1Index++;
+            } else {
+                intercept = obj2Intercepts[obj2Index];
+                // change in obj2. Are we entering or exiting?
+                inObj2 = !inObj2;
+                if (inObj1 && !inObj2 && intercept > 0) {
+                    return new Intercept(intercept, ray.apply(intercept), obj2);
+                }
+                obj2Index++;
+            }
         }
-        //        int count = 0;
-        //
-        //        int index1 = 0, index2=0;
-        //        while (count < 0 && index1 < obj1Intercepts.length && index2 < obj2Intercepts.length) {
-        //            if (obj1Intercepts[index1] < obj2Intercepts[index2]) {
-        //                return obj1Intercepts[0];
-        //            }
-        //        }
 
+        while (obj1Index < obj1Intercepts.length) {
+            intercept = obj1Intercepts[obj1Index];
+            // change in obj1. Are we entering or exiting?
+            inObj1 = !inObj1;
+            if (inObj1 && !inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj1);
+            }  // no change
+            obj1Index++;
+        }
+
+        while (obj2Index < obj2Intercepts.length) {
+            intercept = obj2Intercepts[obj2Index];
+            // change in obj2. Are we entering or exiting?
+            inObj2 = !inObj2;
+            if (inObj1 && !inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj2);
+            }
+            obj2Index++;
+        }
 
         return Intercept.noIntercept();
     }

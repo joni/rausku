@@ -1,7 +1,7 @@
 package rausku.scenes;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.HorizontalPlane;
+import rausku.geometry.HalfSpace;
 import rausku.geometry.Obj;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
@@ -33,7 +33,7 @@ public class Scene7_Teapot extends Scene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        addObject(new HorizontalPlane(-49.0001f, new Ginham(10, Color.of(.75f, .5f, .5f))));
+        addObject(HalfSpace.horizontalPlane(-49.0001f, new Ginham(10, Color.of(.75f, .5f, .5f))));
 
     }
 }

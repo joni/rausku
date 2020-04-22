@@ -5,8 +5,6 @@ import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import java.util.Arrays;
-
 import static rausku.math.FloatMath.sqrt;
 
 public class QuadraticForm implements CSGObject, SceneObject {
@@ -38,8 +36,8 @@ public class QuadraticForm implements CSGObject, SceneObject {
 
         float[] floats = {Float.NaN, Float.NaN};
 
-        Vec v1 = ray.getDirection();
-        Vec v0 = ray.getOrigin();
+        Vec v1 = ray.direction;
+        Vec v0 = ray.origin;
 
         Vec transform0 = matrix.transform(v0);
         Vec transform1 = matrix.transform(v1);
@@ -58,8 +56,8 @@ public class QuadraticForm implements CSGObject, SceneObject {
     }
 
     public Intercept getIntercept(Ray ray) {
-        Vec v0 = ray.getOrigin();
-        Vec v1 = ray.getDirection();
+        Vec v0 = ray.origin;
+        Vec v1 = ray.direction;
 
         Vec transform0 = matrix.transform(v0);
         Vec transform1 = matrix.transform(v1);

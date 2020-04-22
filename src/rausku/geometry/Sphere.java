@@ -25,8 +25,8 @@ public class Sphere implements CSGObject, SceneObject {
     public float[] getAllIntercepts(Ray ray) {
         float[] floats = {Float.NaN, Float.NaN};
 
-        Vec a = ray.getDirection();
-        Vec b = ray.getOrigin();
+        Vec a = ray.direction;
+        Vec b = ray.origin;
         Vec c = this.center;
         float r = this.radius;
 
@@ -49,8 +49,8 @@ public class Sphere implements CSGObject, SceneObject {
     }
 
     private float getIntercept0(Ray ray) {
-        Vec a = ray.getDirection();
-        Vec b = ray.getOrigin();
+        Vec a = ray.direction;
+        Vec b = ray.origin;
         Vec c = this.center;
         float r = this.radius;
 

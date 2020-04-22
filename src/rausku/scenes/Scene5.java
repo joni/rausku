@@ -33,6 +33,6 @@ public class Scene5 extends Scene {
                         new Cube(null),
                         new Sphere(Vec.origin(), 1.33f, null)));
 
-        addObject(new HorizontalPlane(-1.001f));
+        addObject(HalfSpace.createHorizontalPlane(-1.001f));
     }
 }

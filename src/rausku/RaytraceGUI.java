@@ -6,7 +6,7 @@ import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene13_Hyperboloid;
+import rausku.scenes.Scene14_Cave;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene13_Hyperboloid();
+        Scene scene = new Scene14_Cave();
 
         camera = scene.getCamera();
         rayTracer = new RecursiveRayTracer(scene, new RecursiveRayTracer.Params());

@@ -8,9 +8,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Ray implements Debuggable {
 
-    private final Vec origin;
-    private final Vec direction;
-    private final float bound;
+    public final Vec origin;
+    public final Vec direction;
+    public final float bound;
 
     private final List<Object> debugInfo;
 
@@ -34,18 +34,6 @@ public class Ray implements Debuggable {
         Vec direction = endPoint.sub(startPoint);
         float len = direction.len();
         return new Ray(startPoint, direction.div(len), len);
-    }
-
-    public Vec getDirection() {
-        return direction;
-    }
-
-    public Vec getOrigin() {
-        return origin;
-    }
-
-    public float getBound() {
-        return bound;
     }
 
     public Vec apply(float t) {

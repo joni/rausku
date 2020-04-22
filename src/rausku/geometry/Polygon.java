@@ -40,13 +40,13 @@ public class Polygon {
         // n.(direction*t+origin-v0)=0
         // t = n.(v0-origin)/(n.direction)
 
-        float nDotD = normal.dot(ray.getDirection());
+        float nDotD = normal.dot(ray.direction);
         if (nDotD > -1e-2) {
             // back face
             return Float.NaN;
         }
 
-        float planeIntercept = normal.dot(v0.sub(ray.getOrigin())) / nDotD;
+        float planeIntercept = normal.dot(v0.sub(ray.origin)) / nDotD;
 
         if (planeIntercept < SceneObject.INTERCEPT_NEAR) {
             return Float.NaN;

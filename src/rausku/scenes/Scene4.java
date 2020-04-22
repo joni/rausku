@@ -3,7 +3,7 @@ package rausku.scenes;
 import rausku.algorithm.Camera;
 import rausku.geometry.CSGIntersection;
 import rausku.geometry.Cube;
-import rausku.geometry.HorizontalPlane;
+import rausku.geometry.HalfSpace;
 import rausku.geometry.Sphere;
 import rausku.lighting.Color;
 import rausku.material.Material;
@@ -25,6 +25,6 @@ public class Scene4 extends Scene {
                 new Cube(plastic),
                 new Sphere(Vec.of(0, 0, 0f), 1.2f, plastic)));
 
-        addObject(new HorizontalPlane(-1));
+        addObject(HalfSpace.createHorizontalPlane(-1));
     }
 }

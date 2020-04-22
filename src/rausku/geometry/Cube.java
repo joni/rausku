@@ -42,8 +42,8 @@ public class Cube implements CSGObject, SceneObject {
 
     @Override
     public float[] getAllIntercepts(Ray ray) {
-        Vec rayOrigin = ray.getOrigin();
-        Vec rayDirection = ray.getDirection();
+        Vec rayOrigin = ray.origin;
+        Vec rayDirection = ray.direction;
         float[] intercepts = {Float.NaN, Float.NaN};
         int index = 0;
         float[] possibleIntercepts = {
@@ -66,15 +66,13 @@ public class Cube implements CSGObject, SceneObject {
     }
 
     public Intercept getIntercept(Ray ray) {
-        float intercept;
-        ray.getOrigin();
         float[] intercepts = {
-                (+1 - ray.getOrigin().x) / ray.getDirection().x,
-                (-1 - ray.getOrigin().x) / ray.getDirection().x,
-                (+1 - ray.getOrigin().y) / ray.getDirection().y,
-                (-1 - ray.getOrigin().y) / ray.getDirection().y,
-                (+1 - ray.getOrigin().z) / ray.getDirection().z,
-                (-1 - ray.getOrigin().z) / ray.getDirection().z,
+                (+1 - ray.origin.x) / ray.direction.x,
+                (-1 - ray.origin.x) / ray.direction.x,
+                (+1 - ray.origin.y) / ray.direction.y,
+                (-1 - ray.origin.y) / ray.direction.y,
+                (+1 - ray.origin.z) / ray.direction.z,
+                (-1 - ray.origin.z) / ray.direction.z,
         };
         float closestIntercept = Float.POSITIVE_INFINITY;
         for (float intercept1 : intercepts) {
@@ -82,6 +80,7 @@ public class Cube implements CSGObject, SceneObject {
                 closestIntercept = intercept1;
             }
         }
+        float intercept;
         if (Float.isFinite(closestIntercept)) {
             intercept = closestIntercept;
         } else {
