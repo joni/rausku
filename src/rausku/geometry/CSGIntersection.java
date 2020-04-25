@@ -27,26 +27,57 @@ public class CSGIntersection implements CSGObject, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float[] intercepts1 = obj1.getAllIntercepts(ray);
-        float[] intercepts2 = obj2.getAllIntercepts(ray);
-        if (Float.isFinite(intercepts1[0]) && Float.isFinite(intercepts2[0])) {
-            if (intercepts1[0] > intercepts2[0]) {
-                if (intercepts1[0] > 0)
-                    return new Intercept(intercepts1[0], ray.apply(intercepts1[0]), new IInfo(obj1, null));
+        float[] obj1Intercepts = obj1.getAllIntercepts(ray);
+        float[] obj2Intercepts = obj2.getAllIntercepts(ray);
+
+        boolean inObj1 = false;
+        boolean inObj2 = false;
+
+        int obj1Index = 0;
+        int obj2Index = 0;
+
+        while (obj1Index < obj1Intercepts.length && obj2Index < obj2Intercepts.length) {
+            float intercept;
+            CSGObject obj;
+            if (obj1Intercepts[obj1Index] < obj2Intercepts[obj2Index]) {
+                // change in obj1
+                intercept = obj1Intercepts[obj1Index];
+                obj = obj1;
+                inObj1 = !inObj1;
+                obj1Index++;
             } else {
-                if (intercepts2[0] > 0)
-                    return new Intercept(intercepts2[0], ray.apply(intercepts2[0]), new IInfo(obj2, null));
+                // change in obj2
+                intercept = obj2Intercepts[obj2Index];
+                obj = obj2;
+                inObj2 = !inObj2;
+                obj2Index++;
+            }
+            // Are we entering or exiting?
+            if (inObj1 && inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj);
             }
         }
-//        Intercept intercept1 = obj1.getIntercept2(ray);
-//        Intercept intercept2 = obj2.getIntercept2(ray);
-//        if (intercept1.isValid() && intercept2.isValid()) {
-//            if (intercept1.intercept > intercept2.intercept) {
-//                return new Intercept(intercept1.intercept, intercept1.interceptPoint, new IInfo(obj1, intercept1));
-//            } else {
-//                return new Intercept(intercept1.intercept, intercept2.interceptPoint, new IInfo(obj2, intercept2));
-//            }
-//        }
+
+        while (obj1Index < obj1Intercepts.length) {
+            float intercept = obj1Intercepts[obj1Index];
+            // change in obj1. Are we entering or exiting?
+            inObj1 = !inObj1;
+            if (inObj1 && inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj1);
+            }  // no change
+            obj1Index++;
+        }
+
+        while (obj2Index < obj2Intercepts.length) {
+            float intercept = obj2Intercepts[obj2Index];
+            // change in obj2. Are we entering or exiting?
+            inObj2 = !inObj2;
+            if (inObj1 && inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj2);
+            }
+            obj2Index++;
+        }
+
         return Intercept.noIntercept();
     }
 
@@ -59,9 +90,10 @@ public class CSGIntersection implements CSGObject, SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Intercept interceptPoint) {
-        IInfo intercept = (IInfo) interceptPoint.info;
-        return intercept.object.getNormal(ray, interceptPoint);
+    public Vec getNormal(Ray ray, Intercept intercept) {
+        CSGObject object = (CSGObject) intercept.info;
+        // TODO the "intercept info" may have the wrong type
+        return object.getNormal(ray, intercept);
     }
 
     private static class IInfo {

@@ -23,7 +23,6 @@ public class CSGSubtraction implements CSGObject, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float intercept = Float.NaN;
         float[] obj1Intercepts = obj1.getAllIntercepts(ray);
         float[] obj2Intercepts = obj2.getAllIntercepts(ray);
 
@@ -34,27 +33,29 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         int obj2Index = 0;
 
         while (obj1Index < obj1Intercepts.length && obj2Index < obj2Intercepts.length) {
+            float intercept;
+            CSGObject obj;
             if (obj1Intercepts[obj1Index] < obj2Intercepts[obj2Index]) {
+                // change in obj1
                 intercept = obj1Intercepts[obj1Index];
-                // change in obj1. Are we entering or exiting?
+                obj = obj1;
                 inObj1 = !inObj1;
-                if (inObj1 && !inObj2 && intercept > 0) {
-                    return new Intercept(intercept, ray.apply(intercept), obj1);
-                }  // no change
                 obj1Index++;
             } else {
+                // change in obj2
                 intercept = obj2Intercepts[obj2Index];
-                // change in obj2. Are we entering or exiting?
+                obj = obj2;
                 inObj2 = !inObj2;
-                if (inObj1 && !inObj2 && intercept > 0) {
-                    return new Intercept(intercept, ray.apply(intercept), obj2);
-                }
                 obj2Index++;
+            }
+            // Are we entering or exiting?
+            if (inObj1 && !inObj2 && intercept > 0) {
+                return new Intercept(intercept, ray.apply(intercept), obj);
             }
         }
 
         while (obj1Index < obj1Intercepts.length) {
-            intercept = obj1Intercepts[obj1Index];
+            float intercept = obj1Intercepts[obj1Index];
             // change in obj1. Are we entering or exiting?
             inObj1 = !inObj1;
             if (inObj1 && !inObj2 && intercept > 0) {
@@ -64,7 +65,7 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         }
 
         while (obj2Index < obj2Intercepts.length) {
-            intercept = obj2Intercepts[obj2Index];
+            float intercept = obj2Intercepts[obj2Index];
             // change in obj2. Are we entering or exiting?
             inObj2 = !inObj2;
             if (inObj1 && !inObj2 && intercept > 0) {
