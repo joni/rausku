@@ -21,11 +21,7 @@ public class CheckerBoard extends Material {
 
     @Override
     public Color getDiffuseColor(Vec interceptPoint) {
-
         int baseValue = (ceil(interceptPoint.x / scale) ^ ceil(interceptPoint.y / scale) ^ ceil(interceptPoint.z / scale)) & 1;
-
         return diffuseColor[baseValue];
-
-        return Color.of(x, x, x);
     }
 }

@@ -4,25 +4,16 @@ import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
-public class Obj implements SceneObject {
+public class PolygonMesh implements SceneObject {
 
     private final Material material;
     private List<Polygon> polygons;
 
-    public Obj(List<Polygon> polygons, Material material) {
+    public PolygonMesh(List<Polygon> polygons, Material material) {
         this.polygons = polygons;
         this.material = material;
-    }
-
-    public Obj(String fileName, Material material) throws IOException {
-        this.material = material;
-        try (FileInputStream fileInputStream = new FileInputStream(fileName)) {
-            this.polygons = new OBJLoader().parse(fileInputStream);
-        }
     }
 
     @Override

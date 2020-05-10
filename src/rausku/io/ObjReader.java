@@ -1,21 +1,29 @@
-package rausku.geometry;
+package rausku.io;
 
+import rausku.geometry.Polygon;
+import rausku.geometry.Vertex;
 import rausku.math.Vec;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class OBJLoader {
+public class ObjReader implements Closeable, AutoCloseable {
 
-    public List<Polygon> parse(InputStream stream) {
+    private final Scanner scanner;
+
+    public ObjReader(InputStream inputStream) {
+        scanner = new Scanner(inputStream);
+    }
+
+    public List<Polygon> read() {
 
         List<Vec> vertices = new ArrayList<>();
         List<Vec> normals = new ArrayList<>();
         List<Polygon> faces = new ArrayList<>();
-
-        Scanner scanner = new Scanner(stream);
 
         float x;
         float y;
@@ -29,7 +37,7 @@ public class OBJLoader {
                     // comment
                     break;
                 case "v":
-                    // vertex
+                    // vertex coordinates
                     x = scanner.nextFloat();
                     y = scanner.nextFloat();
                     z = scanner.nextFloat();
@@ -54,6 +62,7 @@ public class OBJLoader {
                     );
                     break;
                 default:
+                    // unknown
                     break;
             }
 
@@ -61,5 +70,10 @@ public class OBJLoader {
         }
 
         return faces;
+    }
+
+    @Override
+    public void close() throws IOException {
+        scanner.close();
     }
 }
