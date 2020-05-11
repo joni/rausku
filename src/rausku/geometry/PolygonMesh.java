@@ -10,10 +10,12 @@ public class PolygonMesh implements SceneObject {
 
     private final Material material;
     private List<Polygon> polygons;
+    private BoundingBox boundingBox;
 
     public PolygonMesh(List<Polygon> polygons, Material material) {
         this.polygons = polygons;
         this.material = material;
+        boundingBox = new BoundingBox.Builder().addPolygons(polygons).build();
     }
 
     @Override
@@ -29,6 +31,11 @@ public class PolygonMesh implements SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
+
+        if (!boundingBox.testIntercept(ray)) {
+            return Intercept.noIntercept();
+        }
+
         float closestIntercept = Float.POSITIVE_INFINITY;
         Polygon closestPolygon = null;
         for (Polygon polygon : polygons) {

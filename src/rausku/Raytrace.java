@@ -19,7 +19,7 @@ public class Raytrace {
 
         Camera camera = scene.getCamera();
 
-        Sampler sampler = new Sampler.GaussianRandomSubSampler(4);
+        Sampler sampler = new Sampler.GaussianRandomSubSampler(64);
 //        Sampler sampler = new Sampler.Naive();
 
         RenderStrategy renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.PerLineThreaded());
