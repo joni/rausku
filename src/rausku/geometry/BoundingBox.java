@@ -34,7 +34,7 @@ public class BoundingBox {
         float max = Math.min(Math.min(xRange.max, yRange.max), zRange.max);
         float min = Math.max(Math.max(xRange.min, yRange.min), zRange.min);
 
-        return 0 < min && min <= max;
+        return 0 < max && min <= max;
     }
 
     private static class Range {
@@ -53,7 +53,7 @@ public class BoundingBox {
         }
     }
 
-    static class Builder {
+    public static class Builder {
 
         private float minX = Float.POSITIVE_INFINITY;
         private float maxX = Float.NEGATIVE_INFINITY;

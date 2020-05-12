@@ -75,6 +75,21 @@ public class BoundingBoxTest {
     }
 
     @Test
+    public void testInterceptWhenRayStartsFromInside() {
+        BoundingBox.Builder builder = new BoundingBox.Builder();
+
+        Polygon polygon = new Polygon(Vec.point(1, 0, 0), Vec.point(0, 1, 0), Vec.point(0, 0, 1));
+
+        builder.addPolygons(List.of(polygon));
+
+        BoundingBox bbox = builder.build();
+
+        Ray ray = Ray.fromOriginDirection(Vec.point(.5f, .5f, .5f), Vec.of(1, 1, 1));
+
+        assertTrue(bbox.testIntercept(ray));
+    }
+
+    @Test
     public void testIntercept() {
         BoundingBox.Builder builder = new BoundingBox.Builder();
 
