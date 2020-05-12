@@ -23,7 +23,7 @@ public class Vec {
     }
 
     /**
-     * Computes tU + V
+     * Computes a linear combination tU + V
      */
     public static Vec mulAdd(float t, Vec u, Vec v) {
         return new Vec(u.x * t + v.x,
@@ -33,7 +33,7 @@ public class Vec {
     }
 
     /**
-     * Computes sU + tV
+     * Computes a general linear combination sU + tV
      */
     public static Vec mulAdd(float s, Vec u, float t, Vec v) {
         return new Vec(u.x * s + v.x * t,
@@ -43,7 +43,7 @@ public class Vec {
     }
 
     /**
-     * Computes rW + sU + tV
+     * Computes a general linear combination rW + sU + tV
      */
     public static Vec mulAdd(float r, Vec w, float s, Vec u, float t, Vec v) {
         return new Vec(u.x * s + v.x * t + r * w.x,
@@ -69,7 +69,7 @@ public class Vec {
     }
 
     public Vec add(Vec v) {
-        return Vec.of(x + v.x, y + v.w, z + v.z, w + v.w);
+        return Vec.of(x + v.x, y + v.y, z + v.z, w + v.w);
     }
 
     public Vec sub(Vec v) {

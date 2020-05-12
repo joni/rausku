@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.*;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import static rausku.math.FloatMath.cos;
 import static rausku.math.FloatMath.sin;
 import static rausku.math.FloatMath.toRadians;
@@ -14,6 +15,20 @@ public class VecTest {
 
     @BeforeMethod
     public void setUp() {
+    }
+
+    @Test
+    public void testAdd() {
+        Vec u = Vec.of(1, 2, -3);
+        Vec v = Vec.of(2, -3, 1);
+        assertEquals(u.add(v), Vec.of(3, -1, -2));
+    }
+
+    @Test
+    public void testSub() {
+        Vec u = Vec.of(1, 2, -3);
+        Vec v = Vec.of(2, -3, 1);
+        assertEquals(u.sub(v), Vec.of(-1, 5, -4));
     }
 
     @Test
@@ -60,7 +75,7 @@ public class VecTest {
 
     @Test
     public void testRefractedExit() {
-        for (int i = 0; i < 90; i++) {
+        for (int i = 0; i < 42; i++) {
             float incidentAngle = toRadians(i);
             Vec incident = Vec.of(sin(incidentAngle), cos(incidentAngle), 0);
             Vec normal = Vec.of(0, 1, 0);
@@ -77,6 +92,6 @@ public class VecTest {
         Vec incident = Vec.of(sin(incidentAngle), cos(incidentAngle), 0);
         Vec normal = Vec.of(0, 1, 0);
         Vec refracted = normal.refracted(incident, 1.5f);
-        assertEquals(refracted.sqLen(), Double.NaN, 1e-3);
+        assertNull(refracted);
     }
 }
