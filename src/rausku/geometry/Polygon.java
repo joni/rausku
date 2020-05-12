@@ -8,6 +8,11 @@ import java.util.List;
 
 public class Polygon {
 
+    private final float a;
+    private final float b;
+    private final float c;
+    private final float determinant;
+
     public final List<Vertex> vertices;
 
     public final Vec v0;
@@ -25,6 +30,11 @@ public class Polygon {
         this.side1 = v1.sub(v0);
         this.side2 = v2.sub(v0);
         this.normal = Vec.cross(this.side2, this.side1).normalize();
+
+        this.a = side1.sqLen();
+        this.b = side1.dot(side2);
+        this.c = side2.sqLen();
+        this.determinant = this.a * this.c - this.b * this.b;
     }
 
     public Polygon(Vec v0, Vec v1, Vec v2) {
@@ -35,12 +45,17 @@ public class Polygon {
         this.side1 = v1.sub(v0);
         this.side2 = v2.sub(v0);
         this.normal = Vec.cross(this.side2, this.side1).normalize();
+
+        this.a = side1.sqLen();
+        this.b = side1.dot(side2);
+        this.c = side2.sqLen();
+        this.determinant = this.a * this.c - this.b * this.b;
     }
 
     public float getIntercept(Ray ray) {
-        // plane: n.(v-v0)=0 ray: v=direction*t+origin
-        // n.(direction*t+origin-v0)=0
-        // t = n.(v0-origin)/(n.direction)
+        // plane: n.(v-v0)=0 ray: v=d*t+o
+        // n.(v*t+o-v0)=0
+        // t = n.(v0-o)/(n.d)
 
         float nDotD = normal.dot(ray.direction);
         if (nDotD > -1e-2) {
@@ -58,13 +73,9 @@ public class Polygon {
 
         Vec interceptPoint = ray.apply(planeIntercept).sub(v0);
 
-        double a = side1.sqLen();
-        double b = side1.dot(side2);
-        double c = side2.sqLen();
         double x = side1.dot(interceptPoint);
         double y = side2.dot(interceptPoint);
 
-        double determinant = a * c - b * b;
         double v1coord = (c * x - b * y) / determinant;
         double v2coord = (a * y - b * x) / determinant;
         if (0 <= v1coord && v1coord < 1
@@ -78,13 +89,9 @@ public class Polygon {
 
     public Color getColor(Vec interceptPoint) {
         interceptPoint = interceptPoint.sub(v0);
-        float a = side1.sqLen();
-        float b = side1.dot(side2);
-        float c = side2.sqLen();
         float x = side1.dot(interceptPoint);
         float y = side2.dot(interceptPoint);
 
-        float determinant = a * c - b * b;
         float u = (c * x - b * y) / determinant;
         float v = (a * y - b * x) / determinant;
 
@@ -97,13 +104,9 @@ public class Polygon {
 
         interceptPoint = interceptPoint.sub(v0);
 
-        float a = side1.sqLen();
-        float b = side1.dot(side2);
-        float c = side2.sqLen();
         float x = side1.dot(interceptPoint);
         float y = side2.dot(interceptPoint);
 
-        float determinant = a * c - b * b;
         float u = (c * x - b * y) / determinant;
         float v = (a * y - b * x) / determinant;
 
@@ -116,8 +119,6 @@ public class Polygon {
 
     @Override
     public String toString() {
-        return "Polygon{" +
-                "normal=" + normal +
-                '}';
+        return String.format("Polygon{normal=%s}", normal);
     }
 }
