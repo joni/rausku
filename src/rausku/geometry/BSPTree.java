@@ -23,10 +23,6 @@ public class BSPTree {
         return polygonStats;
     }
 
-    public boolean testIntercept(Ray ray) {
-        return getIntercept(ray).isValid();
-    }
-
     public Intercept getIntercept(Ray ray) {
 
         if (!bbox.testIntercept(ray)) {
@@ -43,24 +39,22 @@ public class BSPTree {
 
         // Then we check the polygons in these nodes
         float closestIntercept = Float.POSITIVE_INFINITY;
-        Polygon closestPolygon = null;
+        Intercept closestInterceptObj = Intercept.noIntercept();
         int polysChecked = 0;
         for (Node node : cellsToCheck) {
             for (Polygon polygon : node.ownPolys) {
                 polysChecked++;
-                float intercept = polygon.getIntercept(ray);
-                if (Float.isFinite(intercept) && intercept > SceneObject.INTERCEPT_NEAR) {
-                    if (intercept < closestIntercept) {
-                        closestIntercept = intercept;
-                        closestPolygon = polygon;
-                    }
+                Intercept intercept = polygon.getIntercept(ray);
+                if (intercept.isValid() && intercept.intercept < closestIntercept) {
+                    closestIntercept = intercept.intercept;
+                    closestInterceptObj = intercept;
                 }
             }
         }
 
         polygonStats.accept(polysChecked);
 
-        return new Intercept(closestIntercept, ray.apply(closestIntercept), closestPolygon);
+        return closestInterceptObj;
     }
 
     @Override
@@ -177,14 +171,13 @@ public class BSPTree {
                 return;
             }
 
-            // Do we enter on the positive or negative side?
-            boolean positiveSide = ray.apply(tmin).dot(nodeType.normal) > splitAt;
-
             // Find intersection of ray with the partition plane
             float intercept = nodeType.getIntercept(ray, splitAt);
 
-            Node first, second;
+            // Do we enter on the positive or negative side?
+            boolean positiveSide = ray.apply(tmin).dot(nodeType.normal) > splitAt;
 
+            Node first, second;
             if (positiveSide) {
                 first = positive;
                 second = negative;
@@ -194,11 +187,11 @@ public class BSPTree {
             }
 
             if (tmin <= intercept && intercept <= tmax) {
-                // If intercept is within this cell, both children have to be tested
+                // Intercept with partition plane is within this cell. Both children have to be tested
                 first.addCellsToCheck(ray, tmin, intercept, cellsToCheck);
                 second.addCellsToCheck(ray, intercept, tmax, cellsToCheck);
             } else {
-                // Otherwise the ray is completely to one side of the partition
+                // Ray is completely to one side of the partition
                 first.addCellsToCheck(ray, tmin, tmax, cellsToCheck);
             }
         }

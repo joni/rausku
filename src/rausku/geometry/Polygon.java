@@ -52,38 +52,33 @@ public class Polygon {
         this.determinant = this.a * this.c - this.b * this.b;
     }
 
-    public float getIntercept(Ray ray) {
+    public Intercept getIntercept(Ray ray) {
         // plane: n.(v-v0)=0 ray: v=d*t+o
         // n.(v*t+o-v0)=0
         // t = n.(v0-o)/(n.d)
 
         float nDotD = normal.dot(ray.direction);
         if (nDotD > -1e-2) {
-            // back face
-            return Float.NaN;
+            // back face culling
+            return Intercept.noIntercept();
         }
 
         float planeIntercept = normal.dot(v0.sub(ray.origin)) / nDotD;
 
         if (planeIntercept < SceneObject.INTERCEPT_NEAR) {
-            return Float.NaN;
+            return Intercept.noIntercept();
         }
 
         // is the intercept inside the triangle?
-
         Vec interceptPoint = ray.apply(planeIntercept).sub(v0);
-
-        double x = side1.dot(interceptPoint);
-        double y = side2.dot(interceptPoint);
-
-        double v1coord = (c * x - b * y) / determinant;
-        double v2coord = (a * y - b * x) / determinant;
-        if (0 <= v1coord && v1coord < 1
-                && 0 <= v2coord && v2coord < 1
-                && v1coord + v2coord < 1) {
-            return planeIntercept;
+        float x = side1.dot(interceptPoint);
+        float y = side2.dot(interceptPoint);
+        float u = (c * x - b * y) / determinant;
+        float v = (a * y - b * x) / determinant;
+        if (0 <= u && 0 <= v && u + v < 1) {
+            return new Intercept(planeIntercept, ray.apply(planeIntercept), new InterceptInfo(u, v));
         } else {
-            return Float.NaN;
+            return Intercept.noIntercept();
         }
     }
 
@@ -98,27 +93,30 @@ public class Polygon {
         return Color.of(1 - u - v, u, v);
     }
 
-    public Vec getNormal(Vec interceptPoint) {
-        if (vertices == null)
-            return normal;
-
-        interceptPoint = interceptPoint.sub(v0);
-
-        float x = side1.dot(interceptPoint);
-        float y = side2.dot(interceptPoint);
-
-        float u = (c * x - b * y) / determinant;
-        float v = (a * y - b * x) / determinant;
-
-        return Vec.mulAdd(
-                1 - u - v, vertices.get(0).normal,
-                u, vertices.get(1).normal,
-                v, vertices.get(2).normal)
-                .normalize();
-    }
-
     @Override
     public String toString() {
         return String.format("Polygon{normal=%s}", normal);
+    }
+
+    public class InterceptInfo {
+
+        final float u;
+        final float v;
+
+        public InterceptInfo(float u, float v) {
+            this.u = u;
+            this.v = v;
+        }
+
+        public Vec getNormal() {
+            if (vertices == null)
+                return normal;
+
+            return Vec.mulAdd(
+                    1 - u - v, vertices.get(0).normal,
+                    u, vertices.get(1).normal,
+                    v, vertices.get(2).normal)
+                    .normalize();
+        }
     }
 }

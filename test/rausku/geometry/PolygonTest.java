@@ -18,7 +18,7 @@ public class PolygonTest {
         assertEquals(polygon.v0, Vec.of(-1, -1, 0));
         assertEquals(polygon.side1, Vec.of(2f, 1f, 0));
         assertEquals(polygon.side2, Vec.of(1f, 2f, 0));
-        assertEquals(polygon.getIntercept(r), 1, 1e-6);
+        assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
     @Test
@@ -30,7 +30,7 @@ public class PolygonTest {
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
         assertEquals(polygon.side1, Vec.of(2f, 0f, 0f));
         assertEquals(polygon.side2, Vec.of(1f, 2f, -2f));
-        assertEquals(polygon.getIntercept(r), 1, 1e-6);
+        assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class PolygonTest {
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
         assertEquals(polygon.side1, Vec.of(2f, 1f, -2f));
         assertEquals(polygon.side2, Vec.of(0f, 2f, 0f));
-        assertEquals(polygon.getIntercept(r), 1, 1e-6);
+        assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class PolygonTest {
 
         Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
-        assertEquals(polygon.getIntercept(r), 1, 1e-6);
+        assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
     @Test
@@ -63,5 +63,9 @@ public class PolygonTest {
         assertEquals(polygon.getColor(a), Color.of(1, 0, 0));
         assertEquals(polygon.getColor(b), Color.of(0, 1, 0));
         assertEquals(polygon.getColor(c), Color.of(0, 0, 1));
+    }
+
+    private float getIntercept(Polygon polygon, Ray r) {
+        return polygon.getIntercept(r).intercept;
     }
 }

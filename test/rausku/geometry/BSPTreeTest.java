@@ -20,7 +20,8 @@ public class BSPTreeTest {
 
         Ray ray = Ray.fromStartEnd(Vec.origin(), Vec.point(1, 1, 1));
 
-        assertTrue(bspTree.testIntercept(ray));
+        Intercept intercept = bspTree.getIntercept(ray);
+        assertTrue(intercept.isValid());
     }
 
     @Test
@@ -34,17 +35,38 @@ public class BSPTreeTest {
 
         for (int i = 0; i < 100; i++) {
             Ray ray = Ray.fromOriginDirection(Vec.point(-4, -2, -4), Vec.of(rnd.nextFloat(), rnd.nextFloat(), rnd.nextFloat()));
-            Intercept intercept = polygonMesh.getIntercept(ray);
-            Intercept intercept1 = bspTree.getIntercept(ray);
-            if (intercept.isValid()) {
-                assertEquals(intercept1.intercept, intercept.intercept, 1e-6f);
+            Intercept expected = polygonMesh.getIntercept(ray);
+            Intercept actual = bspTree.getIntercept(ray);
+            if (expected.isValid()) {
+                assertEquals(actual.intercept, expected.intercept, 1e-6f);
             } else {
-                assertFalse(bspTree.testIntercept(ray), ray.toString());
+                assertFalse(actual.isValid(), ray.toString());
             }
         }
 
         IntSummaryStatistics polygonStats = bspTree.getPolygonStats();
         System.out.printf("average %.2f%%", 100 * polygonStats.getAverage() / torus.size());
+    }
+
+    private static class BasicPolygonMesh {
+
+        List<Polygon> polygons;
+
+        BasicPolygonMesh(List<Polygon> polygons) {
+            this.polygons = polygons;
+        }
+
+        Intercept getIntercept(Ray ray) {
+
+            float closestIntercept = Float.POSITIVE_INFINITY;
+            for (Polygon polygon : polygons) {
+                Intercept intercept = polygon.getIntercept(ray);
+                if (intercept.isValid() && intercept.intercept < closestIntercept) {
+                    closestIntercept = intercept.intercept;
+                }
+            }
+            return new Intercept(closestIntercept, ray.apply(closestIntercept), null);
+        }
     }
 
     private List<Polygon> createTorus(float R, float r) {
@@ -96,31 +118,5 @@ public class BSPTreeTest {
             previous = current;
         }
         return polygons;
-    }
-
-
-    private static class BasicPolygonMesh {
-
-        List<Polygon> polygons;
-
-        BasicPolygonMesh(List<Polygon> polygons) {
-            this.polygons = polygons;
-        }
-
-        Intercept getIntercept(Ray ray) {
-
-            float closestIntercept = Float.POSITIVE_INFINITY;
-            Polygon closestPolygon = null;
-            for (Polygon polygon : polygons) {
-                float intercept = polygon.getIntercept(ray);
-                if (Float.isFinite(intercept) && intercept > SceneObject.INTERCEPT_NEAR) {
-                    if (intercept < closestIntercept) {
-                        closestIntercept = intercept;
-                        closestPolygon = polygon;
-                    }
-                }
-            }
-            return new Intercept(closestIntercept, ray.apply(closestIntercept), closestPolygon);
-        }
     }
 }

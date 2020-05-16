@@ -21,7 +21,7 @@ public class Intercept {
     }
 
     public boolean isValid() {
-        return Float.isFinite(intercept);
+        return Float.isFinite(intercept) && intercept > 0;
     }
 
     @Override
