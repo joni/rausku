@@ -37,6 +37,24 @@ public class BoundingBox {
         return 0 < max && min <= max;
     }
 
+    public float[] getIntercepts(Ray ray) {
+        Vec rayOrigin = ray.origin;
+        Vec rayDirection = ray.direction;
+
+        Range xRange = new Range(minX, maxX, rayOrigin.x, rayDirection.x);
+        Range yRange = new Range(minY, maxY, rayOrigin.y, rayDirection.y);
+        Range zRange = new Range(minZ, maxZ, rayOrigin.z, rayDirection.z);
+
+        float max = Math.min(Math.min(xRange.max, yRange.max), zRange.max);
+        float min = Math.max(Math.max(xRange.min, yRange.min), zRange.min);
+
+        if (0 < max && min <= max) {
+            return new float[]{Math.max(0, min), max};
+        } else {
+            return null;
+        }
+    }
+
     private static class Range {
 
         final float min;
@@ -51,6 +69,11 @@ public class BoundingBox {
                 this.max = (min - o) / d;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("BoundingBox{%s, %s, %s}{%s, %s, %s}", minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public static class Builder {

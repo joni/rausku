@@ -44,8 +44,8 @@ public class Scene15_Torus extends Scene {
         List<Polygon> polygons = new ArrayList<>();
         List<Vertex> previous = new ArrayList<>();
 
-        int uResolution = 17;
-        int vResolution = 9;
+        int uResolution = 32;
+        int vResolution = 16;
 
         for (int i = 0; i <= uResolution; i++) {
             List<Vertex> current = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Scene15_Torus extends Scene {
                 float z = sinV * sinU;
 
                 Vec normal = Vec.of(x, y, z);
-                Vec point = normal.mul(r).add(center);
+                Vec point = Vec.mulAdd(r, normal, center);
 
                 Vertex vertex = Vertex.of(point, normal);
 
