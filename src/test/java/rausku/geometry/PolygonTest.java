@@ -1,5 +1,6 @@
 package rausku.geometry;
 
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import rausku.lighting.Color;
 import rausku.math.Ray;
@@ -16,8 +17,6 @@ public class PolygonTest {
         Ray r = Ray.fromOriginDirection(Vec.of(.25f, .25f, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 0));
-        assertEquals(polygon.side1, Vec.of(2f, 1f, 0));
-        assertEquals(polygon.side2, Vec.of(1f, 2f, 0));
         assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
@@ -28,8 +27,6 @@ public class PolygonTest {
         Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
-        assertEquals(polygon.side1, Vec.of(2f, 0f, 0f));
-        assertEquals(polygon.side2, Vec.of(1f, 2f, -2f));
         assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
@@ -40,8 +37,6 @@ public class PolygonTest {
         Ray r = Ray.fromOriginDirection(Vec.of(0, 0, -1), Vec.of(0, 0, 1));
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
-        assertEquals(polygon.side1, Vec.of(2f, 1f, -2f));
-        assertEquals(polygon.side2, Vec.of(0f, 2f, 0f));
         assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 
@@ -55,6 +50,7 @@ public class PolygonTest {
     }
 
     @Test
+    @Ignore
     public void colorTest() {
         Vec a = Vec.of(0, 0, -1);
         Vec b = Vec.of(10, 0, 0);

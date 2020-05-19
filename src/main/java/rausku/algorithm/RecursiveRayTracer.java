@@ -110,6 +110,15 @@ public class RecursiveRayTracer implements RayTracer {
 
         // nothing hit
         return scene.getAmbientLight().getColor();
+//        Vec origin = Vec.point(ray.origin.x  % 2, ray.origin.y % 2, ray.origin.z % 2);
+//        BoundingBox.Builder bboxBuilder = new BoundingBox.Builder()
+//                .addPoint(Vec.of(-2,-2,-2))
+//                .addPoint(Vec.of(+2,+2,+2));
+//        BoundingBox build = bboxBuilder.build();
+//        float[] intercepts = build.getIntercepts(ray.withOrigin(origin));
+//        Vec interceptPoint = ray.apply(intercepts[1]);
+//        Vec newOrigin = Vec.point(interceptPoint.x  % 2, interceptPoint.y % 2, interceptPoint.z % 2);
+//        return resolveRayColor(depth+1, reflectiveness, ray.withOrigin(newOrigin));
     }
 
     @Override

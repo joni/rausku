@@ -39,7 +39,7 @@ public class Scene7_Teapot extends Scene {
             e.printStackTrace();
         }
 
-        addObject(HalfSpace.horizontalPlane(-49.0001f, new Ginham(10, Color.of(.75f, .5f, .5f))));
+        addObject(HalfSpace.horizontalPlane(-39.9f, new Ginham(10, Color.of(.75f, .5f, .5f))));
 
     }
 }

@@ -74,4 +74,8 @@ public class Ray implements Debuggable {
         Vec rndVec = Vec.of(rnd.nextFloat() - .5f, rnd.nextFloat() - .5f, rnd.nextFloat() - .5f).mul(.1f);
         return new Ray(origin, direction.add(rndVec).normalize(), bound);
     }
+
+    public Ray withOrigin(Vec origin) {
+        return new Ray(origin, this.direction, this.bound);
+    }
 }

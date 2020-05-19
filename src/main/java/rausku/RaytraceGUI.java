@@ -34,7 +34,9 @@ public class RaytraceGUI {
         Scene scene = new Scene7_Teapot();
 
         camera = scene.getCamera();
-        rayTracer = new RecursiveRayTracer(scene, new RecursiveRayTracer.Params());
+        RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()
+                .withMaxDepth(5);
+        rayTracer = new RecursiveRayTracer(scene, params);
 
 //        sampler = new Sampler.GaussianRandomSubSampler(8);
         sampler = new Sampler.Naive();
