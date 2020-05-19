@@ -57,4 +57,9 @@ public class HalfSpace implements CSGObject, SceneObject {
     public Material getMaterial() {
         return material;
     }
+
+    @Override
+    public String toString() {
+        return String.format("HalfSpace%s", v);
+    }
 }

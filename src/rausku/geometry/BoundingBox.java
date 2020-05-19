@@ -7,6 +7,8 @@ import java.util.List;
 
 public class BoundingBox {
 
+    private static final float[] NO_INTERCEPT = {};
+
     public final float minX;
     public final float maxX;
     public final float minY;
@@ -21,6 +23,15 @@ public class BoundingBox {
         this.maxY = builder.maxY;
         this.minZ = builder.minZ;
         this.maxZ = builder.maxZ;
+    }
+
+    public BoundingBox(Vec minPoint, Vec maxPoint) {
+        this.minX = minPoint.x;
+        this.minY = minPoint.y;
+        this.minZ = minPoint.z;
+        this.maxX = maxPoint.x;
+        this.maxY = maxPoint.y;
+        this.maxZ = maxPoint.z;
     }
 
     public boolean testIntercept(Ray ray) {
@@ -51,7 +62,7 @@ public class BoundingBox {
         if (0 < max && min <= max) {
             return new float[]{Math.max(0, min), max};
         } else {
-            return null;
+            return NO_INTERCEPT;
         }
     }
 
@@ -61,7 +72,7 @@ public class BoundingBox {
         final float max;
 
         Range(float min, float max, float o, float d) {
-            if (d > 0) {
+            if (d >= 0) {
                 this.min = (min - o) / d;
                 this.max = (max - o) / d;
             } else {
@@ -85,7 +96,7 @@ public class BoundingBox {
         private float minZ = Float.POSITIVE_INFINITY;
         private float maxZ = Float.NEGATIVE_INFINITY;
 
-        Builder addPolygons(List<Polygon> polygons) {
+        public Builder addPolygons(List<Polygon> polygons) {
             for (Polygon polygon : polygons) {
                 addPoint(polygon.v0);
                 addPoint(polygon.v1);
@@ -94,7 +105,7 @@ public class BoundingBox {
             return this;
         }
 
-        Builder addPoint(Vec point) {
+        public Builder addPoint(Vec point) {
             minX = Math.min(minX, point.x);
             maxX = Math.max(maxX, point.x);
             minY = Math.min(minY, point.y);
@@ -104,7 +115,7 @@ public class BoundingBox {
             return this;
         }
 
-        BoundingBox build() {
+        public BoundingBox build() {
             return new BoundingBox(this);
         }
     }

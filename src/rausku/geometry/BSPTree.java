@@ -25,41 +25,19 @@ public class BSPTree {
 
     public Intercept getIntercept(Ray ray) {
 
-        if (!bbox.testIntercept(ray)) {
-            return Intercept.noIntercept();
-        }
-
-        // We need to find the cells the ray passes through
-        List<Node> cellsToCheck = new ArrayList<>();
-
         float[] intercepts = bbox.getIntercepts(ray);
+        if (intercepts.length == 0) {
+            return Intercept.noIntercept();
+        } else {
+            // Check the tree recursively
+            return root.getIntercept(ray, intercepts[0], intercepts[1]);
 
-        // Check the tree recursively
-        root.addCellsToCheck(ray, intercepts[0], intercepts[1], cellsToCheck);
-
-        // Then we check the polygons in these nodes
-        float closestIntercept = Float.POSITIVE_INFINITY;
-        Intercept closestInterceptObj = Intercept.noIntercept();
-        int polysChecked = 0;
-        for (Node node : cellsToCheck) {
-            for (Polygon polygon : node.ownPolys) {
-                polysChecked++;
-                Intercept intercept = polygon.getIntercept(ray);
-                if (intercept.isValid() && intercept.intercept < closestIntercept) {
-                    closestIntercept = intercept.intercept;
-                    closestInterceptObj = intercept;
-                }
-            }
         }
-
-        polygonStats.accept(polysChecked);
-
-        return closestInterceptObj;
     }
 
     @Override
     public String toString() {
-        return String.format("BSPTree{bbox=%s, root=%s}", bbox, root);
+        return String.format("BSPTree{bbox=%s}", bbox);
     }
 
     enum NodeType {
@@ -74,7 +52,7 @@ public class BSPTree {
         }
 
         public float splitAt(List<Polygon> polygons) {
-            DoubleSummaryStatistics stats = polygons.stream().mapToDouble(poly -> poly.v0.dot(normal)).summaryStatistics();
+            DoubleSummaryStatistics stats = polygons.stream().mapToDouble(poly -> poly.getCenter().dot(normal)).summaryStatistics();
             // median could be better
             return ((float) stats.getAverage());
         }
@@ -82,12 +60,13 @@ public class BSPTree {
         public Split doSplit(List<Polygon> polygons) {
             float splitAt = splitAt(polygons);
             Split split = new Split();
-            split.splitAt = splitAt;
+            Vec splitVector = Vec.of(normal.x, normal.y, normal.z, -splitAt);
+            split.splitVector = splitVector;
 
             for (Polygon polygon : polygons) {
-                float dot = polygon.v0.dot(normal) - splitAt;
-                float dot1 = polygon.v1.dot(normal) - splitAt;
-                float dot2 = polygon.v2.dot(normal) - splitAt;
+                float dot = polygon.v0.dot(splitVector);
+                float dot1 = polygon.v1.dot(splitVector);
+                float dot2 = polygon.v2.dot(splitVector);
 
                 if (dot > 0 && dot1 > 0 && dot2 > 0) {
                     split.positive.add(polygon);
@@ -109,15 +88,10 @@ public class BSPTree {
                 case Z -> X;
             };
         }
-
-        public float getIntercept(Ray ray, float splitAt) {
-            // n.(dt+o) = s <=> t = (s - n.o)/n.d
-            return (splitAt - Vec.dot(normal, ray.origin)) / Vec.dot(normal, ray.direction);
-        }
     }
 
     static class Split {
-        float splitAt;
+        Vec splitVector;
         List<Polygon> positive = new ArrayList<>();
         List<Polygon> negative = new ArrayList<>();
 
@@ -127,8 +101,7 @@ public class BSPTree {
     }
 
     static class Node {
-        NodeType nodeType;
-        float splitAt;
+        Vec splitVector;
         boolean leaf;
 
         List<Polygon> ownPolys;
@@ -137,7 +110,6 @@ public class BSPTree {
         Node negative;
 
         public Node(NodeType nodeType, List<Polygon> polygons) {
-            this.nodeType = nodeType;
 
             if (polygons.size() <= 5) {
                 this.leaf = true;
@@ -149,7 +121,7 @@ public class BSPTree {
                     this.ownPolys = polygons;
                 } else {
                     this.leaf = false;
-                    this.splitAt = split.splitAt;
+                    this.splitVector = split.splitVector;
                     this.ownPolys = List.of();
                     NodeType nextSplit = nodeType.nextSplit();
                     this.positive = new Node(nextSplit, split.positive);
@@ -158,24 +130,30 @@ public class BSPTree {
             }
         }
 
-        @Override
-        public String toString() {
-            return String.format("[%s@%s count=%d, +:%s, -:%s]", nodeType, splitAt, ownPolys.size(), positive, negative);
+        private float getPlaneIntercept(Ray ray) {
+            // n.(dt+o) = 0 <=> t = -n.o/n.d
+            return -Vec.dot(splitVector, ray.origin) / Vec.dot(splitVector, ray.direction);
         }
 
-        public void addCellsToCheck(Ray ray, float tmin, float tmax, List<Node> cellsToCheck) {
-
+        public Intercept getIntercept(Ray ray, float tmin, float tmax) {
             if (leaf) {
-                // no subcells
-                cellsToCheck.add(this);
-                return;
+                Intercept closestIntercept = Intercept.noIntercept();
+
+                for (Polygon polygon : ownPolys) {
+                    Intercept intercept = polygon.getIntercept(ray);
+                    if (intercept.isValid() && tmin < intercept.intercept && intercept.intercept < tmax) {
+                        closestIntercept = intercept;
+                    }
+                }
+
+                return closestIntercept;
             }
 
             // Find intersection of ray with the partition plane
-            float intercept = nodeType.getIntercept(ray, splitAt);
+            float intercept = getPlaneIntercept(ray);
 
             // Do we enter on the positive or negative side?
-            boolean positiveSide = ray.apply(tmin).dot(nodeType.normal) > splitAt;
+            boolean positiveSide = Vec.dot(splitVector, ray.apply(tmin)) > 0;
 
             Node first, second;
             if (positiveSide) {
@@ -188,11 +166,24 @@ public class BSPTree {
 
             if (tmin <= intercept && intercept <= tmax) {
                 // Intercept with partition plane is within this cell. Both children have to be tested
-                first.addCellsToCheck(ray, tmin, intercept, cellsToCheck);
-                second.addCellsToCheck(ray, intercept, tmax, cellsToCheck);
+                Intercept firstIntercept = first.getIntercept(ray, tmin, intercept);
+                if (firstIntercept.isValid()) {
+                    return firstIntercept;
+                } else {
+                    return second.getIntercept(ray, intercept, tmax);
+                }
             } else {
                 // Ray is completely to one side of the partition
-                first.addCellsToCheck(ray, tmin, tmax, cellsToCheck);
+                return first.getIntercept(ray, tmin, tmax);
+            }
+        }
+
+        @Override
+        public String toString() {
+            if (leaf) {
+                return String.format("[count=%d]", ownPolys.size());
+            } else {
+                return String.format("[%s +:%s, -:%s]", splitVector, positive, negative);
             }
         }
     }

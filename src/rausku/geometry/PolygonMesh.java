@@ -31,4 +31,9 @@ public class PolygonMesh implements SceneObject {
     public Intercept getIntercept(Ray ray) {
         return bspTree.getIntercept(ray);
     }
+
+    @Override
+    public String toString() {
+        return String.format("PolygonMesh{bspTree=%s}", bspTree);
+    }
 }

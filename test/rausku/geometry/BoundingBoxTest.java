@@ -45,6 +45,17 @@ public class BoundingBoxTest {
     }
 
     @Test
+    public void testInterceptWithAxisAlignedRay() {
+        BoundingBox bbox = new BoundingBox(Vec.origin(), Vec.point(2, 2, 2));
+
+        Ray ray = Ray.fromOriginDirection(Vec.point(1, 1, 3), Vec.of(0, 0, -1));
+
+        float[] intercepts = bbox.getIntercepts(ray);
+        assertEquals(intercepts[0], 1, 1e-6);
+        assertEquals(intercepts[1], 3, 1e-6);
+    }
+
+    @Test
     public void testInterceptWhenRayPassesBy() {
         BoundingBox.Builder builder = new BoundingBox.Builder();
 
