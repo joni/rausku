@@ -32,11 +32,11 @@ public class Scene15_Torus extends Scene {
         Material creamCeramic = Material.plastic(Color.of(1f, .9f, .8f), .1f);
 
         List<Polygon> polygons = createPolys();
-        PolygonMesh teapot = new PolygonMesh(polygons, creamCeramic);
+        PolygonMesh teapot = new PolygonMesh(polygons);
         addObject(//Matrix.rotateY(toRadians(30)),
-                teapot);
+                teapot, creamCeramic);
 
-        addObject(HalfSpace.horizontalPlane(-1.00001f, new CheckerBoard(.5f)));
+        addObject(HalfSpace.horizontalPlane(-1.00001f), new CheckerBoard(.5f));
     }
 
     private List<Polygon> createPolys() {

@@ -20,10 +20,10 @@ public class Scene2 extends Scene {
 
         for (int i = -5; i <= 5; i++) {
             for (int j = -5; j <= 5; j++) {
-                addObject(new Sphere(Vec.point(i, j, -10), .5f, Material.plastic(Color.of((i + 5) / 10f, (j + 5) / 10f, (10 - i - j) / 20f), .5f)));
+                addObject(new Sphere(Vec.point(i, j, -10), .5f), Material.plastic(Color.of((i + 5) / 10f, (j + 5) / 10f, (10 - i - j) / 20f), .5f));
             }
         }
 
-        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -3f), Material.glass()));
+        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -3f)), Material.glass());
     }
 }

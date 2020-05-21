@@ -24,7 +24,7 @@ public class Scene12_ConeLight extends Scene {
         addLight(new ConeLight(Vec.point(+1f, 2f, 0f), down, angle45, angle60, Color.of(0f, 0f, 1f)));
 
         CheckerBoard checkerBoard = new CheckerBoard(1);
-        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f), checkerBoard));
-        addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 0.5001f), checkerBoard));
+        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f)), checkerBoard);
+        addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 0.5001f)), checkerBoard);
     }
 }

@@ -12,9 +12,9 @@ public class CSGSubtractionTest {
     @Test
     public void cubeMinusSphere() {
         // when you subtract a sphere from a cube
-        CSGSubtraction shape = new CSGSubtraction(null,
-                new Cube(null),
-                new Sphere(Vec.origin(), 1.4f, null));
+        CSGSubtraction shape = new CSGSubtraction(
+                new Cube(),
+                QuadraticForm.createSphere(Vec.origin(), 1.4f));
 
         // and have a ray pass through a hole
         Intercept intercept = shape.getIntercept(
@@ -27,9 +27,9 @@ public class CSGSubtractionTest {
     @Test
     public void planeMinusSphere() {
         // when you subtract a sphere from a plane
-        CSGSubtraction shape = new CSGSubtraction(null,
-                new HalfSpace(Vec.of(0, 1, 0, 0), null),
-                new Sphere(Vec.origin(), 1, null));
+        CSGSubtraction shape = new CSGSubtraction(
+                new HalfSpace(Vec.of(0, 1, 0, 0)),
+                QuadraticForm.createSphere(Vec.origin(), 1));
 
         // and have a ray pass down the middle
         Intercept intercept = shape.getIntercept(Ray.fromOriginDirection(Vec.point(0, 10, 0), Vec.of(0, -1, 0)));

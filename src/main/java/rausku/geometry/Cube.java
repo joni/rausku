@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -11,15 +10,8 @@ import static java.lang.Math.abs;
 public class Cube implements CSGObject, SceneObject {
 
     private static final double BOUNDS = 1.000001;
-    private final Material material;
 
-    public Cube(Material material) {
-        this.material = material;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
+    public Cube() {
     }
 
     @Override

@@ -6,6 +6,7 @@ import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.lighting.LightSource;
+import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 
@@ -21,20 +22,28 @@ public abstract class Scene {
     private List<LightSource> lights = new ArrayList<>();
 
     private Camera camera = Camera.initialCamera();
+    private List<Material> materials = new ArrayList<>();
     private List<Matrix> transforms = new ArrayList<>();
     private List<Matrix> inverseTransforms = new ArrayList<>();
     private List<SceneObject> objects = new ArrayList<>();
 
+    protected void addObject(Matrix transform, SceneObject object, Material material) {
+        transforms.add(transform);
+        inverseTransforms.add(transform.inverse());
+        objects.add(object);
+        materials.add(material);
+    }
+
     protected void addObject(Matrix transform, SceneObject object) {
-        getTransforms().add(transform);
-        getInverseTransforms().add(transform.inverse());
-        getObjects().add(object);
+        addObject(transform, object, null);
+    }
+
+    protected void addObject(SceneObject object, Material material) {
+        addObject(Matrix.eye(), object, material);
     }
 
     protected void addObject(SceneObject object) {
-        getTransforms().add(Matrix.eye());
-        getInverseTransforms().add(Matrix.eye());
-        getObjects().add(object);
+        addObject(Matrix.eye(), object, null);
     }
 
     public Camera getCamera() {
@@ -70,5 +79,17 @@ public abstract class Scene {
 
     public List<SceneObject> getObjects() {
         return objects;
+    }
+
+    public Matrix getTransform(int index) {
+        return transforms.get(index);
+    }
+
+    public SceneObject getObject(int index) {
+        return objects.get(index);
+    }
+
+    public Material getMaterial(int index) {
+        return materials.get(index);
     }
 }

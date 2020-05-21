@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -9,20 +8,12 @@ import static java.lang.Math.min;
 
 public class CSGIntersection implements CSGObject, SceneObject {
 
-    private final Material material;
-
     private final CSGObject obj1;
     private final CSGObject obj2;
 
-    public CSGIntersection(Material material, CSGObject object1, CSGObject object2) {
-        this.material = material;
+    public CSGIntersection(CSGObject object1, CSGObject object2) {
         this.obj1 = object1;
         this.obj2 = object2;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
     }
 
     @Override

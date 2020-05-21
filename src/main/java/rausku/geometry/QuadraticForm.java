@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
@@ -11,18 +10,15 @@ public class QuadraticForm implements CSGObject, SceneObject {
     private final Matrix matrix;
     private final Matrix gradient;
     private final boolean zeroIsInside;
-    private final Material material;
 
-    public QuadraticForm(Matrix matrix, Material material) {
+    public QuadraticForm(Matrix matrix) {
         this.matrix = matrix;
         this.gradient = getGradient(matrix);
-        this.material = material;
         this.zeroIsInside = true;
     }
 
-    public QuadraticForm(boolean zeroIsInside, Matrix matrix, Material material) {
+    public QuadraticForm(boolean zeroIsInside, Matrix matrix) {
         this.matrix = matrix;
-        this.material = material;
         this.gradient = getGradient(matrix);
         this.zeroIsInside = zeroIsInside;
     }
@@ -87,9 +83,5 @@ public class QuadraticForm implements CSGObject, SceneObject {
         } else {
             return gradient.transform(intercept.interceptPoint).normalize().mul(-1);
         }
-    }
-
-    public Material getMaterial() {
-        return material;
     }
 }

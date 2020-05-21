@@ -1,14 +1,13 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.sin;
 
 public class BumpySphere extends Sphere {
-    public BumpySphere(Vec center, float radius, Material material) {
-        super(center, radius, material);
+    public BumpySphere(Vec center, float radius) {
+        super(center, radius);
     }
 
     @Override

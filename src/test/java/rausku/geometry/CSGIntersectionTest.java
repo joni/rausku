@@ -11,9 +11,9 @@ public class CSGIntersectionTest {
     @Test
     public void cubeIntersectSphere() {
         // when you Intersect a sphere and cube
-        CSGIntersection shape = new CSGIntersection(null,
-                new Cube(null),
-                new Sphere(Vec.origin(), 1.4f, null));
+        CSGIntersection shape = new CSGIntersection(
+                new Cube(),
+                QuadraticForm.createSphere(Vec.origin(), 1.4f));
 
         // and have a ray pass through the middle
         Intercept intercept = shape.getIntercept(
@@ -26,9 +26,9 @@ public class CSGIntersectionTest {
     @Test
     public void planeIntersectSphere() {
         // when you Intersect a sphere from a plane
-        CSGIntersection shape = new CSGIntersection(null,
-                new HalfSpace(Vec.of(0, 1, 0, 0), null),
-                new Sphere(Vec.origin(), 1, null));
+        CSGIntersection shape = new CSGIntersection(
+                new HalfSpace(Vec.of(0, 1, 0, 0)),
+                QuadraticForm.createSphere(Vec.origin(), 1));
 
         // and have a ray pass down the middle
         Intercept intercept = shape.getIntercept(Ray.fromOriginDirection(Vec.point(0, 10f, 0), Vec.of(0, -1, 0)));

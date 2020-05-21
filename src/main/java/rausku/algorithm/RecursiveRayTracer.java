@@ -98,7 +98,7 @@ public class RecursiveRayTracer implements RayTracer {
         }
 
         if (intercept != null) {
-            return getColorFromObject(depth, reflectiveness, intercept, ray, scene.getTransforms().get(index), objects.get(index));
+            return getColorFromObject(depth, reflectiveness, intercept, ray, index);
         }
 
         // Specular reflection of the light source itself when nothing is hit
@@ -136,7 +136,10 @@ public class RecursiveRayTracer implements RayTracer {
                 .mul(material.getReflectiveColor());
     }
 
-    private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, Matrix objectToWorld, SceneObject sceneObject) {
+    private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, int index) {
+
+        Matrix objectToWorld = scene.getTransform(index);
+        SceneObject sceneObject = scene.getObject(index);
 
         Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
         Vec normal = objectToWorld.transform(sceneObject.getNormal(ray, intercept));
@@ -152,7 +155,7 @@ public class RecursiveRayTracer implements RayTracer {
 
         // Diffuse reflection
         // For diffuse reflection, for now we only consider light coming directly from light sources
-        Material material = sceneObject.getMaterial();
+        Material material = scene.getMaterial(index);
         Color light = scene.getAmbientLight().getColor();
 
         for (LightSource lightSource : scene.getLights()) {

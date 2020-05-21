@@ -1,25 +1,21 @@
 package rausku.geometry;
 
-import rausku.lighting.Color;
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class HalfSpace implements CSGObject, SceneObject {
     private Vec v;
-    private Material material;
 
-    public HalfSpace(Vec v, Material material) {
+    public HalfSpace(Vec v) {
         this.v = v;
-        this.material = material;
     }
 
     public static HalfSpace createHorizontalPlane(float groundLevel) {
-        return horizontalPlane(groundLevel, Material.plastic(Color.of(.24f, .5f, .2f), 0));
+        return horizontalPlane(groundLevel);
     }
 
-    public static HalfSpace horizontalPlane(float groundLevel, Material material) {
-        return new HalfSpace(Vec.of(0, 1, 0, -groundLevel), material);
+    public static HalfSpace horizontalPlane(float groundLevel) {
+        return new HalfSpace(Vec.of(0, 1, 0, -groundLevel));
     }
 
     @Override
@@ -51,11 +47,6 @@ public class HalfSpace implements CSGObject, SceneObject {
 
     public Vec getNormal(Ray ray, Intercept point) {
         return v;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
     }
 
     @Override

@@ -27,8 +27,8 @@ public class Scene13_Hyperboloid extends Scene {
 
         Material checkerBoard = new Ginham(.5f, Color.of(.5f, .5f, .75f), Color.of(.75f, .5f, .5f));
 
-        addObject(new QuadraticForm(false, Matrix.diag(1f, 1f, -4f, -1f), material));
-        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -.25f), material));
-        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.25f), checkerBoard));
+        addObject(new QuadraticForm(false, Matrix.diag(1f, 1f, -4f, -1f)), material);
+        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -.25f)), material);
+        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.25f)), checkerBoard);
     }
 }

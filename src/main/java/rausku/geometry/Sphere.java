@@ -11,7 +11,7 @@ public class Sphere implements CSGObject, SceneObject {
     private float radius;
     private Material material;
 
-    public Sphere(Vec center, float radius, Material material) {
+    public Sphere(Vec center, float radius) {
         this.center = center;
         this.radius = radius;
         this.material = material;

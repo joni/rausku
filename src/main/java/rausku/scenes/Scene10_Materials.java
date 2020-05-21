@@ -23,14 +23,14 @@ public class Scene10_Materials extends Scene {
 
         Color silver = Color.of(.8f, .8f, .8f);
         addObject(Matrix.translate(-2.0001f, 0, 0),
-                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f), Material.plastic(silver, .99f)));
+                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f)), Material.plastic(silver, .99f));
 
         addObject(Matrix.translate(0, 0, 0),
-                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f), Material.metallic(silver, .99f)));
+                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f)), Material.metallic(silver, .99f));
 
         addObject(Matrix.translate(+2.0001f, 0, 0),
-                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f), Material.glass()));
+                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f)), Material.glass());
 
-        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f), new CheckerBoard(1)));
+        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f)), new CheckerBoard(1));
     }
 }

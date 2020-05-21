@@ -23,8 +23,8 @@ public class Scene9_Antialias extends Scene {
 
         Material material = Material.plastic(Color.of(.8f, .8f, .8f), .7f);
 
-        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -2f), material));
+        addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -2f)), material);
 
-        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 2.0001f), new CheckerBoard(1)));
+        addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 2.0001f)), new CheckerBoard(1));
     }
 }

@@ -24,9 +24,9 @@ public class Scene8_QuadraticForms extends Scene {
 
         Material material = Material.plastic(Color.of(.8f, .8f, .8f), .7f);
 
-        addObject(new QuadraticForm(Matrix.diag(1f, -.2f, 1f, -.1f), material));
-        addObject(new QuadraticForm(Matrix.diag(.5f, 2f, .5f, -1f), material));
+        addObject(new QuadraticForm(Matrix.diag(1f, -.2f, 1f, -.1f)), material);
+        addObject(new QuadraticForm(Matrix.diag(.5f, 2f, .5f, -1f)), material);
 
-        addObject(HalfSpace.horizontalPlane(-.2f, new CheckerBoard(1)));
+        addObject(HalfSpace.horizontalPlane(-.2f), new CheckerBoard(1));
     }
 }

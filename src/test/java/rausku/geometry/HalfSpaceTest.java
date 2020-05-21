@@ -10,7 +10,7 @@ public class HalfSpaceTest {
 
     @Test
     public void testAllInterceptsOutsideIn() {
-        HalfSpace halfSpace = new HalfSpace(Vec.of(0, 1, 0, 0), null);
+        HalfSpace halfSpace = new HalfSpace(Vec.of(0, 1, 0, 0));
 
         float[] allIntercepts = halfSpace.getAllIntercepts(Ray.fromOriginDirection(Vec.point(0, 1, 0), Vec.of(0, -1, 0)));
 
@@ -20,7 +20,7 @@ public class HalfSpaceTest {
 
     @Test
     public void testAllInterceptsInsideOut() {
-        HalfSpace halfSpace = new HalfSpace(Vec.of(0, 1, 0, 0), null);
+        HalfSpace halfSpace = new HalfSpace(Vec.of(0, 1, 0, 0));
 
         float[] allIntercepts = halfSpace.getAllIntercepts(Ray.fromOriginDirection(Vec.point(0, -1, 0), Vec.of(0, +1, 0)));
 

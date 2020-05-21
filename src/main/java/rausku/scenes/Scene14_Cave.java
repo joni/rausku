@@ -24,8 +24,8 @@ public class Scene14_Cave extends Scene {
 
         Material material = Material.plastic(Color.of(1f, .9f, .8f), .2f);
 
-        addObject(new CSGSubtraction(material,
-                new HalfSpace(Vec.of(0f, 1f, 0f, 0f), null),
-                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -4f), null)));
+        addObject(new CSGSubtraction(
+                new HalfSpace(Vec.of(0f, 1f, 0f, 0f)),
+                new QuadraticForm(Matrix.diag(1f, 1f, 1f, -4f))), material);
     }
 }

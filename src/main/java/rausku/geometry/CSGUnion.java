@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -9,19 +8,12 @@ import static java.lang.Math.min;
 
 public class CSGUnion implements CSGObject, SceneObject {
 
-    private final Material material;
     private CSGObject obj1;
     private CSGObject obj2;
 
-    public CSGUnion(Material material, CSGObject object1, CSGObject object2) {
-        this.material = material;
+    public CSGUnion(CSGObject object1, CSGObject object2) {
         this.obj1 = object1;
         this.obj2 = object2;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
     }
 
     @Override

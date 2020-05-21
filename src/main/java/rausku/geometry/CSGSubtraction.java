@@ -1,24 +1,16 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
 public class CSGSubtraction implements CSGObject, SceneObject {
 
-    private final Material material;
     private final CSGObject obj1;
     private final CSGObject obj2;
 
-    public CSGSubtraction(Material material, CSGObject obj1, CSGObject obj2) {
-        this.material = material;
+    public CSGSubtraction(CSGObject obj1, CSGObject obj2) {
         this.obj1 = obj1;
         this.obj2 = obj2;
-    }
-
-    @Override
-    public Material getMaterial() {
-        return material;
     }
 
     @Override

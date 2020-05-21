@@ -24,14 +24,14 @@ public class Scene5 extends Scene {
         Material plastic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
 
         addObject(Matrix.translate(-1.25f, 0, 0),
-                new CSGSubtraction(plastic,
-                        new Cube(null),
-                        new Sphere(Vec.origin(), 1.33f, null)));
+                new CSGSubtraction(
+                        new Cube(),
+                        new Sphere(Vec.origin(), 1.33f)), plastic);
 
         addObject(Matrix.translate(+1.25f, 0, 0),
-                new CSGIntersection(plastic,
-                        new Cube(null),
-                        new Sphere(Vec.origin(), 1.33f, null)));
+                new CSGIntersection(
+                        new Cube(),
+                        new Sphere(Vec.origin(), 1.33f)), plastic);
 
         addObject(HalfSpace.createHorizontalPlane(-1.001f));
     }

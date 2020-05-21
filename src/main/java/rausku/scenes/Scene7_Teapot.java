@@ -33,13 +33,13 @@ public class Scene7_Teapot extends Scene {
 
         try (ObjReader reader = new ObjReader(new FileInputStream("data/teapot.obj"))) {
             List<Polygon> polygons = reader.read();
-            PolygonMesh teapot = new PolygonMesh(polygons, creamCeramic);
-            addObject(Matrix.rotateY(toRadians(30)), teapot);
+            PolygonMesh teapot = new PolygonMesh(polygons);
+            addObject(Matrix.rotateY(toRadians(30)), teapot, creamCeramic);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        addObject(HalfSpace.horizontalPlane(-39.9f, new Ginham(10, Color.of(.75f, .5f, .5f))));
+        addObject(HalfSpace.horizontalPlane(-39.9f), new Ginham(10, Color.of(.75f, .5f, .5f)));
 
     }
 }

@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -9,8 +8,5 @@ public interface SceneObject {
 
     Vec getNormal(Ray ray, Intercept interceptPoint);
 
-    Material getMaterial();
-
     Intercept getIntercept(Ray ray);
-
 }

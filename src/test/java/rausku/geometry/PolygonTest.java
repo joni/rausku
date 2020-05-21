@@ -7,6 +7,7 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class PolygonTest {
 
@@ -28,6 +29,14 @@ public class PolygonTest {
 
         assertEquals(polygon.v0, Vec.of(-1, -1, 1));
         assertEquals(getIntercept(polygon, r), 1, 1e-6);
+    }
+
+    @Test
+    public void intersectTest3D_1() {
+        Polygon polygon = new Polygon(Vec.point(1, 0, 0), Vec.point(0, 1, 0), Vec.point(0, 0, 1));
+        Ray ray = Ray.fromStartEnd(Vec.origin(), Vec.point(1, 1, 1));
+        Intercept intercept = polygon.getIntercept(ray);
+        assertTrue(intercept.isValid());
     }
 
     @Test
