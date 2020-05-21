@@ -26,12 +26,12 @@ public class Scene5 extends Scene {
         addObject(Matrix.translate(-1.25f, 0, 0),
                 new CSGSubtraction(
                         new Cube(),
-                        new Sphere(Vec.origin(), 1.33f)), plastic);
+                        QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
 
         addObject(Matrix.translate(+1.25f, 0, 0),
                 new CSGIntersection(
                         new Cube(),
-                        new Sphere(Vec.origin(), 1.33f)), plastic);
+                        QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
 
         addObject(HalfSpace.createHorizontalPlane(-1.001f));
     }

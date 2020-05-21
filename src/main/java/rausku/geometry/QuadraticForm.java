@@ -27,6 +27,14 @@ public class QuadraticForm implements CSGObject, SceneObject {
         return Matrix.mul(Matrix.diag(1, 1, 1, 0), Matrix.plus(matrix, matrix.transpose()));
     }
 
+    public static QuadraticForm createSphere(Vec center, float radius) {
+        return new QuadraticForm(Matrix.of(
+                1, 0, 0, -center.x,
+                0, 1, 0, -center.y,
+                0, 0, 1, -center.z,
+                -center.x, -center.y, -center.z, center.sqLen() - radius * radius));
+    }
+
     @Override
     public float[] getAllIntercepts(Ray ray) {
 

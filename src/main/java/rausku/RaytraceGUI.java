@@ -6,7 +6,7 @@ import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene7_Teapot;
+import rausku.scenes.Scene1_ThreeSpheres;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene7_Teapot();
+        Scene scene = new Scene1_ThreeSpheres();
 
         camera = scene.getCamera();
         RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()

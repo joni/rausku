@@ -4,7 +4,7 @@ import rausku.algorithm.Camera;
 import rausku.geometry.CSGIntersection;
 import rausku.geometry.Cube;
 import rausku.geometry.HalfSpace;
-import rausku.geometry.Sphere;
+import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.math.Matrix;
@@ -23,7 +23,7 @@ public class Scene4 extends Scene {
         Material plastic = Material.plastic(Color.of(1, 1, 1), .8f);
         addObject(new CSGIntersection(
                 new Cube(),
-                new Sphere(Vec.of(0, 0, 0f), 1.2f)), plastic);
+                QuadraticForm.createSphere(Vec.of(0, 0, 0f), 1.2f)), plastic);
 
         addObject(HalfSpace.createHorizontalPlane(-1), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
     }

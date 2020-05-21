@@ -1,6 +1,5 @@
 package rausku.geometry;
 
-import rausku.material.Material;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -9,16 +8,10 @@ import static java.lang.Math.sqrt;
 public class Sphere implements CSGObject, SceneObject {
     private Vec center;
     private float radius;
-    private Material material;
 
     public Sphere(Vec center, float radius) {
         this.center = center;
         this.radius = radius;
-        this.material = material;
-    }
-
-    public boolean intersectsRay(Ray ray) {
-        return getIntercept0(ray) > 1e-6;
     }
 
     @Override
@@ -78,7 +71,4 @@ public class Sphere implements CSGObject, SceneObject {
         return intercept.interceptPoint.sub(center).normalize();
     }
 
-    public Material getMaterial() {
-        return material;
-    }
 }

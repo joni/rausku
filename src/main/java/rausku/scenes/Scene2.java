@@ -2,7 +2,6 @@ package rausku.scenes;
 
 import rausku.algorithm.Camera;
 import rausku.geometry.QuadraticForm;
-import rausku.geometry.Sphere;
 import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.math.Matrix;
@@ -20,7 +19,7 @@ public class Scene2 extends Scene {
 
         for (int i = -5; i <= 5; i++) {
             for (int j = -5; j <= 5; j++) {
-                addObject(new Sphere(Vec.point(i, j, -10), .5f), Material.plastic(Color.of((i + 5) / 10f, (j + 5) / 10f, (10 - i - j) / 20f), .5f));
+                addObject(QuadraticForm.createSphere(Vec.point(i, j, -10), .5f), Material.plastic(Color.of((i + 5) / 10f, (j + 5) / 10f, (10 - i - j) / 20f), .5f));
             }
         }
 
