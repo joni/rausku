@@ -15,10 +15,13 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene8_QuadraticForms extends Scene {
     {
 
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 10)),
-                500, 500,
-                toRadians(45)));
+        setCamera(
+                Camera.createCamera(
+                        Vec.point(0, 0, 10),
+                        Vec.of(0, 0, -1),
+                        Vec.of(0, 1, 0),
+                        500, 500,
+                        toRadians(45)));
 
         addLight(new DirectionalLight(Vec.of(1f, -1f, -1f).normalize(), Color.of(.8f, .8f, .7f)));
 

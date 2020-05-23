@@ -9,25 +9,37 @@ import static rausku.math.FloatMath.tan;
 
 public class Camera {
 
-    private static final Camera INITIAL = new Camera(Matrix.translate(0, 0, 10), 256, 256, FloatMath.toRadians(45));
+    private static final Camera INITIAL = createCamera(Vec.point(0, 0, 10), Vec.of(0, 0, -1), 256, 256, FloatMath.toRadians(45));
 
-    private final Matrix cameraMatrix;
+    final Matrix cameraMatrix;
     private final int pixelHeight;
     private final int pixelWidth;
     private final Matrix projectionMatrix;
 
-    public Camera(Matrix cameraMatrix, int imageWidth, int imageHeight, float angleOfView) {
+    private Camera(Matrix cameraMatrix, int imageWidth, int imageHeight, float angleOfView) {
         this.cameraMatrix = cameraMatrix;
         this.pixelWidth = imageWidth;
         this.pixelHeight = imageHeight;
-        float scaleFactor = Math.min(imageWidth, imageHeight) / tan(angleOfView / 2);
+        float scaleFactor = Math.min(imageWidth, imageHeight) / (2 * tan(angleOfView / 2));
 
         projectionMatrix = Matrix.of(
-                +1, +0, +0, -pixelWidth / 2f,
+                -1, +0, +0, pixelWidth / 2f,
                 +0, -1, +0, pixelHeight / 2f,
                 +0, +0, scaleFactor, 0,
                 +0, +0, +0, scaleFactor
         );
+    }
+
+    public static Camera createCamera(Vec position, Vec lookAt, int imageWidth, int imageHeight, float angleOfView) {
+        return createCamera(position, lookAt, Vec.of(0, 1, 0), imageWidth, imageHeight, angleOfView);
+    }
+
+    public static Camera createCamera(Vec position, Vec lookAt, Vec up, int imageWidth, int imageHeight, float angleOfView) {
+        Vec forward = lookAt.normalize();
+        Vec left = Vec.cross(up, forward).normalize();
+        Vec realUp = Vec.cross(forward, left);
+        Matrix matrix = Matrix.ofColumns(left, realUp, forward, position);
+        return new Camera(matrix, imageWidth, imageHeight, angleOfView);
     }
 
     public static Camera initialCamera() {
@@ -36,7 +48,7 @@ public class Camera {
 
     public Ray getRayFromOriginToCanvas(float x, float y) {
 
-        Vec imagePoint = Vec.point(x, y, -1);
+        Vec imagePoint = Vec.point(x, y, 1);
 
         Vec origin = Vec.origin();
         Vec direction = projectionMatrix.transform(imagePoint)

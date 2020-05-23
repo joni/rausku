@@ -1,13 +1,11 @@
 package rausku.scenes;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.HalfSpace;
 import rausku.geometry.Polygon;
 import rausku.geometry.PolygonMesh;
 import rausku.geometry.Vertex;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
-import rausku.material.CheckerBoard;
 import rausku.material.Material;
 import rausku.math.FloatMath;
 import rausku.math.Vec;
@@ -17,7 +15,7 @@ import java.util.List;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene15_Torus extends Scene {
+public class Scene16_Spiral extends Scene {
     {
 
         addLight(new DirectionalLight(Vec.of(+1f, -2f, +1f), Color.of(1f, 1f, 1f)));
@@ -36,7 +34,7 @@ public class Scene15_Torus extends Scene {
         addObject(//Matrix.rotateY(toRadians(30)),
                 teapot, creamCeramic);
 
-        addObject(HalfSpace.horizontalPlane(-1.00001f), new CheckerBoard(.5f));
+//        addObject(HalfSpace.horizontalPlane(-1.00001f, new CheckerBoard(.5f)));
     }
 
     private List<Polygon> createPolys() {
@@ -44,19 +42,24 @@ public class Scene15_Torus extends Scene {
         List<Polygon> polygons = new ArrayList<>();
         List<Vertex> previous = new ArrayList<>();
 
-        int uResolution = 32;
-        int vResolution = 16;
+        int uResolution = 8;
+        int vResolution = 4;
 
-        for (int i = 0; i <= uResolution; i++) {
+        for (int i = -uResolution; i <= uResolution; i++) {
             List<Vertex> current = new ArrayList<>();
             float u = i * 2 * FloatMath.PI / uResolution;
             float cosU = FloatMath.cos(u);
             float sinU = FloatMath.sin(u);
 
             float xCenter = R * cosU;
+            float yCenter = u / 2;
             float zCenter = R * sinU;
 
-            Vec center = Vec.point(xCenter, 0, zCenter);
+            r = (float) i / uResolution;
+
+            Vec center = Vec.point(xCenter, yCenter, zCenter);
+
+            System.out.println(center);
 
             for (int j = 0; j <= vResolution; j++) {
 
@@ -82,6 +85,7 @@ public class Scene15_Torus extends Scene {
                     polygons.add(new Polygon(vertex, vec2, vec0));
                 }
 
+                System.out.println(point);
                 current.add(vertex);
             }
             previous = current;

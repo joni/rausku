@@ -79,6 +79,15 @@ public class Matrix {
         );
     }
 
+    public static Matrix ofColumns(Vec A, Vec B, Vec C, Vec D) {
+        return Matrix.of(
+                A.x, B.x, C.x, D.x,
+                A.y, B.y, C.y, D.y,
+                A.z, B.z, C.z, D.z,
+                A.w, B.w, C.w, D.w
+        );
+    }
+
     public Matrix transpose() {
         return Matrix.of(
                 f11, f21, f31, f41,

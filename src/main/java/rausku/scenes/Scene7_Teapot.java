@@ -24,10 +24,12 @@ public class Scene7_Teapot extends Scene {
         addLight(new DirectionalLight(Vec.of(+1f, -2f, +1f), Color.of(1f, 1f, 1f)));
         addLight(new DirectionalLight(Vec.of(-1f, -2f, -1f), Color.of(1f, 1f, 1f)));
 
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 500)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 200, 400),
+                Vec.of(0, -2, -4),
+                Vec.of(0, 1, 0),
                 500, 500,
-                toRadians(45)));
+                toRadians(30)));
 
         Material creamCeramic = Material.plastic(Color.of(1f, .9f, .8f), .1f);
 

@@ -34,16 +34,8 @@ public abstract class Scene {
         materials.add(material);
     }
 
-    protected void addObject(Matrix transform, SceneObject object) {
-        addObject(transform, object, null);
-    }
-
     protected void addObject(SceneObject object, Material material) {
         addObject(Matrix.eye(), object, material);
-    }
-
-    protected void addObject(SceneObject object) {
-        addObject(Matrix.eye(), object, null);
     }
 
     public Camera getCamera() {

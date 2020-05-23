@@ -15,8 +15,9 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene14_Cave extends Scene {
     {
 
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 10)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 2, 10),
+                Vec.of(0, -1, -5),
                 500, 500,
                 toRadians(45)));
 

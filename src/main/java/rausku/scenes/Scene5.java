@@ -12,12 +12,11 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene5 extends Scene {
     public Scene5() {
-        setCamera(new Camera(Matrix.mul(
-                Matrix.rotateY(toRadians(-30)),
-                Matrix.rotateX(toRadians(-30)),
-                Matrix.translate(0, 0, 15)),
+        setCamera(Camera.createCamera(
+                Vec.point(-6, 6, 12),
+                Vec.of(1, -1, -2),
                 500, 500,
-                toRadians(45)));
+                toRadians(30)));
 
         addLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
 
@@ -33,6 +32,6 @@ public class Scene5 extends Scene {
                         new Cube(),
                         QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
 
-        addObject(HalfSpace.createHorizontalPlane(-1.001f));
+        addObject(HalfSpace.createHorizontalPlane(-1.001f), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
     }
 }

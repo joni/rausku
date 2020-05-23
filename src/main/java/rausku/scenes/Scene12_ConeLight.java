@@ -5,7 +5,6 @@ import rausku.geometry.HalfSpace;
 import rausku.lighting.Color;
 import rausku.lighting.ConeLight;
 import rausku.material.CheckerBoard;
-import rausku.math.Matrix;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.sqrt;
@@ -13,7 +12,9 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene12_ConeLight extends Scene {
     {
-        setCamera(new Camera(Matrix.mul(Matrix.rotateX(toRadians(-15)), Matrix.translate(0, 0, 15)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 2, 10),
+                Vec.of(0, -1, -5),
                 500, 500, toRadians(30)));
 
         float angle45 = toRadians(45);

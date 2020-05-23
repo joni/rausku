@@ -14,10 +14,11 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene9_Antialias extends Scene {
     {
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-10)), Matrix.translate(0, 0, 10)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 2, 10),
+                Vec.of(0, -1, -5),
                 500, 500,
-                toRadians(45)));
+                toRadians(30)));
 
         addLight(new DirectionalLight(Vec.of(1f, -1f, -1f).normalize(), Color.of(.8f, .8f, .7f)));
 

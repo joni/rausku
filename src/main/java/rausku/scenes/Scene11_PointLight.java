@@ -14,7 +14,8 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene11_PointLight extends Scene {
     {
-        setCamera(new Camera(Matrix.translate(0, 0, 15),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 0, 15), Vec.of(0, 0, -1),
                 500, 500, toRadians(30)));
 
         addLight(new PointLight(Vec.point(0f, 2, 1f), Color.of(1f, 0f, 0f)));

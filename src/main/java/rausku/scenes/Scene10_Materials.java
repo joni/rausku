@@ -14,8 +14,9 @@ import static rausku.math.FloatMath.toRadians;
 
 public class Scene10_Materials extends Scene {
     {
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-10)), Matrix.translate(0, 0, 15)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 2, 10),
+                Vec.of(0, -1, -5),
                 500, 500,
                 toRadians(45)));
 

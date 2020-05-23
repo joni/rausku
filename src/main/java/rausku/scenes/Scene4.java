@@ -7,7 +7,6 @@ import rausku.geometry.HalfSpace;
 import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.material.Material;
-import rausku.math.Matrix;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
@@ -15,8 +14,9 @@ import static rausku.math.FloatMath.toRadians;
 public class Scene4 extends Scene {
     public Scene4() {
 
-        setCamera(new Camera(
-                Matrix.mul(Matrix.rotateX(toRadians(-30)), Matrix.translate(0, 0, 20)),
+        setCamera(Camera.createCamera(
+                Vec.point(0, 5, 10),
+                Vec.of(0, -1, -2),
                 500, 500,
                 toRadians(45)));
 

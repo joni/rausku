@@ -68,7 +68,7 @@ public class Cube implements CSGObject, SceneObject {
         };
         float closestIntercept = Float.POSITIVE_INFINITY;
         for (float intercept1 : intercepts) {
-            if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 < SceneObject.INTERCEPT_NEAR) {
+            if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 > SceneObject.INTERCEPT_NEAR) {
                 closestIntercept = intercept1;
             }
         }
