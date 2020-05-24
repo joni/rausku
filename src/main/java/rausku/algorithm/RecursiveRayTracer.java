@@ -142,6 +142,7 @@ public class RecursiveRayTracer implements RayTracer {
         SceneObject sceneObject = scene.getObject(index);
 
         Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
+        // TODO use transform for normal vectors
         Vec normal = objectToWorld.transform(sceneObject.getNormal(ray, intercept));
 
         if (this.debug) {

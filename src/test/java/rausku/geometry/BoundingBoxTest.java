@@ -45,6 +45,14 @@ public class BoundingBoxTest {
     }
 
     @Test
+    public void testContains() {
+        BoundingBox bbox = new BoundingBox(Vec.point(-1, -1, -1), Vec.point(1, 1, 1));
+
+        assertTrue(bbox.contains(Vec.point(-.2f, +.5f, -.9f)));
+        assertFalse(bbox.contains(Vec.point(-2f, +5f, -9f)));
+    }
+
+    @Test
     public void testInterceptWithAxisAlignedRay() {
         BoundingBox bbox = new BoundingBox(Vec.origin(), Vec.point(2, 2, 2));
 

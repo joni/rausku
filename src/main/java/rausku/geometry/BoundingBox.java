@@ -9,6 +9,11 @@ public class BoundingBox {
 
     private static final float[] NO_INTERCEPT = {};
 
+    private static final BoundingBox unbounded = new BoundingBox(
+            Vec.point(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY),
+            Vec.point(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+    );
+
     public final float minX;
     public final float maxX;
     public final float minY;
@@ -32,6 +37,10 @@ public class BoundingBox {
         this.maxX = maxPoint.x;
         this.maxY = maxPoint.y;
         this.maxZ = maxPoint.z;
+    }
+
+    public static BoundingBox unbounded() {
+        return unbounded;
     }
 
     public boolean testIntercept(Ray ray) {
@@ -64,6 +73,12 @@ public class BoundingBox {
         } else {
             return NO_INTERCEPT;
         }
+    }
+
+    public boolean contains(Vec point) {
+        return minX <= point.x && point.x < maxX
+                && minY <= point.y && point.y < maxY
+                && minZ <= point.z && point.z < maxZ;
     }
 
     private static class Range {

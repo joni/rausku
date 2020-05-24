@@ -7,20 +7,32 @@ import rausku.math.Vec;
 import static rausku.math.FloatMath.sqrt;
 
 public class QuadraticForm implements CSGObject, SceneObject {
+
+    private static final float[] NO_INTERCEPT = {};
+
     private final Matrix matrix;
     private final Matrix gradient;
-    private final boolean zeroIsInside;
+
+    private final BoundingBox bbox;
 
     public QuadraticForm(Matrix matrix) {
+        this(matrix, BoundingBox.unbounded());
+    }
+
+    public QuadraticForm(Matrix matrix, BoundingBox bbox) {
         this.matrix = matrix;
         this.gradient = getGradient(matrix);
-        this.zeroIsInside = true;
+        this.bbox = bbox;
     }
 
     public QuadraticForm(boolean zeroIsInside, Matrix matrix) {
-        this.matrix = matrix;
-        this.gradient = getGradient(matrix);
-        this.zeroIsInside = zeroIsInside;
+        if (zeroIsInside) {
+            this.matrix = matrix;
+        } else {
+            this.matrix = Matrix.mul(Matrix.diag(-1), matrix);
+        }
+        this.gradient = getGradient(this.matrix);
+        this.bbox = BoundingBox.unbounded();
     }
 
     private static Matrix getGradient(Matrix matrix) {
@@ -37,7 +49,9 @@ public class QuadraticForm implements CSGObject, SceneObject {
 
     @Override
     public float[] getAllIntercepts(Ray ray) {
-
+        if (!bbox.testIntercept(ray)) {
+            return NO_INTERCEPT;
+        }
         float[] floats = {Float.NaN, Float.NaN};
 
         Vec v1 = ray.direction;
@@ -55,11 +69,16 @@ public class QuadraticForm implements CSGObject, SceneObject {
             float sqrt = Math.copySign(sqrt(determinant), A);
             floats[0] = (-B - sqrt) / (2 * A);
             floats[1] = (-B + sqrt) / (2 * A);
+            return floats;
+        } else {
+            return NO_INTERCEPT;
         }
-        return floats;
     }
 
     public Intercept getIntercept(Ray ray) {
+        if (!bbox.testIntercept(ray)) {
+            return Intercept.noIntercept();
+        }
         Vec v0 = ray.origin;
         Vec v1 = ray.direction;
 
@@ -74,22 +93,25 @@ public class QuadraticForm implements CSGObject, SceneObject {
         if (determinant > 0) {
             float sqrtDeterminant = Math.copySign(sqrt(determinant), A);
             float intercept = (-B - sqrtDeterminant) / (2 * A);
-            if (intercept > SceneObject.INTERCEPT_NEAR) {
-                return new Intercept(intercept, ray.apply(intercept), null);
+            Vec interceptPoint = ray.apply(intercept);
+            if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
+                return new Intercept(intercept, interceptPoint, null);
             }
             intercept = (-B + sqrtDeterminant) / (2 * A);
-            if (intercept > SceneObject.INTERCEPT_NEAR) {
-                return new Intercept(intercept, ray.apply(intercept), null);
+            interceptPoint = ray.apply(intercept);
+            if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
+                return new Intercept(intercept, interceptPoint, null);
             }
         }
         return Intercept.noIntercept();
     }
 
     public Vec getNormal(Ray ray, Intercept intercept) {
-        if (zeroIsInside) {
-            return gradient.transform(intercept.interceptPoint).normalize();
+        Vec normal = gradient.transform(intercept.interceptPoint).normalize();
+        if (Vec.dot(normal, ray.direction) > 0) {
+            return normal.mul(-1);
         } else {
-            return gradient.transform(intercept.interceptPoint).normalize().mul(-1);
+            return normal;
         }
     }
 }
