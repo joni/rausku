@@ -10,7 +10,7 @@ import java.util.List;
 
 public class BSPTree {
 
-    private final BoundingBox bbox;
+    public final BoundingBox bbox;
     private Node root;
     private IntSummaryStatistics polygonStats = new IntSummaryStatistics();
 

@@ -7,4 +7,6 @@ public interface CSGObject {
     float[] getAllIntercepts(Ray ray);
 
     Vec getNormal(Ray ray, Intercept intercept);
+
+    BoundingBox getBoundingBox();
 }

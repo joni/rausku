@@ -122,4 +122,20 @@ public class BoundingBoxTest {
 
         assertTrue(bbox.testIntercept(ray));
     }
+
+    @Test
+    public void testUnion() {
+        BoundingBox bbox1 = new BoundingBox(Vec.point(0, 0, 0), Vec.point(1, 1, 1));
+        BoundingBox bbox2 = new BoundingBox(Vec.point(1, 0, 0), Vec.point(2, 1, 1));
+        BoundingBox union = BoundingBox.union(bbox1, bbox2);
+        assertEquals(union, new BoundingBox(Vec.origin(), Vec.of(2, 1, 1)));
+    }
+
+    @Test
+    public void testIntersection() {
+        BoundingBox bbox1 = new BoundingBox(Vec.point(0, 0, 0), Vec.point(2, 2, 2));
+        BoundingBox bbox2 = new BoundingBox(Vec.point(1, 1, 1), Vec.point(3, 3, 3));
+        BoundingBox intersection = BoundingBox.intersection(bbox1, bbox2);
+        assertEquals(intersection, new BoundingBox(Vec.point(1, 1, 1), Vec.point(2, 2, 2)));
+    }
 }

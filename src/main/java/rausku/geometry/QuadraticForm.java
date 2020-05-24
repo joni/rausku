@@ -106,6 +106,11 @@ public class QuadraticForm implements CSGObject, SceneObject {
         return Intercept.noIntercept();
     }
 
+    @Override
+    public BoundingBox getBoundingBox() {
+        return bbox;
+    }
+
     public Vec getNormal(Ray ray, Intercept intercept) {
         Vec normal = gradient.transform(intercept.interceptPoint).normalize();
         if (Vec.dot(normal, ray.direction) > 0) {

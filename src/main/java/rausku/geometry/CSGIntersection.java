@@ -10,10 +10,12 @@ public class CSGIntersection implements CSGObject, SceneObject {
 
     private final CSGObject obj1;
     private final CSGObject obj2;
+    private BoundingBox bbox;
 
     public CSGIntersection(CSGObject object1, CSGObject object2) {
         this.obj1 = object1;
         this.obj2 = object2;
+        this.bbox = BoundingBox.intersection(obj1.getBoundingBox(), obj2.getBoundingBox());
     }
 
     @Override
@@ -70,6 +72,11 @@ public class CSGIntersection implements CSGObject, SceneObject {
         }
 
         return Intercept.noIntercept();
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return bbox;
     }
 
     @Override

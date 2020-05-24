@@ -10,10 +10,12 @@ public class CSGUnion implements CSGObject, SceneObject {
 
     private CSGObject obj1;
     private CSGObject obj2;
+    private BoundingBox bbox;
 
     public CSGUnion(CSGObject object1, CSGObject object2) {
         this.obj1 = object1;
         this.obj2 = object2;
+        this.bbox = BoundingBox.union(obj1.getBoundingBox(), obj2.getBoundingBox());
     }
 
     @Override
@@ -84,6 +86,11 @@ public class CSGUnion implements CSGObject, SceneObject {
     public Vec getNormal(Ray ray, Intercept intercept) {
         CSGObject object = (CSGObject) intercept.info;
         return object.getNormal(ray, intercept);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return bbox;
     }
 
     private static class IInfo {

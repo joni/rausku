@@ -3,58 +3,30 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import java.util.Arrays;
-
 import static java.lang.Math.abs;
 
 public class Cube implements CSGObject, SceneObject {
 
     private static final double BOUNDS = 1.000001;
-
-    public Cube() {
-    }
+    private BoundingBox bbox = new BoundingBox(Vec.point(-1, -1, -1), Vec.point(1, 1, 1));
 
     @Override
     public Vec getNormal(Ray ray, Intercept intercept) {
-        Vec interceptPoint = intercept.interceptPoint;
-        float absx = abs(interceptPoint.x);
-        float absy = abs(interceptPoint.y);
-        float absz = abs(interceptPoint.z);
-        if (absx > absy && absx > absz) {
-            return Vec.of(interceptPoint.x, 0, 0).normalize();
-        }
-        if (absy > absx && absy > absz) {
-            return Vec.of(0, interceptPoint.y, 0).normalize();
-        }
-        if (absz > absx && absz > absy) {
-            return Vec.of(0, 0, interceptPoint.z).normalize();
-        }
-        return interceptPoint.normalize();
+        IInfo info = (IInfo) intercept.info;
+        return switch (info.face) {
+            case 0 -> Vec.of(+1, 0, 0);
+            case 1 -> Vec.of(-1, 0, 0);
+            case 2 -> Vec.of(0, +1, 0);
+            case 3 -> Vec.of(0, -1, 0);
+            case 4 -> Vec.of(0, 0, +1);
+            case 5 -> Vec.of(0, 0, -1);
+            default -> throw new IllegalStateException("Unexpected value: " + info.face);
+        };
     }
 
     @Override
     public float[] getAllIntercepts(Ray ray) {
-        Vec rayOrigin = ray.origin;
-        Vec rayDirection = ray.direction;
-        float[] intercepts = {Float.NaN, Float.NaN};
-        int index = 0;
-        float[] possibleIntercepts = {
-                (+1 - rayOrigin.x) / rayDirection.x,
-                (-1 - rayOrigin.x) / rayDirection.x,
-                (+1 - rayOrigin.y) / rayDirection.y,
-                (-1 - rayOrigin.y) / rayDirection.y,
-                (+1 - rayOrigin.z) / rayDirection.z,
-                (-1 - rayOrigin.z) / rayDirection.z,
-        };
-        float closestIntercept = Float.POSITIVE_INFINITY;
-        for (float intercept : possibleIntercepts) {
-            if (isOk(ray, intercept) && index < 2) {
-                closestIntercept = intercept;
-                intercepts[index++] = intercept;
-            }
-        }
-        Arrays.sort(intercepts);
-        return intercepts;
+        return bbox.getIntercepts(ray);
     }
 
     public Intercept getIntercept(Ray ray) {
@@ -66,23 +38,40 @@ public class Cube implements CSGObject, SceneObject {
                 (+1 - ray.origin.z) / ray.direction.z,
                 (-1 - ray.origin.z) / ray.direction.z,
         };
+        int face = -1;
         float closestIntercept = Float.POSITIVE_INFINITY;
-        for (float intercept1 : intercepts) {
+        for (int i = 0; i < intercepts.length; i++) {
+            float intercept1 = intercepts[i];
             if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 > SceneObject.INTERCEPT_NEAR) {
                 closestIntercept = intercept1;
+                face = i;
             }
         }
-        float intercept;
-        if (Float.isFinite(closestIntercept)) {
-            intercept = closestIntercept;
-        } else {
-            intercept = Float.NaN;
+        if (!Float.isFinite(closestIntercept)) {
+            return Intercept.noIntercept();
         }
-        return new Intercept(intercept, ray.apply(intercept), null);
+
+        float intercept = closestIntercept;
+        IInfo info = new IInfo(face);
+        return new Intercept(intercept, ray.apply(intercept), info);
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return bbox;
     }
 
     private boolean isOk(Ray ray, float intercept) {
         Vec interceptPoint = ray.apply(intercept);
         return abs(interceptPoint.x) < BOUNDS && abs(interceptPoint.y) < BOUNDS && abs(interceptPoint.z) < BOUNDS;
+    }
+
+    static class IInfo {
+
+        private int face;
+
+        public IInfo(int face) {
+            this.face = face;
+        }
     }
 }

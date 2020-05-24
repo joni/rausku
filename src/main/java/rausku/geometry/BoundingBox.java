@@ -4,6 +4,7 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BoundingBox {
 
@@ -20,6 +21,15 @@ public class BoundingBox {
     public final float maxY;
     public final float minZ;
     public final float maxZ;
+
+    public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minY = minY;
+        this.maxY = maxY;
+        this.minZ = minZ;
+        this.maxZ = maxZ;
+    }
 
     private BoundingBox(Builder builder) {
         this.minX = builder.minX;
@@ -41,6 +51,22 @@ public class BoundingBox {
 
     public static BoundingBox unbounded() {
         return unbounded;
+    }
+
+    public static BoundingBox intersection(BoundingBox bbox1, BoundingBox bbox2) {
+        return new BoundingBox(
+                Math.max(bbox1.minX, bbox2.minX), Math.min(bbox1.maxX, bbox2.maxX),
+                Math.max(bbox1.minY, bbox2.minY), Math.min(bbox1.maxY, bbox2.maxY),
+                Math.max(bbox1.minZ, bbox2.minZ), Math.min(bbox1.maxZ, bbox2.maxZ)
+        );
+    }
+
+    public static BoundingBox union(BoundingBox bbox1, BoundingBox bbox2) {
+        return new BoundingBox(
+                Math.min(bbox1.minX, bbox2.minX), Math.max(bbox1.maxX, bbox2.maxX),
+                Math.min(bbox1.minY, bbox2.minY), Math.max(bbox1.maxY, bbox2.maxY),
+                Math.min(bbox1.minZ, bbox2.minZ), Math.max(bbox1.maxZ, bbox2.maxZ)
+        );
     }
 
     public boolean testIntercept(Ray ray) {
@@ -100,6 +126,24 @@ public class BoundingBox {
     @Override
     public String toString() {
         return String.format("BoundingBox{%s, %s, %s}{%s, %s, %s}", minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoundingBox that = (BoundingBox) o;
+        return Float.compare(that.minX, minX) == 0 &&
+                Float.compare(that.maxX, maxX) == 0 &&
+                Float.compare(that.minY, minY) == 0 &&
+                Float.compare(that.maxY, maxY) == 0 &&
+                Float.compare(that.minZ, minZ) == 0 &&
+                Float.compare(that.maxZ, maxZ) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minX, maxX, minY, maxY, minZ, maxZ);
     }
 
     public static class Builder {

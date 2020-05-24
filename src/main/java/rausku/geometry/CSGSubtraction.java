@@ -86,4 +86,9 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         }
     }
 
+    @Override
+    public BoundingBox getBoundingBox() {
+        return obj1.getBoundingBox();
+    }
+
 }

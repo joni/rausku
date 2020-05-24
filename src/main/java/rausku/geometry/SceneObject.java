@@ -9,4 +9,6 @@ public interface SceneObject {
     Vec getNormal(Ray ray, Intercept interceptPoint);
 
     Intercept getIntercept(Ray ray);
+
+    BoundingBox getBoundingBox();
 }

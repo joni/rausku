@@ -35,6 +35,11 @@ public class HalfSpace implements CSGObject, SceneObject {
         return new Intercept(intercept, ray.apply(intercept), null);
     }
 
+    @Override
+    public BoundingBox getBoundingBox() {
+        return BoundingBox.unbounded();
+    }
+
     private float getIntercept0(Ray ray) {
         // v.(dt+o) = 0  <=> (v.d)t = - v.o  <=> t = -v.o/v.d
         float intercept = -Vec.dot(v, ray.origin) / Vec.dot(v, ray.direction);

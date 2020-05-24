@@ -25,6 +25,11 @@ public class PolygonMesh implements SceneObject {
     }
 
     @Override
+    public BoundingBox getBoundingBox() {
+        return bspTree.bbox;
+    }
+
+    @Override
     public String toString() {
         return String.format("PolygonMesh{bspTree=%s}", bspTree);
     }
