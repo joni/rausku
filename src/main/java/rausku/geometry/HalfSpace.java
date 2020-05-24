@@ -50,7 +50,7 @@ public class HalfSpace implements CSGObject, SceneObject {
         }
     }
 
-    public Vec getNormal(Ray ray, Intercept point) {
+    public Vec getNormal(Intercept point) {
         return v;
     }
 

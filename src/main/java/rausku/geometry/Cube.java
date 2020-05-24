@@ -11,7 +11,7 @@ public class Cube implements CSGObject, SceneObject {
     private BoundingBox bbox = new BoundingBox(Vec.point(-1, -1, -1), Vec.point(1, 1, 1));
 
     @Override
-    public Vec getNormal(Ray ray, Intercept intercept) {
+    public Vec getNormal(Intercept intercept) {
         IInfo info = (IInfo) intercept.info;
         return switch (info.face) {
             case 0 -> Vec.of(+1, 0, 0);

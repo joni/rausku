@@ -41,7 +41,7 @@ public class RecursiveRayTracer implements RayTracer {
         List<SceneObject> objects = scene.getObjects();
         for (int i = 0; i < objects.size(); i++) {
             SceneObject object = objects.get(i);
-            Matrix transform = scene.getInverseTransforms().get(i);
+            Matrix transform = scene.getInverseTransform(i);
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
@@ -75,7 +75,7 @@ public class RecursiveRayTracer implements RayTracer {
         List<SceneObject> objects = scene.getObjects();
         for (int i = 0; i < objects.size(); i++) {
             SceneObject object = objects.get(i);
-            Matrix transform = scene.getInverseTransforms().get(i);
+            Matrix transform = scene.getInverseTransform(i);
             Ray transform1 = transform.transform(ray);
             if (debug) {
                 ray.addDebug(transform1);
@@ -139,11 +139,15 @@ public class RecursiveRayTracer implements RayTracer {
     private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, int index) {
 
         Matrix objectToWorld = scene.getTransform(index);
+        Matrix worldToObject = scene.getInverseTransform(index);
         SceneObject sceneObject = scene.getObject(index);
 
         Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
-        // TODO use transform for normal vectors
-        Vec normal = objectToWorld.transform(sceneObject.getNormal(ray, intercept));
+        Vec objectNormal = sceneObject.getNormal(intercept);
+//        if (Vec.dot(objectNormal, ray.direction) > 0) {
+//            objectNormal = objectNormal.mul(-1);
+//        }
+        Vec normal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
         if (this.debug) {
             addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, normal);

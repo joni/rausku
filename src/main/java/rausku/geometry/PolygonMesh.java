@@ -14,7 +14,7 @@ public class PolygonMesh implements SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Intercept interceptPoint) {
+    public Vec getNormal(Intercept interceptPoint) {
         Polygon.InterceptInfo polygonIntercept = (Polygon.InterceptInfo) interceptPoint.info;
         return polygonIntercept.getNormal();
     }

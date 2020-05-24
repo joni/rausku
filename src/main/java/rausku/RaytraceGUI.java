@@ -6,7 +6,7 @@ import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene3;
+import rausku.scenes.Scene4_Transforms;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -31,11 +31,11 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene3();
+        Scene scene = new Scene4_Transforms();
 
         camera = scene.getCamera();
         RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()
-                .withMaxDepth(5);
+                .withMaxDepth(10);
         rayTracer = new RecursiveRayTracer(scene, params);
 
 //        sampler = new Sampler.GaussianRandomSubSampler(8);

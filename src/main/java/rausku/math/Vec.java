@@ -118,11 +118,15 @@ public class Vec {
     }
 
     public Vec toCanonical() {
-        if (w == 0) {
+        if (w == 0 || w == 1) {
             return this;
         } else {
             return Vec.of(x / w, y / w, z / w, 1);
         }
+    }
+
+    public Vec toVector() {
+        return Vec.of(x, y, z);
     }
 
     public Vec reflected(Vec v) {

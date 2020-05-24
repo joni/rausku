@@ -83,9 +83,9 @@ public class CSGUnion implements CSGObject, SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Intercept intercept) {
+    public Vec getNormal(Intercept intercept) {
         CSGObject object = (CSGObject) intercept.info;
-        return object.getNormal(ray, intercept);
+        return object.getNormal(intercept);
     }
 
     @Override

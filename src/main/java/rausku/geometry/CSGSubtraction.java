@@ -76,13 +76,13 @@ public class CSGSubtraction implements CSGObject, SceneObject {
 
 
     @Override
-    public Vec getNormal(Ray ray, Intercept intercept) {
+    public Vec getNormal(Intercept intercept) {
         CSGObject object = (CSGObject) intercept.info;
         // TODO the "intercept info" may have the wrong type
         if (object == obj1) {
-            return object.getNormal(ray, intercept);
+            return object.getNormal(intercept);
         } else {
-            return object.getNormal(ray, intercept).mul(-1);
+            return object.getNormal(intercept).mul(-1);
         }
     }
 

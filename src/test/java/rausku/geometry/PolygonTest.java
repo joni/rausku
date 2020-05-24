@@ -14,10 +14,14 @@ public class PolygonTest {
     @Test
     public void intersectTest2D() {
         Polygon polygon = new Polygon(Vec.of(-1, -1, 0), Vec.of(1, 0, 0), Vec.of(0, 1, 0));
-
         Ray r = Ray.fromOriginDirection(Vec.of(.25f, .25f, -1), Vec.of(0, 0, 1));
+        assertEquals(getIntercept(polygon, r), 1, 1e-6);
+    }
 
-        assertEquals(polygon.v0, Vec.of(-1, -1, 0));
+    @Test
+    public void intersectTest2D_other_side() {
+        Polygon polygon = new Polygon(Vec.point(0, 0, 0), Vec.point(1, 0, 0), Vec.point(0, 1, 0));
+        Ray r = Ray.fromOriginDirection(Vec.of(.25f, .25f, +1), Vec.of(0, 0, -1));
         assertEquals(getIntercept(polygon, r), 1, 1e-6);
     }
 

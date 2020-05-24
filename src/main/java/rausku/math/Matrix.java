@@ -337,6 +337,15 @@ public class Matrix {
         );
     }
 
+    public Vec transposeTransform(Vec v) {
+        return Vec.of(
+                f11 * v.x + f21 * v.y + f31 * v.z + f41 * v.w,
+                f12 * v.x + f22 * v.y + f32 * v.z + f42 * v.w,
+                f13 * v.x + f23 * v.y + f33 * v.z + f43 * v.w,
+                f14 * v.x + f24 * v.y + f34 * v.z + f44 * v.w
+        );
+    }
+
     public Ray transform(Ray ray) {
         return Ray.fromOriginDirection(transform(ray.origin), transform(ray.direction));
     }

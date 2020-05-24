@@ -88,10 +88,10 @@ public class CSGIntersection implements CSGObject, SceneObject {
     }
 
     @Override
-    public Vec getNormal(Ray ray, Intercept intercept) {
+    public Vec getNormal(Intercept intercept) {
         CSGObject object = (CSGObject) intercept.info;
         // TODO the "intercept info" may have the wrong type
-        return object.getNormal(ray, intercept);
+        return object.getNormal(intercept);
     }
 
     private static class IInfo {

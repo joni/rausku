@@ -6,7 +6,7 @@ import rausku.math.Vec;
 public interface CSGObject {
     float[] getAllIntercepts(Ray ray);
 
-    Vec getNormal(Ray ray, Intercept intercept);
+    Vec getNormal(Intercept intercept);
 
     BoundingBox getBoundingBox();
 }

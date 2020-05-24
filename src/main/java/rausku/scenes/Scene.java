@@ -18,14 +18,14 @@ public abstract class Scene {
 
     private static final DirectionalLight DEFAULT_LIGHT = new DirectionalLight(Vec.of(1, -1, -.5f).normalize(), Color.of(.8f, .8f, .7f));
 
-    private AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .25f, .3f));
-    private List<LightSource> lights = new ArrayList<>();
+    private final AmbientLight ambientLight = new AmbientLight(Color.of(.2f, .25f, .3f));
 
     private Camera camera = Camera.initialCamera();
-    private List<Material> materials = new ArrayList<>();
-    private List<Matrix> transforms = new ArrayList<>();
-    private List<Matrix> inverseTransforms = new ArrayList<>();
-    private List<SceneObject> objects = new ArrayList<>();
+    private final List<LightSource> lights = new ArrayList<>();
+    private final List<Material> materials = new ArrayList<>();
+    private final List<Matrix> transforms = new ArrayList<>();
+    private final List<Matrix> inverseTransforms = new ArrayList<>();
+    private final List<SceneObject> objects = new ArrayList<>();
 
     protected void addObject(Matrix transform, SceneObject object, Material material) {
         transforms.add(transform);
@@ -61,20 +61,16 @@ public abstract class Scene {
         this.lights.add(lightSource);
     }
 
-    public List<Matrix> getTransforms() {
-        return transforms;
-    }
-
-    public List<Matrix> getInverseTransforms() {
-        return inverseTransforms;
-    }
-
     public List<SceneObject> getObjects() {
         return objects;
     }
 
     public Matrix getTransform(int index) {
         return transforms.get(index);
+    }
+
+    public Matrix getInverseTransform(int index) {
+        return inverseTransforms.get(index);
     }
 
     public SceneObject getObject(int index) {

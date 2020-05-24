@@ -27,7 +27,7 @@ public class Ray implements Debuggable {
     }
 
     public static Ray fromOriginDirection(Vec origin, Vec direction) {
-        return new Ray(origin, direction.normalize());
+        return new Ray(origin, direction);
     }
 
     public static Ray fromStartEnd(Vec startPoint, Vec endPoint) {
