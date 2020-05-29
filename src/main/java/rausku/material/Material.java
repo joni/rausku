@@ -31,6 +31,10 @@ public class Material {
         this.indexOfRefraction = indexOfRefraction;
     }
 
+    public static Material matte(Color color) {
+        return new Material(color, Color.of(0, 0, 0), 0);
+    }
+
     public static Material plastic(Color color, float reflectiveness) {
         // "Plastic" is covered by a thin, glossy reflective film that reflects the spectrum uniformly
         return new Material(color, Color.of(1, 1, 1), reflectiveness);
@@ -38,7 +42,7 @@ public class Material {
 
     public static Material metallic(Color color, float reflectiveness) {
         // Metals are highly reflective but may absorb some wavelengths (think copper, gold)
-        return new Material(color, color, reflectiveness);
+        return new Material(Color.of(0, 0, 0), color, reflectiveness);
     }
 
     public static Material glass() {

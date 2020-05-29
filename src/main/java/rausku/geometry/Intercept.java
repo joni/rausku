@@ -4,7 +4,7 @@ import rausku.math.Vec;
 
 public class Intercept {
 
-    private static final Intercept NO_INTERCEPT = new Intercept(Float.NaN, Vec.origin(), null);
+    private static final Intercept NO_INTERCEPT = new Intercept(Float.POSITIVE_INFINITY, Vec.origin(), null);
 
     public final float intercept;
     public final Vec interceptPoint;
@@ -21,7 +21,7 @@ public class Intercept {
     }
 
     public boolean isValid() {
-        return Float.isFinite(intercept) && intercept > 0;
+        return Float.isFinite(intercept) && intercept > SceneObject.INTERCEPT_NEAR;
     }
 
     @Override

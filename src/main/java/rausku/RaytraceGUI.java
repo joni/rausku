@@ -6,7 +6,7 @@ import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene4_Transforms;
+import rausku.scenes.Scene15_Torus;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -28,10 +28,11 @@ public class RaytraceGUI {
     private final RecursiveRayTracer rayTracer;
     private final Camera camera;
     private final Sampler sampler;
+    private final Scene scene;
 
     public RaytraceGUI() {
 
-        Scene scene = new Scene4_Transforms();
+        scene = new Scene15_Torus();
 
         camera = scene.getCamera();
         RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()
@@ -116,7 +117,7 @@ public class RaytraceGUI {
         });
 
         JScrollPane scrollPane = new JScrollPane(tree);
-        scrollPane.setPreferredSize(new Dimension(500, 500));
+        scrollPane.setPreferredSize(new Dimension(camera.getPixelWidth(), camera.getPixelHeight()));
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, middlePanel, scrollPane);
 

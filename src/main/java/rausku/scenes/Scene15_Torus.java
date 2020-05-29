@@ -3,13 +3,14 @@ package rausku.scenes;
 import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
 import rausku.geometry.Polygon;
-import rausku.geometry.PolygonMesh;
+import rausku.geometry.Torus;
 import rausku.geometry.Vertex;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.material.CheckerBoard;
 import rausku.material.Material;
 import rausku.math.FloatMath;
+import rausku.math.Matrix;
 import rausku.math.Vec;
 
 import java.util.ArrayList;
@@ -24,23 +25,24 @@ public class Scene15_Torus extends Scene {
         addLight(new DirectionalLight(Vec.of(-1f, -2f, -1f), Color.of(1f, 1f, 1f)));
 
         setCamera(Camera.createCamera(
-                Vec.point(5, 5, 5),
-                Vec.of(-1, -1, -1),
+                Vec.point(0, 10, 10),
+                Vec.of(0, -1, -1),
                 500, 500,
                 toRadians(45)));
 
-        Material creamCeramic = Material.plastic(Color.of(1f, .9f, .8f), .1f);
+        Material material1 = Material.plastic(Color.of(.8f, 0f, .6f), .1f);
+        Material material2 = Material.plastic(Color.of(.6f, 0f, .8f), .1f);
 
-        List<Polygon> polygons = createPolys();
-        PolygonMesh teapot = new PolygonMesh(polygons);
-        addObject(//Matrix.rotateY(toRadians(30)),
-                teapot, creamCeramic);
+        Torus torus = new Torus(2, 1f);
 
-        addObject(HalfSpace.horizontalPlane(-1.00001f), new CheckerBoard(.5f));
+        addObject(Matrix.translate(-1, 0, 0), torus, material1);
+        addObject(Matrix.mul(Matrix.rotateX(toRadians(90)), Matrix.translate(+1, 0, 0)), torus, material2);
+
+        addObject(HalfSpace.horizontalPlane(-3.00001f), new CheckerBoard(.5f));
     }
 
     private List<Polygon> createPolys() {
-        float R = 2, r = 1f;
+        float R = 1, r = .5f;
         List<Polygon> polygons = new ArrayList<>();
         List<Vertex> previous = new ArrayList<>();
 
