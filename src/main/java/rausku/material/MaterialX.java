@@ -6,7 +6,7 @@ import rausku.math.Vec;
 import static rausku.math.FloatMath.*;
 
 
-public class MaterialX extends Material {
+public class MaterialX extends SolidColorMaterial {
 
     @Override
     public Color getDiffuseColor(Vec interceptPoint) {

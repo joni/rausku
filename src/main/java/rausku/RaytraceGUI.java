@@ -32,7 +32,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        scene = new Scene15_Torus();
+        scene = new Scene10_Materials();
 
         camera = scene.getCamera();
         RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()

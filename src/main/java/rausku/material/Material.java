@@ -2,79 +2,54 @@ package rausku.material;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
-import rausku.math.Vec;
 
-public class Material {
-    /**
-     * Base color of the object
-     */
-    private Color diffuseColor;
-    /**
-     * Color of specular reflection. Some materials such as plastics are covered with a thin glossy film that has a
-     * colorless/white specular reflection.
-     */
-    private Color reflectiveColor;
-    private float reflectiveness;
-    private float indexOfRefraction = 1;
-
-    protected Material() {
+public interface Material {
+    static Material matte(Color color) {
+        return new SolidColorMaterial(color, Color.of(0, 0, 0), 0);
     }
 
-    protected Material(Color diffuseColor, Color reflectiveColor, float reflectiveness) {
-        this(diffuseColor, reflectiveColor, reflectiveness, 1);
-    }
-
-    protected Material(Color diffuseColor, Color reflectiveColor, float reflectiveness, float indexOfRefraction) {
-        this.diffuseColor = diffuseColor;
-        this.reflectiveColor = reflectiveColor;
-        this.reflectiveness = reflectiveness;
-        this.indexOfRefraction = indexOfRefraction;
-    }
-
-    public static Material matte(Color color) {
-        return new Material(color, Color.of(0, 0, 0), 0);
-    }
-
-    public static Material plastic(Color color, float reflectiveness) {
+    static Material plastic(Color color, float reflectiveness) {
         // "Plastic" is covered by a thin, glossy reflective film that reflects the spectrum uniformly
-        return new Material(color, Color.of(1, 1, 1), reflectiveness);
+        return new SolidColorMaterial(color, Color.of(1, 1, 1), reflectiveness);
     }
 
-    public static Material metallic(Color color, float reflectiveness) {
+    static Material metallic(Color color, float reflectiveness) {
         // Metals are highly reflective but may absorb some wavelengths (think copper, gold)
-        return new Material(Color.of(0, 0, 0), color, reflectiveness);
+        return new SolidColorMaterial(Color.of(0, 0, 0), color, reflectiveness);
     }
 
-    public static Material glass() {
+    static Material glass() {
         // Glass is highly reflective and allows transmitting light through the surface
-        return new Material(Color.of(0f, 0f, 0f), Color.of(1f, 1f, 1f), 1f, 1.5f);
+        return new SolidColorMaterial(Color.of(0f, 0f, 0f), Color.of(1f, 1f, 1f), 1f, 1.5f);
     }
 
-    public float getReflectiveness() {
-        return reflectiveness;
+    static Material checkerBoard(float scale) {
+        return new TextureMaterial(new CheckerBoardTexture(scale));
     }
 
-    public Color getDiffuseColor(Vec interceptPoint) {
-        return diffuseColor;
+    static Material checkerBoard(float scale, Color color) {
+        return new TextureMaterial(new CheckerBoardTexture(scale, color));
     }
 
-    public Color getReflectiveColor() {
-        return reflectiveColor;
+    static Material gingham(float scale, Color color1) {
+        return new TextureMaterial(new GinghamTexture(scale, color1));
     }
 
-    public boolean hasRefraction() {
-        return indexOfRefraction != 1;
+    static Material gingham(float scale, Color color1, Color color2) {
+        return new TextureMaterial(new GinghamTexture(scale, color1, color2));
     }
 
-    public float getIndexOfRefraction() {
-        return indexOfRefraction;
+    static Material gingham(float scale, Color color1, Color color2, Color color3) {
+        return new TextureMaterial(new GinghamTexture(scale, color1, color2, color3));
     }
 
-    public Color getDiffuseColor(Intercept intercept) {
-//        if (intercept.info instanceof Polygon) {
-//            return ((Polygon) intercept.info).getColor(intercept.interceptPoint);
-//        } else {
-        return getDiffuseColor(intercept.interceptPoint);
-//        }
-    }
+    Color getDiffuseColor(Intercept intercept);
+
+    float getReflectiveness();
+
+    Color getReflectiveColor(Intercept intercept);
+
+    boolean hasRefraction();
+
+    float getIndexOfRefraction();
 }

@@ -6,9 +6,9 @@ import static java.lang.Math.exp;
 import static java.lang.Math.min;
 
 public class Color {
-    float r;
-    float g;
-    float b;
+    public final float r;
+    public final float g;
+    public final float b;
 
     private Color(float r, float g, float b) {
         this.r = r;
@@ -31,6 +31,11 @@ public class Color {
             b += color.b;
         }
         return Color.of(r / colors.length, g / colors.length, b / colors.length);
+    }
+
+    public static Color ofHsl(float h, float s, float l) {
+        java.awt.Color rgb = java.awt.Color.getHSBColor(h, s, l);
+        return Color.of(rgb.getRed() / 255f, rgb.getGreen() / 255f, rgb.getBlue() / 255f);
     }
 
     public int toIntRGB() {

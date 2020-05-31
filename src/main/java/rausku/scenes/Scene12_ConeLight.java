@@ -4,7 +4,7 @@ import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
 import rausku.lighting.Color;
 import rausku.lighting.ConeLight;
-import rausku.material.CheckerBoard;
+import rausku.material.Material;
 import rausku.math.Vec;
 
 import static rausku.math.FloatMath.sqrt;
@@ -24,7 +24,7 @@ public class Scene12_ConeLight extends Scene {
         addLight(new ConeLight(Vec.point(+0f, 2f, sqrt(3)), down, angle45, angle60, Color.of(0f, 1f, 0f)));
         addLight(new ConeLight(Vec.point(+1f, 2f, 0f), down, angle45, angle60, Color.of(0f, 0f, 1f)));
 
-        CheckerBoard checkerBoard = new CheckerBoard(1);
+        Material checkerBoard = Material.checkerBoard(1);
         addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f)), checkerBoard);
         addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 0.5001f)), checkerBoard);
     }

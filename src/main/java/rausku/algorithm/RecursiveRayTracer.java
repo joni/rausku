@@ -126,14 +126,14 @@ public class RecursiveRayTracer implements RayTracer {
         return resolveRayColor(0, reflectiveness, ray);
     }
 
-    Color getSpecularReflection(int depth, float reflectiveness, Ray ray, Vec interceptPoint, Vec normal, Material material) {
-        Ray reflected = ray.getReflected(normal, interceptPoint);
+    Color getSpecularReflection(int depth, float reflectiveness, Ray ray, Intercept intercept, Vec normal, Material material) {
+        Ray reflected = ray.getReflected(normal, intercept.interceptPoint);
         if (this.debug) {
             addDebugString(ray, "reflected ray: %s", reflected);
             ray.addDebug(reflected);
         }
         return resolveRayColor(depth + 1, reflectiveness * material.getReflectiveness(), reflected)
-                .mul(material.getReflectiveColor());
+                .mul(material.getReflectiveColor(intercept));
     }
 
     private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, int index) {
@@ -142,7 +142,7 @@ public class RecursiveRayTracer implements RayTracer {
         Matrix worldToObject = scene.getInverseTransform(index);
         SceneObject sceneObject = scene.getObject(index);
 
-        Vec interceptPoint = objectToWorld.transform(intercept.interceptPoint);
+        Vec interceptPoint = ray.apply(intercept.intercept); // objectToWorld.transform(intercept.interceptPoint);
         Vec objectNormal = sceneObject.getNormal(intercept);
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);
@@ -197,7 +197,7 @@ public class RecursiveRayTracer implements RayTracer {
 
             // Specular reflection only
             if (material.getReflectiveness() > 0) {
-                Color reflectedLight = getSpecularReflection(depth, reflectiveness, ray, interceptPoint, normal, material);
+                Color reflectedLight = getSpecularReflection(depth, reflectiveness, ray, intercept, normal, material);
                 objectColor = reflectedLight.mulAdd(material.getReflectiveness(), objectColor);
             }
 

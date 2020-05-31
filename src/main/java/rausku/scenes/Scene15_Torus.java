@@ -7,7 +7,6 @@ import rausku.geometry.Torus;
 import rausku.geometry.Vertex;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
-import rausku.material.CheckerBoard;
 import rausku.material.Material;
 import rausku.math.FloatMath;
 import rausku.math.Matrix;
@@ -38,7 +37,7 @@ public class Scene15_Torus extends Scene {
         addObject(Matrix.translate(-1, 0, 0), torus, material1);
         addObject(Matrix.mul(Matrix.rotateX(toRadians(90)), Matrix.translate(+1, 0, 0)), torus, material2);
 
-        addObject(HalfSpace.horizontalPlane(-3.00001f), new CheckerBoard(.5f));
+        addObject(HalfSpace.horizontalPlane(-3.00001f), Material.checkerBoard(.5f));
     }
 
     private List<Polygon> createPolys() {

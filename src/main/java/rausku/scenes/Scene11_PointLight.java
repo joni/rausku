@@ -5,7 +5,6 @@ import rausku.geometry.HalfSpace;
 import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.lighting.PointLight;
-import rausku.material.CheckerBoard;
 import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
@@ -26,7 +25,7 @@ public class Scene11_PointLight extends Scene {
         Color silver = Color.of(1, 1, 1);
         addObject(new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f)), Material.plastic(silver, 0f));
 
-        CheckerBoard checkerBoard = new CheckerBoard(1);
+        Material checkerBoard = Material.checkerBoard(1);
         addObject(new HalfSpace(Vec.of(1f, 0f, 0f, 1.0001f)), checkerBoard);
         addObject(new HalfSpace(Vec.of(0f, 1f, 0f, 1.0001f)), checkerBoard);
         addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 1.0001f)), checkerBoard);
