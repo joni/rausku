@@ -1,4 +1,4 @@
-package rausku.material;
+package rausku.texture;
 
 import org.testng.annotations.Test;
 import rausku.geometry.Intercept;

@@ -6,10 +6,10 @@ import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.material.Material;
-import rausku.material.NoiseTexture;
 import rausku.material.TextureMaterial;
 import rausku.math.Matrix;
 import rausku.math.Vec;
+import rausku.texture.NoiseTexture;
 
 import static rausku.math.FloatMath.toRadians;
 

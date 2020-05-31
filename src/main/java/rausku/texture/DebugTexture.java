@@ -1,4 +1,4 @@
-package rausku.material;
+package rausku.texture;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;

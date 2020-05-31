@@ -2,6 +2,7 @@ package rausku.material;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
+import rausku.texture.Texture;
 
 public class TextureMaterial implements Material {
 

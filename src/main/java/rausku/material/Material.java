@@ -2,6 +2,8 @@ package rausku.material;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
+import rausku.texture.CheckerBoardTexture;
+import rausku.texture.GinghamTexture;
 
 public interface Material {
     static Material matte(Color color) {
