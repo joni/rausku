@@ -28,6 +28,6 @@ public class Scene4_Transforms extends Scene {
         addObject(Matrix.mul(Matrix.translate(3, 0, 1.5f), Matrix.rotateX(toRadians(90)), Matrix.diag(1, 2.5f, 1, 1)), object1, material);
         addObject(Matrix.mul(Matrix.translate(-1.5f, 0, 3), Matrix.rotateZ(toRadians(90)), Matrix.diag(1, 2.5f, 1, 1)), object1, material);
 
-        addObject(HalfSpace.createHorizontalPlane(-1), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
+        addObject(HalfSpace.horizontalPlane((float) -1), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
     }
 }

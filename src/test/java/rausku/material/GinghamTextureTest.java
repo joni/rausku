@@ -17,13 +17,13 @@ public class GinghamTextureTest {
         Color white = Color.of(1, 1, 1);
         GinghamTexture texture = new GinghamTexture(1f, magenta, cyan);
 
-        Color color3 = texture.getColor(new Intercept(0, Vec.point(.5f, .5f, .5f), null));
-        assertEquals(color3, blue);
-        Color color2 = texture.getColor(new Intercept(0, Vec.point(.5f, .5f, 1.5f), null));
+        Color color1 = texture.getColor(new Intercept(0, Vec.origin(), .5f, .5f, null));
+        assertEquals(color1, blue);
+        Color color2 = texture.getColor(new Intercept(0, Vec.origin(), .5f, 1.5f, null));
         assertEquals(color2, cyan);
-        Color color4 = texture.getColor(new Intercept(0, Vec.point(1.5f, .5f, .5f), null));
-        assertEquals(color4, magenta);
-        Color color1 = texture.getColor(new Intercept(0, Vec.point(1.5f, .5f, 1.5f), null));
-        assertEquals(color1, white);
+        Color color3 = texture.getColor(new Intercept(0, Vec.origin(), 1.5f, .5f, null));
+        assertEquals(color3, magenta);
+        Color color4 = texture.getColor(new Intercept(0, Vec.origin(), 1.5f, 1.5f, null));
+        assertEquals(color4, white);
     }
 }

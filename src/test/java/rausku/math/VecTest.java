@@ -3,6 +3,8 @@ package rausku.math;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Random;
+
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.*;
 import static org.testng.Assert.assertEquals;
@@ -93,5 +95,15 @@ public class VecTest {
         Vec normal = Vec.of(0, 1, 0);
         Vec refracted = normal.refracted(incident, 1.5f);
         assertNull(refracted);
+    }
+
+    @Test
+    public void testPerpendicular() {
+        Random rnd = new Random();
+        for (int i = 0; i < 100; i++) {
+            Vec v = Vec.of(((float) rnd.nextGaussian()), (float) rnd.nextGaussian(), (float) rnd.nextGaussian());
+            Vec perp = v.perpendicular();
+            assertEquals(v.dot(perp), 0, 1e-6);
+        }
     }
 }

@@ -2,7 +2,6 @@ package rausku.material;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
-import rausku.math.Vec;
 
 import static rausku.math.FloatMath.ceil;
 
@@ -29,8 +28,7 @@ public class GinghamTexture implements Texture {
 
     @Override
     public Color getColor(Intercept intercept) {
-        Vec interceptPoint = intercept.interceptPoint;
-        int baseValue = ((ceil(interceptPoint.x / scale) & 1) << 1) | (ceil(interceptPoint.z / scale) & 1);
+        int baseValue = ((ceil(intercept.u / scale) & 1) << 1) | (ceil(intercept.v / scale) & 1);
         return diffuseColor[baseValue];
     }
 }

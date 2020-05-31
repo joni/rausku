@@ -8,12 +8,23 @@ public class Intercept {
 
     public final float intercept;
     public final Vec interceptPoint;
+    public final float u;
+    public final float v;
     public final Object info;
 
     public Intercept(float intercept, Vec interceptPoint, Object info) {
         this.intercept = intercept;
         this.interceptPoint = interceptPoint;
         this.info = info;
+        this.u = this.v = 0f;
+    }
+
+    public Intercept(float intercept, Vec interceptPoint, float u, float v, Object info) {
+        this.intercept = intercept;
+        this.interceptPoint = interceptPoint;
+        this.info = info;
+        this.u = u;
+        this.v = v;
     }
 
     public static Intercept noIntercept() {

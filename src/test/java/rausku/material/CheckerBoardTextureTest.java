@@ -11,12 +11,13 @@ public class CheckerBoardTextureTest {
 
     @Test
     public void testColor() {
-        CheckerBoardTexture texture = new CheckerBoardTexture(1f, Color.of(0, 0, 0), Color.of(1, 1, 1));
+        Color w = Color.of(1, 1, 1);
+        Color b = Color.of(0, 0, 0);
+        CheckerBoardTexture texture = new CheckerBoardTexture(1f, w, b);
 
-        Color color = texture.getColor(new Intercept(0, Vec.point(.5f, .5f, .5f), null));
-
-        assertEquals(color.r, 1f, 1e-6f);
-        assertEquals(color.g, 1f, 1e-6f);
-        assertEquals(color.b, 1f, 1e-6f);
+        Color color = texture.getColor(new Intercept(0, Vec.origin(), .5f, .5f, null));
+        assertEquals(color, w);
+        Color color2 = texture.getColor(new Intercept(0, Vec.origin(), 1.5f, .5f, null));
+        assertEquals(color2, b);
     }
 }

@@ -129,6 +129,32 @@ public class Vec {
         return Vec.of(x, y, z);
     }
 
+    public Vec perpendicular() {
+        if (abs(x) > abs(y)) {
+            if (abs(y) > abs(z)) {
+                // x > y > z
+                return Vec.of(-y, x, 0);
+            } else if (abs(x) > abs(z)) {
+                // x > z > y
+                return Vec.of(-z, 0, x);
+            } else {
+                // z > x > y
+                return Vec.of(z, 0, -x);
+            }
+        } else {
+            if (abs(z) > abs(x)) {
+                // y > z > x
+                return Vec.of(0, -z, y);
+            } else if (abs(x) > abs(z)) {
+                // y > x > z
+                return Vec.of(y, -x, 0);
+            } else {
+                // z > y > x
+                return Vec.of(0, z, -y);
+            }
+        }
+    }
+
     public Vec reflected(Vec v) {
         // assert normalized
         return mulAdd(-2 * this.dot(v), this, v);

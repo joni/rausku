@@ -9,6 +9,14 @@ import static org.testng.Assert.assertEquals;
 public class HalfSpaceTest {
 
     @Test
+    public void testUV() {
+        HalfSpace halfSpace = HalfSpace.horizontalPlane(-1);
+
+        assertEquals(halfSpace.u, Vec.of(1f, -0f, 0f));
+        assertEquals(halfSpace.v, Vec.of(-0f, 0f, 1));
+    }
+
+    @Test
     public void testAllInterceptsOutsideIn() {
         HalfSpace halfSpace = new HalfSpace(Vec.of(0, 1, 0, 0));
 

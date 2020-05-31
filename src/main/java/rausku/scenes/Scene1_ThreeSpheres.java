@@ -15,7 +15,7 @@ public class Scene1_ThreeSpheres extends Scene {
         QuadraticForm sphere2 = QuadraticForm.createSphere(Vec.of(.0f, 0, 5.866f), .5f);
         QuadraticForm sphere3 = QuadraticForm.createSphere(Vec.of(.5f, 0, 5), .5f);
         QuadraticForm sphere4 = QuadraticForm.createSphere(Vec.of(.0f, .8165f, 5.422f), .5f);
-        HalfSpace plane = HalfSpace.createHorizontalPlane(-.5f);
+        HalfSpace plane = HalfSpace.horizontalPlane(-.5f);
 
         addObject(sphere, Material.plastic(red, .5f));
         addObject(sphere2, Material.plastic(red, .5f));

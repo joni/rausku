@@ -26,7 +26,8 @@ public class CheckerBoardTexture implements Texture {
     @Override
     public Color getColor(Intercept intercept) {
         Vec interceptPoint = intercept.interceptPoint;
-        int baseValue = (ceil(interceptPoint.x / scale) ^ ceil(interceptPoint.y / scale) ^ ceil(interceptPoint.z / scale)) & 1;
+        int baseValue = (ceil(intercept.u / scale) ^ ceil(intercept.v / scale)) & 1;
+//        int baseValue = (ceil(interceptPoint.x / scale) ^ ceil(interceptPoint.y / scale) ^ ceil(interceptPoint.z / scale)) & 1;
         return diffuseColor[baseValue];
     }
 }
