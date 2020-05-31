@@ -44,6 +44,10 @@ public class FloatMath {
         return (int) Math.ceil(value);
     }
 
+    public static int floor(float value) {
+        return (int) Math.floor(value);
+    }
+
     public static float hypot(float x, float y) {
         return (float) Math.hypot(x, y);
     }

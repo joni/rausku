@@ -6,6 +6,8 @@ import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.material.Material;
+import rausku.material.NoiseTexture;
+import rausku.material.TextureMaterial;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 
@@ -30,6 +32,8 @@ public class Scene10_Materials extends Scene {
 
         addObject(Matrix.translate(-2, 0, 0), object, Material.gingham(1 / 8f, Color.of(1, 0, 1), Color.of(0, 1, 1)));
 
-        addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 1.0001f)), Material.checkerBoard(1));
+        Material planeMaterial = new TextureMaterial(new NoiseTexture(2));
+//        Material planeMaterial = Material.checkerBoard(1);
+        addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 1.0001f)), planeMaterial);
     }
 }
