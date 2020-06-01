@@ -51,4 +51,18 @@ public class FloatMath {
     public static float hypot(float x, float y) {
         return (float) Math.hypot(x, y);
     }
+
+    public static float lerp(float start, float end, float x) {
+        return start * (1 - x) + end * x;
+    }
+
+    public static float smoothstep3(float start, float end, float x) {
+        float blend = x * x * (3 - x * 2);
+        return lerp(start, end, blend);
+    }
+
+    public static float smoothstep5(float start, float end, float x) {
+        float blend = x * x * x * (10 - x * (15 - x * 6));
+        return lerp(start, end, blend);
+    }
 }

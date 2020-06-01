@@ -8,6 +8,7 @@ import rausku.lighting.DirectionalLight;
 import rausku.material.Material;
 import rausku.material.TextureMaterial;
 import rausku.math.Matrix;
+import rausku.math.PerlinNoise2D;
 import rausku.math.Vec;
 import rausku.texture.NoiseTexture;
 
@@ -31,9 +32,11 @@ public class Scene10_Materials extends Scene {
         addObject(Matrix.translate(+2, 2, 0), object, Material.glass());
 
         addObject(Matrix.translate(-2, 0, 0), object, Material.gingham(1 / 8f, Color.of(1, 0, 1), Color.of(0, 1, 1)));
+        PerlinNoise2D noise = new PerlinNoise2D();
+        addObject(Matrix.translate(0, 0, 0), object, new TextureMaterial(new NoiseTexture(noise)));
+        addObject(Matrix.translate(2, 0, 0), object, new TextureMaterial(new NoiseTexture(noise.fractalNoise(8))));
 
-        Material planeMaterial = new TextureMaterial(new NoiseTexture(2));
-//        Material planeMaterial = Material.checkerBoard(1);
+        Material planeMaterial = Material.checkerBoard(1);
         addObject(new HalfSpace(Vec.of(0f, 0f, 1f, 1.0001f)), planeMaterial);
     }
 }
