@@ -2,18 +2,18 @@ package rausku.texture;
 
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
-import rausku.math.Noise;
+import rausku.math.Noise2D;
 import rausku.math.PerlinNoise2D;
 
 public class NoiseTexture implements Texture {
 
-    private final Noise noise;
+    private final Noise2D noise;
 
     public NoiseTexture() {
         noise = new PerlinNoise2D();
     }
 
-    public NoiseTexture(Noise noise) {
+    public NoiseTexture(Noise2D noise) {
         this.noise = noise;
     }
 

@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static rausku.math.FloatMath.floor;
 
-public class PerlinNoise2D implements Noise {
+public class PerlinNoise2D implements Noise2D {
 
     public static final int SIZE = 8;
     private final int[] permutation;
