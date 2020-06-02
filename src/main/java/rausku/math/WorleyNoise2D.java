@@ -6,7 +6,6 @@ import static rausku.math.FloatMath.floor;
 import static rausku.math.FloatMath.sqrt;
 
 public class WorleyNoise2D implements Noise2D {
-    int scale = 4;
     int[] permutation = new int[256];
     float[][] pts = new float[256][2];
 
@@ -57,6 +56,5 @@ public class WorleyNoise2D implements Noise2D {
         }
 
         return minDistance * sqrt(2) - 1;
-//        return minDistance;
     }
 }

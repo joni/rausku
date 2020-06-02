@@ -33,6 +33,13 @@ public class Color {
         return Color.of(r / colors.length, g / colors.length, b / colors.length);
     }
 
+    public static Color blend(float x, Color color1, float y, Color color2) {
+        float r = x * color1.r + y * color2.r;
+        float g = x * color1.g + y * color2.g;
+        float b = x * color1.b + y * color2.b;
+        return Color.of(r, g, b);
+    }
+
     public static Color ofHsl(float h, float s, float l) {
         java.awt.Color rgb = java.awt.Color.getHSBColor(h, s, l);
         return Color.of(rgb.getRed() / 255f, rgb.getGreen() / 255f, rgb.getBlue() / 255f);
