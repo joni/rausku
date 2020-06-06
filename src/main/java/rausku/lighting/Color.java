@@ -45,6 +45,13 @@ public class Color {
         return Color.of(rgb.getRed() / 255f, rgb.getGreen() / 255f, rgb.getBlue() / 255f);
     }
 
+    public static Color ofRgb(int rgb) {
+        float r = (rgb & 0xff0000) >> 16;
+        float g = (rgb & 0x00ff00) >> 8;
+        float b = (rgb & 0x0000ff);
+        return Color.of(r / 255f, g / 255f, b / 255f);
+    }
+
     public int toIntRGB() {
         int r = min(255, (int) (256 * (1 - exp(-this.r))));
         int g = min(255, (int) (256 * (1 - exp(-this.g))));

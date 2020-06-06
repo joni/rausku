@@ -37,4 +37,5 @@ public class TextureMaterial implements Material {
     public Color getReflectiveColor(Intercept intercept) {
         return specularTexture.getColor(intercept);
     }
+
 }
