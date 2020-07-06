@@ -24,15 +24,12 @@ public class BSPTree {
     }
 
     public Intercept getIntercept(Ray ray) {
-
         float[] intercepts = bbox.getIntercepts(ray);
         if (intercepts.length == 0) {
             return Intercept.noIntercept();
-        } else {
-            // Check the tree recursively
-            return root.getIntercept(ray, intercepts[0], intercepts[1]);
-
         }
+        // Check the tree recursively
+        return root.getIntercept(ray, intercepts[0], intercepts[1]);
     }
 
     @Override
@@ -141,12 +138,16 @@ public class BSPTree {
 
                 for (Polygon polygon : ownPolys) {
                     Intercept intercept = polygon.getIntercept(ray);
-                    if (intercept.isValid() && tmin < intercept.intercept && intercept.intercept < tmax) {
+                    if (intercept.isValid() && tmin < intercept.intercept && intercept.intercept < tmax && intercept.intercept < closestIntercept.intercept) {
                         closestIntercept = intercept;
                     }
                 }
 
-                return closestIntercept;
+                if (closestIntercept.isValid()) {
+                    return closestIntercept;
+                } else {
+                    return Intercept.noIntercept();
+                }
             }
 
             // Find intersection of ray with the partition plane
