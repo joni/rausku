@@ -13,24 +13,25 @@ import java.util.Scanner;
 
 public class ObjReader implements Closeable, AutoCloseable {
 
-    private final Scanner scanner;
+    private final Scanner fileScanner;
+    List<Vec> vertices = new ArrayList<>();
+    List<Vec> normals = new ArrayList<>();
+    List<Polygon> faces = new ArrayList<>();
 
     public ObjReader(InputStream inputStream) {
-        scanner = new Scanner(inputStream);
+        fileScanner = new Scanner(inputStream);
     }
 
     public List<Polygon> read() {
-
-        List<Vec> vertices = new ArrayList<>();
-        List<Vec> normals = new ArrayList<>();
-        List<Polygon> faces = new ArrayList<>();
 
         float x;
         float y;
         float z;
 
-        while (scanner.hasNextLine()) {
-            String command = scanner.next();
+        while (fileScanner.hasNextLine()) {
+            String command = fileScanner.next();
+            String line = fileScanner.nextLine();
+            Scanner scanner = new Scanner(line);
 
             switch (command) {
                 case "#":
@@ -52,28 +53,41 @@ public class ObjReader implements Closeable, AutoCloseable {
                     break;
                 case "f":
                     // face
-                    int a = scanner.nextInt() - 1;
-                    int b = scanner.nextInt() - 1;
-                    int c = scanner.nextInt() - 1;
-                    faces.add(new Polygon(
-                            Vertex.of(vertices.get(a), normals.get(a)),
-                            Vertex.of(vertices.get(b), normals.get(b)),
-                            Vertex.of(vertices.get(c), normals.get(c)))
-                    );
+                    String as = scanner.next();
+                    Vertex a = createVertex(as);
+                    String bs = scanner.next();
+                    Vertex b = createVertex(bs);
+                    String cs = scanner.next();
+                    Vertex c = createVertex(cs);
+                    faces.add(new Polygon(a, b, c));
+                    while (scanner.hasNext()) {
+                        b = c;
+                        cs = scanner.next();
+                        c = createVertex(cs);
+                        faces.add(new Polygon(a, b, c));
+                    }
                     break;
                 default:
                     // unknown
                     break;
             }
-
-            scanner.nextLine();
         }
 
         return faces;
     }
 
+    private Vertex createVertex(String cs) {
+        String[] split = cs.split("/");
+        int i = Integer.parseInt(split[0]);
+        int j = i;
+        if (split.length > 2) {
+            j = Integer.parseInt(split[2]);
+        }
+        return Vertex.of(vertices.get(i - 1), normals.get(j - 1));
+    }
+
     @Override
     public void close() throws IOException {
-        scanner.close();
+        fileScanner.close();
     }
 }
