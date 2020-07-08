@@ -84,6 +84,19 @@ public class MatrixTest {
     }
 
     @Test
+    public void testRotate() {
+        Matrix rotate120deg = Matrix.rotate(Vec.of(1, 1, 1), toRadians(120));
+        Vec x = Vec.of(1, 0, 0);
+        Vec y = Vec.point(0, 1, 0);
+        Vec z = Vec.of(0, 0, 1);
+        System.out.println(rotate120deg);
+
+        assertVecEquals(rotate120deg.transform(x), Vec.of(0, 1, 0));
+        assertVecEquals(rotate120deg.transform(y), Vec.point(0, 0, 1));
+        assertVecEquals(rotate120deg.transform(z), Vec.point(1, 0, 0));
+    }
+
+    @Test
     public void testTranslate() {
         Matrix translate = Matrix.translate(3, 2, -5);
 
@@ -92,5 +105,9 @@ public class MatrixTest {
 
         assertEquals(translate.transform(v), v, "Translation does not change vectors");
         assertEquals(translate.transform(p), Vec.point(-2, 5, -3), "Translation changes points");
+    }
+
+    private void assertVecEquals(Vec actual, Vec expected) {
+        assertEquals(actual.sub(expected).len(), 0, 1e-6f);
     }
 }

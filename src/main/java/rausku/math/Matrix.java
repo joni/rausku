@@ -274,12 +274,32 @@ public class Matrix {
         );
     }
 
+    public static Matrix rotate(Vec axis, float angle) {
+        axis = axis.normalize();
+        Matrix K = Matrix.of(
+                0, -axis.z, axis.y, 0,
+                axis.z, 0, -axis.x, 0,
+                -axis.y, axis.x, 0, 0,
+                0, 0, 0, 0
+        );
+        return plus(EYE, plus(K.mul(sin(angle)), mul(K, K).mul(1 - cos(angle))));
+    }
+
     public static Matrix plus(Matrix a, Matrix b) {
         return Matrix.of(
                 a.f11 + b.f11, a.f12 + b.f12, a.f13 + b.f13, a.f14 + b.f14,
                 a.f21 + b.f21, a.f22 + b.f22, a.f23 + b.f23, a.f24 + b.f24,
                 a.f31 + b.f31, a.f32 + b.f32, a.f33 + b.f33, a.f34 + b.f34,
                 a.f41 + b.f41, a.f42 + b.f42, a.f43 + b.f43, a.f44 + b.f44
+        );
+    }
+
+    public Matrix mul(float f) {
+        return Matrix.of(
+                f * f11, f * f12, f * f13, f * f14,
+                f * f21, f * f22, f * f23, f * f24,
+                f * f31, f * f32, f * f33, f * f34,
+                f * f41, f * f42, f * f43, f * f44
         );
     }
 
