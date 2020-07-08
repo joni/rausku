@@ -1,7 +1,9 @@
 package rausku.material;
 
 import rausku.geometry.Intercept;
+import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
+import rausku.math.Vec;
 import rausku.texture.CheckerBoardTexture;
 import rausku.texture.GinghamTexture;
 
@@ -54,4 +56,8 @@ public interface Material {
     boolean hasRefraction();
 
     float getIndexOfRefraction();
+
+    default Vec getNormal(Intercept intercept, SceneObject sceneObject) {
+        return sceneObject.getNormal(intercept);
+    }
 }

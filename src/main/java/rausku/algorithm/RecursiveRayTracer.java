@@ -110,15 +110,25 @@ public class RecursiveRayTracer implements RayTracer {
 
         // nothing hit
         return scene.getAmbientLight().getColor();
-//        Vec origin = Vec.point(ray.origin.x  % 2, ray.origin.y % 2, ray.origin.z % 2);
-//        BoundingBox.Builder bboxBuilder = new BoundingBox.Builder()
-//                .addPoint(Vec.of(-2,-2,-2))
-//                .addPoint(Vec.of(+2,+2,+2));
-//        BoundingBox build = bboxBuilder.build();
-//        float[] intercepts = build.getIntercepts(ray.withOrigin(origin));
+
+//        BoundingBox bbox = new BoundingBox(Vec.origin(), Vec.point(+2,+2,+2));
+//        float[] intercepts = bbox.getIntercepts(ray);
+//        if (intercepts.length==0) {
+//            return scene.getAmbientLight().getColor();
+//        }
 //        Vec interceptPoint = ray.apply(intercepts[1]);
-//        Vec newOrigin = Vec.point(interceptPoint.x  % 2, interceptPoint.y % 2, interceptPoint.z % 2);
+//        float x, y, z;
+//        x = limit(interceptPoint.x, 2);
+//        y = limit(interceptPoint.y, 2);
+//        z = limit(interceptPoint.z, 2);
+//        Vec newOrigin = Vec.point(x, y, z);
 //        return resolveRayColor(depth+1, reflectiveness, ray.withOrigin(newOrigin));
+    }
+
+    private float limit(float value, float limit) {
+        if (value >= limit) return value - limit;
+        else if (value <= 1e-6) return value + limit;
+        else return value;
     }
 
     @Override
@@ -141,9 +151,11 @@ public class RecursiveRayTracer implements RayTracer {
         Matrix objectToWorld = scene.getTransform(index);
         Matrix worldToObject = scene.getInverseTransform(index);
         SceneObject sceneObject = scene.getObject(index);
+        Material material = scene.getMaterial(index);
 
         Vec interceptPoint = ray.apply(intercept.intercept); // objectToWorld.transform(intercept.interceptPoint);
-        Vec objectNormal = sceneObject.getNormal(intercept);
+        Vec objectNormal = material.getNormal(intercept, sceneObject);
+
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);
 //        }
@@ -160,7 +172,6 @@ public class RecursiveRayTracer implements RayTracer {
 
         // Diffuse reflection
         // For diffuse reflection, for now we only consider light coming directly from light sources
-        Material material = scene.getMaterial(index);
         Color light = scene.getAmbientLight().getColor();
 
         for (LightSource lightSource : scene.getLights()) {
@@ -214,7 +225,7 @@ public class RecursiveRayTracer implements RayTracer {
             // Specular reflection
             // Ignore internal reflection for now, easily becomes infinite loop
             if (normal.dot(ray.direction) < 0 && material.getReflectiveness() > 0) {
-                Color reflectedLight = getSpecularReflection(depth, reflectiveness * reflectionCoeff, ray, interceptPoint, normal, material)
+                Color reflectedLight = getSpecularReflection(depth, reflectiveness * reflectionCoeff, ray, intercept, normal, material)
                         .mul(reflectionCoeff);
                 objectColor = reflectedLight.mulAdd(reflectiveness * material.getReflectiveness(), objectColor);
             }
@@ -242,9 +253,6 @@ public class RecursiveRayTracer implements RayTracer {
             if (interceptsRay(lightRay)) {
                 return 1;
             } else {
-                if (this.debug) {
-                    addDebugString(lightRay, "shadow");
-                }
                 return 0;
             }
         } else {
