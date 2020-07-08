@@ -40,11 +40,13 @@ public class QuadraticForm implements CSGObject, SceneObject {
     }
 
     public static QuadraticForm createSphere(Vec center, float radius) {
+        Vec radiusVec = Vec.of(radius, radius, radius);
         return new QuadraticForm(Matrix.of(
                 1, 0, 0, -center.x,
                 0, 1, 0, -center.y,
                 0, 0, 1, -center.z,
-                -center.x, -center.y, -center.z, center.sqLen() - radius * radius));
+                -center.x, -center.y, -center.z, center.sqLen() - radius * radius),
+                new BoundingBox(center.sub(radiusVec), center.add(radiusVec)));
     }
 
     @Override
