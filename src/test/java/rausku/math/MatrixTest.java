@@ -1,11 +1,12 @@
 package rausku.math;
 
-import org.testng.annotations.Ignore;
-import org.testng.annotations.Test;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static rausku.math.FloatMath.sqrt;
 import static rausku.math.FloatMath.toRadians;
 
@@ -30,7 +31,7 @@ public class MatrixTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testMulAssociative() {
         Matrix a = Matrix.random(rng);
         Matrix b = Matrix.random(rng);
