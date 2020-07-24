@@ -1,7 +1,7 @@
 package rausku.math;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
@@ -14,10 +14,6 @@ import static rausku.math.FloatMath.sin;
 import static rausku.math.FloatMath.toRadians;
 
 public class VecTest {
-
-    @BeforeMethod
-    public void setUp() {
-    }
 
     @Test
     public void testAdd() {

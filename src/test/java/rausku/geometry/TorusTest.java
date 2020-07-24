@@ -1,10 +1,10 @@
 package rausku.geometry;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TorusTest {
 
