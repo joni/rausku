@@ -1,6 +1,7 @@
 package rausku.scenes;
 
 import rausku.algorithm.Camera;
+import rausku.geometry.Group;
 import rausku.geometry.SceneObject;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -10,6 +11,7 @@ import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,9 +29,32 @@ public abstract class Scene {
     private final List<Matrix> inverseTransforms = new ArrayList<>();
     private final List<SceneObject> objects = new ArrayList<>();
 
+    private final ArrayDeque<Matrix> transformStack = new ArrayDeque<>();
+
+    public Scene() {
+        transformStack.push(Matrix.eye());
+    }
+
+    protected void push(Matrix transform) {
+        transformStack.push(Matrix.mul(transformStack.getLast(), transform));
+    }
+
+    protected void pop() {
+        transformStack.pop();
+    }
+
+    protected void addGroup(Matrix transform, Group group) {
+        push(transform);
+        for (int i = 0; i < group.size(); i++) {
+            addObject(group.getTransform(i), group.getObject(i), group.getMaterial(i));
+        }
+        pop();
+    }
+
     protected void addObject(Matrix transform, SceneObject object, Material material) {
-        transforms.add(transform);
-        inverseTransforms.add(transform.inverse());
+        Matrix matrix = Matrix.mul(transformStack.peek(), transform);
+        transforms.add(matrix);
+        inverseTransforms.add(matrix.inverse());
         objects.add(object);
         materials.add(material);
     }

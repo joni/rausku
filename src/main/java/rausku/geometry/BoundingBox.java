@@ -15,6 +15,11 @@ public class BoundingBox {
             Vec.point(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
     );
 
+    private static final BoundingBox empty = new BoundingBox(
+            Vec.point(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+            Vec.point(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)
+    );
+
     public final float minX;
     public final float maxX;
     public final float minY;
@@ -67,6 +72,10 @@ public class BoundingBox {
                 Math.min(bbox1.minY, bbox2.minY), Math.max(bbox1.maxY, bbox2.maxY),
                 Math.min(bbox1.minZ, bbox2.minZ), Math.max(bbox1.maxZ, bbox2.maxZ)
         );
+    }
+
+    public static BoundingBox empty() {
+        return empty;
     }
 
     public boolean testIntercept(Ray ray) {

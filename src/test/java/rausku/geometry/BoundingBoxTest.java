@@ -132,6 +132,14 @@ public class BoundingBoxTest {
     }
 
     @Test
+    public void testUnionEmpty() {
+        BoundingBox bbox = new BoundingBox(Vec.point(0, 0, 0), Vec.point(1, 1, 1));
+        BoundingBox empty = BoundingBox.empty();
+        BoundingBox union = BoundingBox.union(bbox, empty);
+        assertEquals(union, bbox);
+    }
+
+    @Test
     public void testIntersection() {
         BoundingBox bbox1 = new BoundingBox(Vec.point(0, 0, 0), Vec.point(2, 2, 2));
         BoundingBox bbox2 = new BoundingBox(Vec.point(1, 1, 1), Vec.point(3, 3, 3));
