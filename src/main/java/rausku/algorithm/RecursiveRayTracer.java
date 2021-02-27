@@ -9,8 +9,7 @@ import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.Scene;
-
-import java.util.List;
+import rausku.scenes.SceneIntercept;
 
 import static rausku.math.FloatMath.abs;
 import static rausku.math.FloatMath.pow;
@@ -33,33 +32,14 @@ public class RecursiveRayTracer implements RayTracer {
         this.debug = false;
     }
 
+    @Override
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    boolean interceptsRay(Ray ray) {
-        List<SceneObject> objects = scene.getObjects();
-        for (int i = 0; i < objects.size(); i++) {
-            SceneObject object = objects.get(i);
-            Matrix transform = scene.getInverseTransform(i);
-            Ray transform1 = transform.transform(ray);
-            Intercept intercept2 = object.getIntercept(transform1);
-            float intercept = intercept2.intercept;
-            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.bound) {
-                if (this.debug) {
-                    ray.addDebug(transform1);
-                    ray.addDebug(String.format("intercept %d, %s", i, intercept2));
-                }
-                return true;
-            }
-        }
-        if (this.debug) {
-            ray.addDebug("no intercept");
-        }
-        return false;
+        scene.setDebug(debug);
     }
 
     Color resolveRayColor(int depth, float reflectiveness, Ray ray) {
+
 
         if (depth > maxDepth) {
             if (this.debug) {
@@ -68,36 +48,19 @@ public class RecursiveRayTracer implements RayTracer {
             return scene.getAmbientLight().getColor();
         }
 
-        float closestIntercept = Float.POSITIVE_INFINITY;
-        Intercept intercept = null;
-        int index = -1;
-
-        List<SceneObject> objects = scene.getObjects();
-        for (int i = 0; i < objects.size(); i++) {
-            SceneObject object = objects.get(i);
-            Matrix transform = scene.getInverseTransform(i);
-            Ray transform1 = transform.transform(ray);
-            if (debug) {
-                ray.addDebug(transform1);
-            }
-            Intercept objectIntercept = object.getIntercept(transform1);
-            float interceptValue = objectIntercept.intercept;
-            if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
-                index = i;
-                closestIntercept = interceptValue;
-                intercept = objectIntercept;
-            }
-        }
+        SceneIntercept sceneIntercept = scene.getIntercept(ray);
+        Intercept intercept = sceneIntercept.intercept;
+        int index = sceneIntercept.interceptIndex;
 
         if (this.debug) {
             if (index >= 0) {
-                addDebugString(ray, "depth=%d object=%d[%s] %s", depth, index, objects.get(index), intercept);
+                addDebugString(ray, "depth=%d object=%d %s", depth, index, intercept);
             } else {
                 addDebugString(ray, "depth=%d no intercept", depth);
             }
         }
 
-        if (intercept != null) {
+        if (intercept.isValid()) {
             return getColorFromObject(depth, reflectiveness, intercept, ray, index);
         }
 
@@ -132,8 +95,8 @@ public class RecursiveRayTracer implements RayTracer {
     }
 
     @Override
-    public Color resolveRayColor(float reflectiveness, Ray ray) {
-        return resolveRayColor(0, reflectiveness, ray);
+    public Color resolveRayColor(Ray ray, int depth) {
+        return resolveRayColor(depth, 1f, ray);
     }
 
     Color getSpecularReflection(int depth, float reflectiveness, Ray ray, Intercept intercept, Vec normal, Material material) {
@@ -180,7 +143,7 @@ public class RecursiveRayTracer implements RayTracer {
                 // No light from this light source
                 continue;
             }
-            Ray lightRay = lightSource.getRay(interceptPoint);
+            Ray lightRay = lightSource.sampleRay(intercept);
             if (debug) {
                 ray.addDebug(lightRay);
             }
@@ -250,7 +213,7 @@ public class RecursiveRayTracer implements RayTracer {
     private float getShadowProbability(Ray lightRay) {
 
         if (!softShadows) {
-            if (interceptsRay(lightRay)) {
+            if (scene.interceptsRay(lightRay)) {
                 return 1;
             } else {
                 return 0;
@@ -262,7 +225,7 @@ public class RecursiveRayTracer implements RayTracer {
 
             for (int i = 0; i < shadowRays; i++) {
                 Ray newLightRay = lightRay.jitterDirection();
-                if (interceptsRay(newLightRay)) {
+                if (scene.interceptsRay(newLightRay)) {
                     shadowCount++;
                 }
             }

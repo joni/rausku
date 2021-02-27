@@ -1,5 +1,6 @@
 package rausku.lighting;
 
+import rausku.geometry.Intercept;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -13,8 +14,8 @@ public class DirectionalLight implements LightSource {
     }
 
     @Override
-    public Ray getRay(Vec origin) {
-        return Ray.fromOriginDirection(origin, towardsLight);
+    public Ray sampleRay(Intercept intercept) {
+        return Ray.fromOriginDirection(intercept.interceptPoint, towardsLight);
     }
 
     public Vec getDirection() {

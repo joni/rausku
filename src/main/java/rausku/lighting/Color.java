@@ -16,6 +16,10 @@ public class Color {
         this.b = b;
     }
 
+    public static Color of(float gray) {
+        return of(gray, gray, gray);
+    }
+
     public static Color of(float r, float g, float b) {
         return new Color(r, g, b);
     }

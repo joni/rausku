@@ -1,5 +1,6 @@
 package rausku.lighting;
 
+import rausku.geometry.Intercept;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
@@ -13,8 +14,8 @@ public class PointLight implements LightSource {
     }
 
     @Override
-    public Ray getRay(Vec origin) {
-        return Ray.fromStartEnd(origin, position);
+    public Ray sampleRay(Intercept intercept) {
+        return Ray.fromStartEnd(intercept.interceptPoint, position);
     }
 
     @Override

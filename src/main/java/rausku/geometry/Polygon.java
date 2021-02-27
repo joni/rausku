@@ -79,13 +79,14 @@ public class Polygon {
         float nDotD = normal.dot(ray.direction);
         if (nDotD > -1e-2) {
             // back face culling
-            return Intercept.noIntercept();
+//            return Intercept.noIntercept();
         }
 
         Vec sub = ray.origin.sub(v0);
         float dot = -normal.dot(sub);
 
-        if (dot > 0) {
+        if (Math.signum(dot) != Math.signum(nDotD)) {
+            // intersection is behind the ray
             return Intercept.noIntercept();
         }
 

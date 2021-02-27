@@ -34,7 +34,7 @@ public class Torus implements SceneObject {
             return Intercept.noIntercept();
         }
         float[] bboxIntercepts = bbox.getIntercepts(ray);
-        float t = 0;
+        float t = bboxIntercepts[0];
 
         float len = ray.direction.len();
 

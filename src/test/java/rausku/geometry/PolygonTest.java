@@ -1,13 +1,13 @@
 package rausku.geometry;
 
-import org.testng.annotations.Ignore;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import rausku.lighting.Color;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PolygonTest {
 
@@ -63,7 +63,7 @@ public class PolygonTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void colorTest() {
         Vec a = Vec.of(0, 0, -1);
         Vec b = Vec.of(10, 0, 0);

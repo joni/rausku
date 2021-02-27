@@ -10,8 +10,8 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene5 extends Scene {
-    public Scene5() {
+public class Scene5_CSG extends Scene {
+    public Scene5_CSG() {
         setCamera(Camera.createCamera(
                 Vec.point(-6, 6, 12),
                 Vec.of(1, -1, -2),
@@ -32,6 +32,6 @@ public class Scene5 extends Scene {
                         new Cube(),
                         QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
 
-        addObject(HalfSpace.createHorizontalPlane(-1.001f), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
+        addObject(HalfSpace.horizontalPlane(-1.001f), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
     }
 }

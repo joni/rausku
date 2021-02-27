@@ -2,6 +2,7 @@ package rausku.scenes;
 
 import rausku.algorithm.Camera;
 import rausku.geometry.Group;
+import rausku.geometry.Intercept;
 import rausku.geometry.SceneObject;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -9,6 +10,7 @@ import rausku.lighting.DirectionalLight;
 import rausku.lighting.LightSource;
 import rausku.material.Material;
 import rausku.math.Matrix;
+import rausku.math.Ray;
 import rausku.math.Vec;
 
 import java.util.ArrayDeque;
@@ -30,6 +32,7 @@ public abstract class Scene {
     private final List<SceneObject> objects = new ArrayList<>();
 
     private final ArrayDeque<Matrix> transformStack = new ArrayDeque<>();
+    private boolean debug = false;
 
     public Scene() {
         transformStack.push(Matrix.eye());
@@ -104,5 +107,59 @@ public abstract class Scene {
 
     public Material getMaterial(int index) {
         return materials.get(index);
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean interceptsRay(Ray ray) {
+        List<SceneObject> objects = this.objects;
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = getInverseTransform(i);
+            Ray transform1 = transform.transform(ray);
+            Intercept intercept2 = object.getIntercept(transform1);
+            float intercept = intercept2.intercept;
+            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.bound) {
+                if (debug) {
+                    ray.addDebug(transform1);
+                    ray.addDebug(String.format("intercept %d, %s", i, intercept2));
+                }
+                return true;
+            }
+        }
+        if (debug) {
+            ray.addDebug("no intercept");
+        }
+        return false;
+    }
+
+    public SceneIntercept getIntercept(Ray ray) {
+        float closestIntercept = Float.POSITIVE_INFINITY;
+        Intercept intercept = Intercept.noIntercept();
+        int interceptIndex = -1;
+
+        List<SceneObject> objects = getObjects();
+        for (int i = 0; i < objects.size(); i++) {
+            SceneObject object = objects.get(i);
+            Matrix transform = inverseTransforms.get(i);
+            Ray transformed = transform.transform(ray);
+            if (isDebug()) {
+                ray.addDebug(transformed);
+            }
+            Intercept objectIntercept = object.getIntercept(transformed);
+            float interceptValue = objectIntercept.intercept;
+            if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
+                closestIntercept = interceptValue;
+                intercept = objectIntercept;
+                interceptIndex = i;
+            }
+        }
+        return new SceneIntercept(interceptIndex, intercept);
     }
 }

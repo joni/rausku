@@ -39,7 +39,7 @@ public interface Sampler {
         @Override
         public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Ray ray = camera.getRayFromOriginToCanvas(x, y);
-            Color color = rayTracer.resolveRayColor(1, ray);
+            Color color = rayTracer.resolveRayColor(ray);
             image.setRGB(x, y, color.toIntRGB());
         }
     }
@@ -58,7 +58,7 @@ public interface Sampler {
             Color[] colors = new Color[samplesPerPixel];
             for (int i = 0; i < samplesPerPixel; i++) {
                 Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
-                colors[i] = rayTracer.resolveRayColor(1, ray);
+                colors[i] = rayTracer.resolveRayColor(ray);
             }
             image.setRGB(x, y, Color.average(colors).toIntRGB());
         }
@@ -78,7 +78,7 @@ public interface Sampler {
             Color[] colors = new Color[samplesPerPixel];
             for (int i = 0; i < samplesPerPixel; i++) {
                 Ray ray = camera.getRayFromOriginToCanvas(x + rnd.nextFloat() - .5f, y + rnd.nextFloat() - .5f);
-                colors[i] = rayTracer.resolveRayColor(1, ray);
+                colors[i] = rayTracer.resolveRayColor(ray);
             }
             image.setRGB(x, y, Color.average(colors).toIntRGB());
         }
@@ -101,7 +101,7 @@ public interface Sampler {
 
         private Color getColor(RayTracer rayTracer, Camera camera, float x, float y) {
             Ray ray = camera.getRayFromOriginToCanvas(x, y);
-            return rayTracer.resolveRayColor(1, ray);
+            return rayTracer.resolveRayColor(ray);
         }
     }
 }

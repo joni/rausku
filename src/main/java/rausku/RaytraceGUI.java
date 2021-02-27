@@ -1,12 +1,9 @@
 package rausku;
 
-import rausku.algorithm.Camera;
-import rausku.algorithm.RecursiveRayTracer;
-import rausku.algorithm.RenderStrategy;
-import rausku.algorithm.Sampler;
+import rausku.algorithm.*;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene6_Textures;
+import rausku.scenes.Scene0_Sphere;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,19 +22,20 @@ import java.util.concurrent.ExecutionException;
 public class RaytraceGUI {
 
     private final RenderStrategy renderer;
-    private final RecursiveRayTracer rayTracer;
+    private final RayTracer rayTracer;
     private final Camera camera;
     private final Sampler sampler;
     private final Scene scene;
 
     public RaytraceGUI() {
 
-        scene = new Scene6_Textures();
+        scene = new Scene0_Sphere();
 
         camera = scene.getCamera();
         RecursiveRayTracer.Params params = new RecursiveRayTracer.Params()
                 .withMaxDepth(10);
-        rayTracer = new RecursiveRayTracer(scene, params);
+//        rayTracer = new RecursiveRayTracer(scene, params);
+        rayTracer = new MonteCarloRayTracer(scene);
 
 //        sampler = new Sampler.GaussianRandomSubSampler(8);
         sampler = new Sampler.Naive();
@@ -95,7 +93,7 @@ public class RaytraceGUI {
                 Point point = e.getPoint();
                 Ray ray = camera.getRayFromOriginToCanvas(point.x, point.y);
                 ray.addDebug(String.format("Canvas coordinates x=%d y=%d", point.x, point.y));
-                rayTracer.resolveRayColor(1, ray);
+                rayTracer.resolveRayColor(ray);
                 DefaultMutableTreeNode root = buildDebugTree(ray);
                 tree.setModel(new DefaultTreeModel(root));
                 tree.revalidate();

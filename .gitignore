@@ -1,6 +1,7 @@
 /out/
 /.idea/
 /raytrace.iml
+/src/jmh/generated/
 
 # Ignore Gradle project-specific cache directory
 .gradle
