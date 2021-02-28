@@ -3,9 +3,6 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 public class CSGUnion implements CSGObject, SceneObject {
 
     private CSGObject obj1;
@@ -20,8 +17,8 @@ public class CSGUnion implements CSGObject, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float[] obj1Intercepts = obj1.getAllIntercepts(ray);
-        float[] obj2Intercepts = obj2.getAllIntercepts(ray);
+        Intercept[] obj1Intercepts = obj1.getAllInterceptObjects(ray);
+        Intercept[] obj2Intercepts = obj2.getAllInterceptObjects(ray);
 
         boolean inObj1 = false;
         boolean inObj2 = false;
@@ -30,9 +27,9 @@ public class CSGUnion implements CSGObject, SceneObject {
         int obj2Index = 0;
 
         while (obj1Index < obj1Intercepts.length && obj2Index < obj2Intercepts.length) {
-            float intercept;
+            Intercept intercept;
             CSGObject obj;
-            if (obj1Intercepts[obj1Index] < obj2Intercepts[obj2Index]) {
+            if (obj1Intercepts[obj1Index].intercept < obj2Intercepts[obj2Index].intercept) {
                 // change in obj1
                 intercept = obj1Intercepts[obj1Index];
                 obj = obj1;
@@ -46,27 +43,27 @@ public class CSGUnion implements CSGObject, SceneObject {
                 obj2Index++;
             }
             // Are we entering or exiting?
-            if ((inObj1 || inObj2) && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj);
+            if ((inObj1 || inObj2) && intercept.intercept > 0) {
+                return new Intercept(intercept, new IInfo(obj, intercept));
             }
         }
 
         while (obj1Index < obj1Intercepts.length) {
-            float intercept = obj1Intercepts[obj1Index];
+            Intercept intercept = obj1Intercepts[obj1Index];
             // change in obj1. Are we entering or exiting?
             inObj1 = !inObj1;
-            if ((inObj1 || inObj2) && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj1);
+            if ((inObj1 || inObj2) && intercept.intercept > 0) {
+                return new Intercept(intercept, new IInfo(obj1, intercept));
             }  // no change
             obj1Index++;
         }
 
         while (obj2Index < obj2Intercepts.length) {
-            float intercept = obj2Intercepts[obj2Index];
+            Intercept intercept = obj2Intercepts[obj2Index];
             // change in obj2. Are we entering or exiting?
             inObj2 = !inObj2;
-            if ((inObj1 || inObj2) && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj2);
+            if ((inObj1 || inObj2) && intercept.intercept > 0) {
+                return new Intercept(intercept, new IInfo(obj2, intercept));
             }
             obj2Index++;
         }
@@ -75,17 +72,33 @@ public class CSGUnion implements CSGObject, SceneObject {
     }
 
     @Override
-    public float[] getAllIntercepts(Ray ray) {
-        float[] intercepts1 = obj1.getAllIntercepts(ray);
-        float[] intercepts2 = obj2.getAllIntercepts(ray);
-        float[] allIntercepts = {max(intercepts1[0], intercepts2[0]), min(intercepts1[1], intercepts2[1])};
+    public Intercept[] getAllInterceptObjects(Ray ray) {
+        Intercept[] intercepts1 = obj1.getAllInterceptObjects(ray);
+        Intercept[] intercepts2 = obj2.getAllInterceptObjects(ray);
+        Intercept[] allIntercepts = {max(intercepts1[0], intercepts2[0]), min(intercepts1[1], intercepts2[1])};
         return allIntercepts;
+    }
+
+    private Intercept max(Intercept i1, Intercept i2) {
+        if (i1.intercept < i2.intercept) {
+            return i2;
+        } else {
+            return i1;
+        }
+    }
+
+    private Intercept min(Intercept i1, Intercept i2) {
+        if (i1.intercept > i2.intercept) {
+            return i2;
+        } else {
+            return i1;
+        }
     }
 
     @Override
     public Vec getNormal(Intercept intercept) {
-        CSGObject object = (CSGObject) intercept.info;
-        return object.getNormal(intercept);
+        IInfo info = (IInfo) intercept.info;
+        return info.object.getNormal(info.intercept);
     }
 
     @Override

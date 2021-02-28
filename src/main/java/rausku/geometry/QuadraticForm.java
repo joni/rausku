@@ -8,7 +8,7 @@ import static rausku.math.FloatMath.sqrt;
 
 public class QuadraticForm implements CSGObject, SceneObject {
 
-    private static final float[] NO_INTERCEPT = {};
+    private static final Intercept[] NO_INTERCEPT = {};
 
     private final Matrix matrix;
     private final Matrix gradient;
@@ -50,11 +50,10 @@ public class QuadraticForm implements CSGObject, SceneObject {
     }
 
     @Override
-    public float[] getAllIntercepts(Ray ray) {
+    public Intercept[] getAllInterceptObjects(Ray ray) {
         if (!bbox.testIntercept(ray)) {
             return NO_INTERCEPT;
         }
-        float[] floats = {Float.NaN, Float.NaN};
 
         Vec v1 = ray.direction;
         Vec v0 = ray.origin;
@@ -69,9 +68,14 @@ public class QuadraticForm implements CSGObject, SceneObject {
         float determinant = B * B - 4 * A * C;
         if (determinant > 0) {
             float sqrt = Math.copySign(sqrt(determinant), A);
-            floats[0] = (-B - sqrt) / (2 * A);
-            floats[1] = (-B + sqrt) / (2 * A);
-            return floats;
+            float t1 = (-B - sqrt) / (2 * A);
+            float t2 = (-B + sqrt) / (2 * A);
+            Vec point1 = ray.apply(t1);
+            Vec point2 = ray.apply(t2);
+            return new Intercept[]{
+                    new Intercept(t1, point1, point1),
+                    new Intercept(t2, point2, point2)
+            };
         } else {
             return NO_INTERCEPT;
         }

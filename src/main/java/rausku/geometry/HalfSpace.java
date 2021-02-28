@@ -19,14 +19,14 @@ public class HalfSpace implements CSGObject, SceneObject {
     }
 
     @Override
-    public float[] getAllIntercepts(Ray ray) {
+    public Intercept[] getAllInterceptObjects(Ray ray) {
         // v.(dt+o) > 0  <=> (v.d)t > -v.o  <=> t <> -v.o/v.d
         float vDotD = Vec.dot(normal, ray.direction);
         float intercept = -Vec.dot(normal, ray.origin) / vDotD;
         if (vDotD > 0) {
-            return new float[]{Float.NEGATIVE_INFINITY, intercept};
+            return new Intercept[]{Intercept.noIntercept(), new Intercept(intercept, ray.apply(intercept), null)};
         } else {
-            return new float[]{intercept, Float.POSITIVE_INFINITY};
+            return new Intercept[]{new Intercept(intercept, ray.apply(intercept), null), Intercept.noIntercept()};
         }
     }
 

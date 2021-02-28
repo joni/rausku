@@ -3,6 +3,9 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import static java.lang.Math.abs;
 
 public class Cube implements CSGObject, SceneObject {
@@ -25,8 +28,32 @@ public class Cube implements CSGObject, SceneObject {
     }
 
     @Override
-    public float[] getAllIntercepts(Ray ray) {
-        return bbox.getIntercepts(ray);
+    public Intercept[] getAllInterceptObjects(Ray ray) {
+        float[] intercepts = {
+                (+1 - ray.origin.x) / ray.direction.x,
+                (-1 - ray.origin.x) / ray.direction.x,
+                (+1 - ray.origin.y) / ray.direction.y,
+                (-1 - ray.origin.y) / ray.direction.y,
+                (+1 - ray.origin.z) / ray.direction.z,
+                (-1 - ray.origin.z) / ray.direction.z,
+        };
+
+        Intercept[] interceptObjs = new Intercept[2];
+        int index = 0;
+
+        for (int i = 0; i < intercepts.length; i++) {
+            float intercept1 = intercepts[i];
+            if (isOk(ray, intercept1)) {
+                interceptObjs[index++] = new Intercept(intercept1, ray.apply(intercept1), new IInfo(i));
+            }
+        }
+        if (index < 2) {
+            return new Intercept[0];
+        }
+
+        Arrays.sort(interceptObjs, Comparator.comparing(i -> i.intercept));
+
+        return interceptObjs;
     }
 
     public Intercept getIntercept(Ray ray) {

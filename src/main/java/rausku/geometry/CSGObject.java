@@ -4,7 +4,8 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 
 public interface CSGObject {
-    float[] getAllIntercepts(Ray ray);
+
+    Intercept[] getAllInterceptObjects(Ray ray);
 
     Vec getNormal(Intercept intercept);
 

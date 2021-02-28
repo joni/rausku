@@ -27,6 +27,14 @@ public class Intercept {
         this.v = v;
     }
 
+    public Intercept(Intercept intercept, Object info) {
+        this.intercept = intercept.intercept;
+        this.interceptPoint = intercept.interceptPoint;
+        this.u = intercept.u;
+        this.v = intercept.v;
+        this.info = info;
+    }
+
     public static Intercept noIntercept() {
         return NO_INTERCEPT;
     }

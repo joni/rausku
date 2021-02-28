@@ -15,8 +15,8 @@ public class CSGSubtraction implements CSGObject, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float[] obj1Intercepts = obj1.getAllIntercepts(ray);
-        float[] obj2Intercepts = obj2.getAllIntercepts(ray);
+        Intercept[] obj1Intercepts = obj1.getAllInterceptObjects(ray);
+        Intercept[] obj2Intercepts = obj2.getAllInterceptObjects(ray);
 
         boolean inObj1 = false;
         boolean inObj2 = false;
@@ -25,9 +25,9 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         int obj2Index = 0;
 
         while (obj1Index < obj1Intercepts.length && obj2Index < obj2Intercepts.length) {
-            float intercept;
+            Intercept intercept;
             CSGObject obj;
-            if (obj1Intercepts[obj1Index] < obj2Intercepts[obj2Index]) {
+            if (obj1Intercepts[obj1Index].intercept < obj2Intercepts[obj2Index].intercept) {
                 // change in obj1
                 intercept = obj1Intercepts[obj1Index];
                 obj = obj1;
@@ -41,27 +41,27 @@ public class CSGSubtraction implements CSGObject, SceneObject {
                 obj2Index++;
             }
             // Are we entering or exiting?
-            if (inObj1 && !inObj2 && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj);
+            if (inObj1 && !inObj2 && intercept.intercept > 0) {
+                return createIntercept(ray, intercept, obj);
             }
         }
 
         while (obj1Index < obj1Intercepts.length) {
-            float intercept = obj1Intercepts[obj1Index];
+            Intercept icept = obj1Intercepts[obj1Index];
             // change in obj1. Are we entering or exiting?
             inObj1 = !inObj1;
-            if (inObj1 && !inObj2 && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj1);
+            if (inObj1 && !inObj2 && icept.intercept > 0) {
+                return createIntercept(ray, icept, obj1);
             }  // no change
             obj1Index++;
         }
 
         while (obj2Index < obj2Intercepts.length) {
-            float intercept = obj2Intercepts[obj2Index];
+            Intercept icept = obj2Intercepts[obj2Index];
             // change in obj2. Are we entering or exiting?
             inObj2 = !inObj2;
-            if (inObj1 && !inObj2 && intercept > 0) {
-                return new Intercept(intercept, ray.apply(intercept), obj2);
+            if (inObj1 && !inObj2 && icept.intercept > 0) {
+                return createIntercept(ray, icept, obj2);
             }
             obj2Index++;
         }
@@ -69,20 +69,24 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         return Intercept.noIntercept();
     }
 
-    @Override
-    public float[] getAllIntercepts(Ray ray) {
-        return new float[0];
+    private Intercept createIntercept(Ray ray, Intercept intercept, CSGObject obj) {
+        IInfo iinfo = new IInfo(obj, intercept);
+        return new Intercept(intercept, iinfo);
     }
 
+    @Override
+    public Intercept[] getAllInterceptObjects(Ray ray) {
+        return new Intercept[0];
+    }
 
     @Override
     public Vec getNormal(Intercept intercept) {
         IInfo info = (IInfo) intercept.info;
         // TODO the "intercept info" may have the wrong type
-        if (info == obj1) {
-            return info.object.getNormal(intercept);
+        if (info.object == obj1) {
+            return info.object.getNormal(info.intercept);
         } else {
-            return info.object.getNormal(intercept).mul(-1);
+            return info.object.getNormal(info.intercept).mul(-1);
         }
     }
 
@@ -91,14 +95,13 @@ public class CSGSubtraction implements CSGObject, SceneObject {
         return obj1.getBoundingBox();
     }
 
-    static class IInfo {
+    private static class IInfo {
+        private final CSGObject object;
+        private final Intercept intercept;
 
-        private CSGObject object;
-        private Object objectInterceptInfo;
-
-        public IInfo(CSGObject object, Object objectInterceptInfo) {
+        public IInfo(CSGObject object, Intercept intercept) {
             this.object = object;
-            this.objectInterceptInfo = objectInterceptInfo;
+            this.intercept = intercept;
         }
     }
 }

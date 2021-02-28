@@ -22,15 +22,17 @@ public class Scene5_CSG extends Scene {
 
         Material plastic = Material.plastic(Color.of(1f, 1f, 1f), .3f);
 
-        addObject(Matrix.translate(-1.25f, 0, 0),
-                new CSGSubtraction(
-                        new Cube(),
-                        QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
+        Cube cube = new Cube();
+        QuadraticForm sphere = QuadraticForm.createSphere(Vec.origin(), 1.33f);
 
-        addObject(Matrix.translate(+1.25f, 0, 0),
-                new CSGIntersection(
-                        new Cube(),
-                        QuadraticForm.createSphere(Vec.origin(), 1.33f)), plastic);
+        addObject(Matrix.translate(-2.33f, 0, 0),
+                new CSGSubtraction(cube, sphere), plastic);
+
+        addObject(Matrix.translate(+0f, 0, 0),
+                new CSGUnion(cube, sphere), plastic);
+
+        addObject(Matrix.translate(+2.33f, 0, 0),
+                new CSGIntersection(cube, sphere), plastic);
 
         addObject(HalfSpace.horizontalPlane(-1.001f), Material.plastic(Color.of(.24f, .5f, .2f), 0f));
     }
