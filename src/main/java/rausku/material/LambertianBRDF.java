@@ -4,11 +4,9 @@ import rausku.lighting.Color;
 import rausku.math.Rand;
 import rausku.math.Vec;
 
-import static rausku.math.FloatMath.cos;
-
 public class LambertianBRDF implements BRDF {
 
-    Color color;
+    final Color color;
 
     public LambertianBRDF(Color color) {
         this.color = color;
@@ -20,6 +18,6 @@ public class LambertianBRDF implements BRDF {
 
     public Sample sample(Vec outgoing, float s, float t) {
         Vec hemisphere = Rand.cosineHemisphere(s, t);
-        return new Sample(color, hemisphere, cos(hemisphere.z));
+        return new Sample(color, hemisphere, hemisphere.y);
     }
 }

@@ -149,9 +149,6 @@ public abstract class Scene {
             SceneObject object = objects.get(i);
             Matrix transform = inverseTransforms.get(i);
             Ray transformed = transform.transform(ray);
-            if (isDebug()) {
-                ray.addDebug(transformed);
-            }
             Intercept objectIntercept = object.getIntercept(transformed);
             float interceptValue = objectIntercept.intercept;
             if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {

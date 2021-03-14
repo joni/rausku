@@ -62,11 +62,11 @@ public class Vec {
         return Vec.of(x / a, y / a, z / a, w / a);
     }
 
-    public static Vec cross(Vec v, Vec w) {
+    public static Vec cross(Vec u, Vec v) {
         return Vec.of(
-                v.y * w.z - v.z * w.y,
-                v.z * w.x - v.x * w.z,
-                v.x * w.y - v.y * w.x
+                u.y * v.z - u.z * v.y,
+                u.z * v.x - u.x * v.z,
+                u.x * v.y - u.y * v.x
         );
     }
 

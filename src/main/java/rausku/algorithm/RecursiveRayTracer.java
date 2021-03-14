@@ -192,7 +192,7 @@ public class RecursiveRayTracer implements RayTracer {
 
             // Specular reflection
             // Ignore internal reflection for now, easily becomes infinite loop
-            if (normal.dot(ray.direction) < 0 && material.hasSpecularReflection()) {
+            if (normal.dot(ray.direction) < 0) {
                 Color reflectedLight = getSpecularReflection(depth, ray, intercept, normal, material);
                 light = reflectedLight.mulAdd(reflectionCoeff, light);
             }

@@ -20,11 +20,11 @@ import static rausku.math.FloatMath.abs;
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
-    public static final int MAX_DEPTH = 4;
+    public static final int MAX_DEPTH = 2;
     private boolean debug;
     private Scene scene;
 
-    private int lightRayCount = 2;
+    private int lightRayCount = 16;
 
     public MonteCarloRayTracer(Scene scene) {
         this.scene = scene;
@@ -71,18 +71,18 @@ public class MonteCarloRayTracer implements RayTracer {
         SceneObject sceneObject = scene.getObject(interceptIndex);
         Material material = scene.getMaterial(interceptIndex);
 
-        Vec interceptPoint = ray.apply(intercept.intercept);
+        Vec interceptPoint = sceneIntercept.worldInterceptPoint;
         Vec objectNormal = material.getNormal(intercept, sceneObject);
 
-        Vec normal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
+        Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        Matrix localBase = Matrix.orthonormalBasis(normal);
+        Matrix localBase = Matrix.orthonormalBasis(worldNormal);
         Matrix localInvert = localBase.transpose();
 
         Vec localOutgoing = localInvert.transform(ray.direction);
 
         if (this.debug) {
-            addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, normal);
+            addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, worldNormal);
             addDebugString(ray, "local outgoing: %s", localOutgoing);
         }
 
@@ -91,11 +91,11 @@ public class MonteCarloRayTracer implements RayTracer {
         BRDF bsdf = material.getBSDF(intercept);
 
         // sample light coming directly from light source
-        Color directLight = sampleDirectLighting(sceneIntercept, ray, normal, rng, bsdf);
+        Color directLight = sampleDirectLighting(sceneIntercept, ray, worldNormal, rng, bsdf);
 
         // sample light from BSDF
         Color light = Color.black();
-        int bsdfSamples = 4;
+        int bsdfSamples = 16;
 
         for (int i = 0; i < bsdfSamples; i++) {
 
@@ -143,13 +143,11 @@ public class MonteCarloRayTracer implements RayTracer {
                 LightSource.Sample sample = lightSource.sample(intercept, rng.nextFloat(), rng.nextFloat());
                 Ray lightRay = sample.ray;
                 float cosineIncident = normal.dot(lightRay.direction);
+                if (this.debug) {
+                    addDebugString(ray, "shadow ray: %f %s", cosineIncident, lightRay);
+//                    ray.addDebug(lightRay);
+                }
                 if (cosineIncident > 0) {
-
-                    if (this.debug) {
-                        addDebugString(ray, "shadow ray: %s", lightRay);
-                        ray.addDebug(lightRay);
-                    }
-
                     boolean shadow = scene.interceptsRay(lightRay);
                     if (!shadow) {
                         Color incidentRadiance = lightSource.getColor();
@@ -160,7 +158,9 @@ public class MonteCarloRayTracer implements RayTracer {
                 }
             }
         }
-
+        if (this.debug) {
+            addDebugString(ray, "direct light %s", light);
+        }
         return light;
     }
 
