@@ -1,10 +1,11 @@
-package rausku.scenes;
+package rausku.scenes.v1;
 
 import rausku.geometry.HalfSpace;
 import rausku.geometry.QuadraticForm;
 import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.math.Vec;
+import rausku.scenes.DefaultSceneDefinition;
 
 public class Scene1_ThreeSpheres extends DefaultSceneDefinition {
     {

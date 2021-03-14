@@ -1,4 +1,4 @@
-package rausku.scenes;
+package rausku.scenes.v1;
 
 import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
@@ -10,6 +10,7 @@ import rausku.material.TextureMaterial;
 import rausku.math.Matrix;
 import rausku.math.PerlinNoise2D;
 import rausku.math.Vec;
+import rausku.scenes.DefaultSceneDefinition;
 import rausku.texture.NoiseTexture;
 
 import static rausku.math.FloatMath.toRadians;

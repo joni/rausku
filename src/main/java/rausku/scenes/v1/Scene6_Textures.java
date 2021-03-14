@@ -1,4 +1,4 @@
-package rausku.scenes;
+package rausku.scenes.v1;
 
 import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
@@ -7,6 +7,7 @@ import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.material.TextureMaterial;
 import rausku.math.*;
+import rausku.scenes.DefaultSceneDefinition;
 import rausku.texture.CheckerBoardTexture;
 import rausku.texture.GinghamTexture;
 import rausku.texture.ImageTexture;

@@ -1,4 +1,4 @@
-package rausku.scenes;
+package rausku.scenes.v1;
 
 import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
@@ -7,6 +7,7 @@ import rausku.lighting.Color;
 import rausku.lighting.DirectionalLight;
 import rausku.material.Material;
 import rausku.math.Vec;
+import rausku.scenes.DefaultSceneDefinition;
 
 import static rausku.math.FloatMath.toRadians;
 

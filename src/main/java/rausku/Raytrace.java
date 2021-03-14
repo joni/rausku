@@ -5,8 +5,8 @@ import rausku.algorithm.RecursiveRayTracer;
 import rausku.algorithm.RenderStrategy;
 import rausku.algorithm.Sampler;
 import rausku.scenes.Scene;
-import rausku.scenes.Scene7_Teapot;
 import rausku.scenes.SceneDefinition;
+import rausku.scenes.v1.Scene7_Teapot;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

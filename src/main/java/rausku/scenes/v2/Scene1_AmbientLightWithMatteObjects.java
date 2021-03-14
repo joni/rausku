@@ -13,7 +13,7 @@ import rausku.scenes.DefaultSceneDefinition;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene0_SphereAndCubes extends DefaultSceneDefinition {
+public class Scene1_AmbientLightWithMatteObjects extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(2, 4, 8),
