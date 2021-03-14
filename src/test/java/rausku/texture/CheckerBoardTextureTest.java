@@ -1,11 +1,12 @@
 package rausku.texture;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 import rausku.geometry.Intercept;
 import rausku.lighting.Color;
 import rausku.math.Vec;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class CheckerBoardTextureTest {
 

@@ -24,8 +24,13 @@ public class TextureMaterial implements Material {
     }
 
     @Override
-    public float getReflectiveness() {
-        return 0;
+    public BRDF getBSDF(Intercept intercept) {
+        return new LambertianBRDF(diffuseTexture.getColor(intercept));
+    }
+
+    @Override
+    public boolean hasSpecularReflection() {
+        return false;
     }
 
     @Override

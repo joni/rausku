@@ -121,7 +121,7 @@ public abstract class Scene {
         List<SceneObject> objects = this.objects;
         for (int i = 0; i < objects.size(); i++) {
             SceneObject object = objects.get(i);
-            Matrix transform = getInverseTransform(i);
+            Matrix transform = inverseTransforms.get(i);
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
@@ -160,6 +160,6 @@ public abstract class Scene {
                 interceptIndex = i;
             }
         }
-        return new SceneIntercept(interceptIndex, intercept);
+        return new SceneIntercept(interceptIndex, ray.apply(intercept.intercept), intercept);
     }
 }

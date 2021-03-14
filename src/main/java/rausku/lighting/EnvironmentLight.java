@@ -6,20 +6,20 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
-public class AmbientLight implements LightSource {
+public class EnvironmentLight implements LightSource {
     private Color color;
 
-    public AmbientLight(Color color) {
+    public EnvironmentLight(Color color) {
         this.color = color;
     }
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        return new Sample(color, sampleRay(intercept, s, t), 1 / (2 * FloatMath.PI));
+        return new Sample(color, sampleRay(intercept, s, t), 1 / (4 * FloatMath.PI));
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
-        Vec hemisphere = Rand.hemisphere(s, t);
+        Vec hemisphere = Rand.sphere(s, t);
         return Ray.fromOriginDirection(intercept.worldInterceptPoint, hemisphere);
     }
 

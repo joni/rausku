@@ -4,7 +4,9 @@ import rausku.geometry.Intercept;
 import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.lighting.LightSource;
+import rausku.material.BRDF;
 import rausku.material.Material;
+import rausku.math.FresnelReflectance;
 import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
@@ -12,7 +14,6 @@ import rausku.scenes.Scene;
 import rausku.scenes.SceneIntercept;
 
 import static rausku.math.FloatMath.abs;
-import static rausku.math.FloatMath.pow;
 
 public class RecursiveRayTracer implements RayTracer {
 
@@ -21,14 +22,12 @@ public class RecursiveRayTracer implements RayTracer {
     private final Params params;
 
     private final int maxDepth;
-    private boolean softShadows;
     private boolean debug;
 
     public RecursiveRayTracer(Scene scene, Params params) {
         this.scene = scene;
         this.params = params;
         this.maxDepth = params.maxDepth;
-        this.softShadows = params.softShadows;
         this.debug = false;
     }
 
@@ -38,9 +37,7 @@ public class RecursiveRayTracer implements RayTracer {
         scene.setDebug(debug);
     }
 
-    Color resolveRayColor(int depth, float reflectiveness, Ray ray) {
-
-
+    Color resolveRayColor(int depth, Ray ray) {
         if (depth > maxDepth) {
             if (this.debug) {
                 addDebugString(ray, "Max depth reached");
@@ -50,7 +47,7 @@ public class RecursiveRayTracer implements RayTracer {
 
         SceneIntercept sceneIntercept = scene.getIntercept(ray);
         Intercept intercept = sceneIntercept.intercept;
-        int index = sceneIntercept.interceptIndex;
+        int index = sceneIntercept.objectIndex;
 
         if (this.debug) {
             if (index >= 0) {
@@ -61,18 +58,20 @@ public class RecursiveRayTracer implements RayTracer {
         }
 
         if (intercept.isValid()) {
-            return getColorFromObject(depth, reflectiveness, intercept, ray, index);
+            Color returnedLight = getColorFromObject(depth, sceneIntercept, ray);
+            addDebugString(ray, "Returned Light %s", returnedLight);
+            return returnedLight;
         }
 
         // Specular reflection of the light source itself when nothing is hit
         for (LightSource light : scene.getLights()) {
             if (light.intercepts(ray)) {
-                return light.getColor().mul(10);
+                return light.getColor();
             }
         }
 
         // nothing hit
-        return scene.getAmbientLight().getColor();
+        return Color.black();
 
 //        BoundingBox bbox = new BoundingBox(Vec.origin(), Vec.point(+2,+2,+2));
 //        float[] intercepts = bbox.getIntercepts(ray);
@@ -96,28 +95,43 @@ public class RecursiveRayTracer implements RayTracer {
 
     @Override
     public Color resolveRayColor(Ray ray, int depth) {
-        return resolveRayColor(depth, 1f, ray);
+        return resolveRayColor(depth, ray);
     }
 
-    Color getSpecularReflection(int depth, float reflectiveness, Ray ray, Intercept intercept, Vec normal, Material material) {
-        Ray reflected = ray.getReflected(normal, intercept.interceptPoint);
-        if (this.debug) {
-            addDebugString(ray, "reflected ray: %s", reflected);
-            ray.addDebug(reflected);
+    Color getSpecularReflection(int depth, Ray ray, SceneIntercept intercept, Vec normal, Material material) {
+
+        Matrix localBase = Matrix.orthonormalBasis(normal);
+        Matrix localInvert = localBase.transpose();
+        Vec localOutgoing = localInvert.transform(ray.direction);
+
+        BRDF.Sample sample = material.getBSDF(intercept.intercept).sample(localOutgoing, 0, 0);
+        Vec worldIncidentDirection = localBase.transform(sample.incident).normalize();
+
+        Color f = sample.color;
+        if (!f.isBlack()) {
+            Ray reflected = Ray.fromOriginDirection(intercept.worldInterceptPoint, worldIncidentDirection);
+            if (this.debug) {
+                addDebugString(ray, "reflected ray: %s", reflected);
+                ray.addDebug(reflected);
+            }
+            float cosineIncident = abs(sample.incident.y); // = normal.dot(incidentRay.direction)
+
+            return resolveRayColor(depth + 1, reflected).mul(f).mul(cosineIncident);
+        } else {
+            return Color.black();
         }
-        return resolveRayColor(depth + 1, reflectiveness * material.getReflectiveness(), reflected)
-                .mul(material.getReflectiveColor(intercept));
     }
 
-    private Color getColorFromObject(int depth, float reflectiveness, Intercept intercept, Ray ray, int index) {
+    private Color getColorFromObject(int depth, SceneIntercept intercept, Ray ray) {
 
+        int index = intercept.objectIndex;
         Matrix objectToWorld = scene.getTransform(index);
         Matrix worldToObject = scene.getInverseTransform(index);
         SceneObject sceneObject = scene.getObject(index);
         Material material = scene.getMaterial(index);
 
-        Vec interceptPoint = ray.apply(intercept.intercept); // objectToWorld.transform(intercept.interceptPoint);
-        Vec objectNormal = material.getNormal(intercept, sceneObject);
+        Vec interceptPoint = intercept.worldInterceptPoint; // objectToWorld.transform(intercept.interceptPoint);
+        Vec objectNormal = material.getNormal(intercept.intercept, sceneObject);
 
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);
@@ -135,7 +149,7 @@ public class RecursiveRayTracer implements RayTracer {
 
         // Diffuse reflection
         // For diffuse reflection, for now we only consider light coming directly from light sources
-        Color light = scene.getAmbientLight().getColor();
+        Color light = Color.black(); //scene.getAmbientLight().getColor();
 
         for (LightSource lightSource : scene.getLights()) {
             float intensity = lightSource.getIntensity(interceptPoint);
@@ -143,54 +157,44 @@ public class RecursiveRayTracer implements RayTracer {
                 // No light from this light source
                 continue;
             }
-            Ray lightRay = lightSource.sampleRay(intercept);
-            if (debug) {
+            LightSource.Sample sample = lightSource.sample(intercept, 0, 1);
+            Ray lightRay = sample.ray;
+            if (this.debug) {
+                addDebugString(ray, "shadow ray: %s", lightRay);
                 ray.addDebug(lightRay);
             }
             float diffuseReflectionEnergy = normal.dot(lightRay.direction);
             if (diffuseReflectionEnergy > 0) {
                 // check shadow
-                if (this.debug) {
-                    addDebugString(ray, "shadow ray: %s", lightRay);
-                    ray.addDebug(lightRay);
+                if (!scene.interceptsRay(lightRay)) {
+                    Color materialColor = material.getBSDF(intercept.intercept).evaluate(ray.direction, lightRay.direction);
+                    light = sample.color.mul(materialColor).mulAdd(diffuseReflectionEnergy, light);
                 }
-
-                float shadowProbability = getShadowProbability(lightRay);
-                light = lightSource.getColor().mulAdd(intensity * diffuseReflectionEnergy * (1 - shadowProbability), light);
             }
         }
 
-        // Some of this light got absorbed by the material.
-        Color objectColor = material.getDiffuseColor(intercept).mul(light);
-
-        if (reflectiveness <= 1e-6) {
-            return objectColor;
-        }
+        addDebugString(ray, "Direct light %s", light);
 
         if (!material.hasRefraction()) {
 
             // Specular reflection only
-            if (material.getReflectiveness() > 0) {
-                Color reflectedLight = getSpecularReflection(depth, reflectiveness, ray, intercept, normal, material);
-                objectColor = reflectedLight.mulAdd(material.getReflectiveness(), objectColor);
-            }
+            Color reflectedLight = getSpecularReflection(depth, ray, intercept, normal, material);
+            light = reflectedLight.add(light);
 
         } else {
 
             // Light passing through a surface breaks down to absorbed, transmitted, and reflected light
             // mix according to the coefficient of reflection
-            float R0 = pow((1 - material.getIndexOfRefraction()) / (1 + material.getIndexOfRefraction()), 2);
-            float reflectionCoeff = R0 + (1 - R0) * pow(1 - abs(Vec.cos(normal, ray.direction)), 5);
+            float reflectionCoeff = FresnelReflectance.approximation(material.getIndexOfRefraction(), Vec.cos(normal, ray.direction));
             if (this.debug) {
                 addDebugString(ray, "reflection coeff %f", reflectionCoeff);
             }
 
             // Specular reflection
             // Ignore internal reflection for now, easily becomes infinite loop
-            if (normal.dot(ray.direction) < 0 && material.getReflectiveness() > 0) {
-                Color reflectedLight = getSpecularReflection(depth, reflectiveness * reflectionCoeff, ray, intercept, normal, material)
-                        .mul(reflectionCoeff);
-                objectColor = reflectedLight.mulAdd(reflectiveness * material.getReflectiveness(), objectColor);
+            if (normal.dot(ray.direction) < 0 && material.hasSpecularReflection()) {
+                Color reflectedLight = getSpecularReflection(depth, ray, intercept, normal, material);
+                light = reflectedLight.mulAdd(reflectionCoeff, light);
             }
 
             // Light transmitted through the surface
@@ -200,38 +204,14 @@ public class RecursiveRayTracer implements RayTracer {
             }
             if (transmitted != null) {
                 ray.addDebug(transmitted);
-                Color transmittedLight = resolveRayColor(depth + 1, reflectiveness * (1 - reflectionCoeff), transmitted);
+                Color transmittedLight = resolveRayColor(depth + 1, transmitted);
 
-                objectColor = transmittedLight.mulAdd(1 - reflectionCoeff, objectColor);
+                light = transmittedLight.mulAdd(1 - reflectionCoeff, light);
             }
-
         }
 
-        return objectColor;
-    }
-
-    private float getShadowProbability(Ray lightRay) {
-
-        if (!softShadows) {
-            if (scene.interceptsRay(lightRay)) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
-
-            int shadowRays = 4;
-            int shadowCount = 0;
-
-            for (int i = 0; i < shadowRays; i++) {
-                Ray newLightRay = lightRay.jitterDirection();
-                if (scene.interceptsRay(newLightRay)) {
-                    shadowCount++;
-                }
-            }
-
-            return (float) shadowCount / shadowRays;
-        }
+        // Some of this light got absorbed by the material.
+        return light;
     }
 
     void addDebugString(Ray ray, String messageFormat, Object... args) {

@@ -3,24 +3,28 @@ package rausku.algorithm;
 import rausku.geometry.Intercept;
 import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
+import rausku.lighting.LightSource;
+import rausku.material.BRDF;
 import rausku.material.Material;
 import rausku.math.Matrix;
-import rausku.math.Rand;
 import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.Scene;
 import rausku.scenes.SceneIntercept;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static rausku.math.FloatMath.abs;
 
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
+    public static final int MAX_DEPTH = 4;
     private boolean debug;
     private Scene scene;
 
-    private Random rng = new Random();
-    private int lightRayCount = 16;
+    private int lightRayCount = 2;
 
     public MonteCarloRayTracer(Scene scene) {
         this.scene = scene;
@@ -29,8 +33,8 @@ public class MonteCarloRayTracer implements RayTracer {
     @Override
     public Color resolveRayColor(Ray ray, int depth) {
 
-        if (depth > 2) {
-            return Color.of(0f);
+        if (depth > MAX_DEPTH) {
+            return Color.black();
         }
 
         SceneIntercept intercept = scene.getIntercept(ray);
@@ -44,102 +48,119 @@ public class MonteCarloRayTracer implements RayTracer {
         }
 
         if (intercept.isValid()) {
-            return getColorFromObject(depth, intercept.intercept, ray, intercept.interceptIndex);
+            return getColorFromObject(depth, intercept, ray);
         }
 
-        // Specular reflection of the light source itself when nothing is hit
-//        for (LightSource light : scene.getLights()) {
-//            if (light.intercepts(ray)) {
-//                return light.getColor().mul(10);
-//            }
-//        }
+        // Nothing hit in scene - check light directly from sources that have no geometry
+        Color totalLight = Color.black();
+        for (LightSource light : scene.getLights()) {
+            if (light.intercepts(ray)) {
+                totalLight = totalLight.add(light.getColor());
+            }
+        }
 
-        // nothing hit
-        return scene.getAmbientLight().getColor();
+        return totalLight;
     }
 
-    private Color getColorFromObject(int depth, Intercept intercept, Ray ray, int interceptIndex) {
+    private Color getColorFromObject(int depth, SceneIntercept sceneIntercept, Ray ray) {
 
-        int index = interceptIndex;
-
-        Matrix objectToWorld = scene.getTransform(index);
-        Matrix worldToObject = scene.getInverseTransform(index);
-        SceneObject sceneObject = scene.getObject(index);
-        Material material = scene.getMaterial(index);
+        int interceptIndex = sceneIntercept.objectIndex;
+        Intercept intercept = sceneIntercept.intercept;
+        Matrix objectToWorld = scene.getTransform(interceptIndex);
+        Matrix worldToObject = scene.getInverseTransform(interceptIndex);
+        SceneObject sceneObject = scene.getObject(interceptIndex);
+        Material material = scene.getMaterial(interceptIndex);
 
         Vec interceptPoint = ray.apply(intercept.intercept);
         Vec objectNormal = material.getNormal(intercept, sceneObject);
 
         Vec normal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
+        Matrix localBase = Matrix.orthonormalBasis(normal);
+        Matrix localInvert = localBase.transpose();
+
+        Vec localOutgoing = localInvert.transform(ray.direction);
+
         if (this.debug) {
             addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, normal);
+            addDebugString(ray, "local outgoing: %s", localOutgoing);
         }
 
-        // The light coming from this point can come from different sources:
-        // - Diffuse reflection (matte reflection)
-        // - Specular reflection (mirror reflection)
-        // - Transmitted through the object (e.g. glass)
+        Random rng = ThreadLocalRandom.current();
 
-        // Diffuse reflection
+        BRDF bsdf = material.getBSDF(intercept);
 
-        Color light = computeAmbientLight(depth, ray, interceptPoint, normal);
+        // sample light coming directly from light source
+        Color directLight = sampleDirectLighting(sceneIntercept, ray, normal, rng, bsdf);
+
+        // sample light from BSDF
+        Color light = Color.black();
+        int bsdfSamples = 4;
+
+        for (int i = 0; i < bsdfSamples; i++) {
+
+            BRDF.Sample sample = bsdf.sample(localOutgoing, rng.nextFloat(), rng.nextFloat());
+
+            Vec globalIncidentDirection = localBase.transform(sample.incident).normalize();
+
+            float cosineIncident = abs(sample.incident.y); // = normal.dot(incidentRay.direction)
+
+            Ray incidentRay = Ray.fromOriginDirection(interceptPoint, globalIncidentDirection);
+
+            if (this.debug) {
+                addDebugString(ray, "local incident: %s", sample.incident);
+                ray.addDebug(incidentRay);
+            }
+
+            Color incidentRadiance = resolveRayColor(incidentRay, depth + 1);
+
+            light = incidentRadiance
+                    .mul(sample.color)
+                    .mulAdd(cosineIncident / sample.likelihood, light);
+        }
+
+        Color totalLight = light.mulAdd(1f / bsdfSamples, directLight);
 
         if (debug) {
-            addDebugString(ray, "light %s", light);
+            addDebugString(ray, "light %s", totalLight);
         }
 
-//        for (LightSource lightSource : scene.getLights()) {
-//            float intensity = lightSource.getIntensity(interceptPoint);
-//            if (intensity <= MIN_INTENSITY) {
-//                // No light from this light source
-//                continue;
-//            }
-//            Ray lightRay = lightSource.getRay(interceptPoint);
-//            if (debug) {
-//                ray.addDebug(lightRay);
-//            }
-//            float diffuseReflectionEnergy = normal.dot(lightRay.direction);
-//            if (diffuseReflectionEnergy > 0) {
-//                // check shadow
-//                if (this.debug) {
-//                    addDebugString(ray, "shadow ray: %s", lightRay);
-//                    ray.addDebug(lightRay);
-//                }
-//
-//                float shadowProbability = getShadowProbability(lightRay);
-//                light = lightSource.getColor().mulAdd(intensity * diffuseReflectionEnergy * (1 - shadowProbability), light);
-//            }
-//        }
-
-        // Some of this light got absorbed by the material.
-        Color objectColor = material.getDiffuseColor(intercept).mul(light);
-
-        // Specular reflection
-
-        // Transmitted light
-
-        return objectColor;
+        return totalLight;
     }
 
-    private Color computeAmbientLight(int depth, Ray ray, Vec interceptPoint, Vec normal) {
-        Color light = Color.of(0);
+    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, Random rng, BRDF bsdf) {
+        Color light = Color.black();
 
-        for (int i = 0; i < lightRayCount; i++) {
-            Vec side = normal.perpendicular();
-            Vec up = Vec.cross(normal, side);
-
-            Vec hemisphere = Rand.cosineHemisphere(rng.nextFloat(), rng.nextFloat());
-            Vec randomDirection = Vec.mulAdd(hemisphere.x, side, hemisphere.y, up, hemisphere.z, normal);
-
-            float diffuseReflectionEnergy = hemisphere.z; // = normal.dot(lightRay.direction)
-
-            Ray lightRay = Ray.fromOriginDirection(interceptPoint, randomDirection);
-            if (this.debug) {
-                ray.addDebug(lightRay);
+        Vec interceptPoint = intercept.worldInterceptPoint;
+        for (LightSource lightSource : scene.getLights()) {
+            float intensity = lightSource.getIntensity(interceptPoint);
+            if (intensity <= MIN_INTENSITY) {
+                // No light from this light source
+                continue;
             }
-            light = resolveRayColor(lightRay, depth + 1).mulAdd(diffuseReflectionEnergy / lightRayCount, light);
+
+            for (int i = 0; i < lightRayCount; i++) {
+                LightSource.Sample sample = lightSource.sample(intercept, rng.nextFloat(), rng.nextFloat());
+                Ray lightRay = sample.ray;
+                float cosineIncident = normal.dot(lightRay.direction);
+                if (cosineIncident > 0) {
+
+                    if (this.debug) {
+                        addDebugString(ray, "shadow ray: %s", lightRay);
+                        ray.addDebug(lightRay);
+                    }
+
+                    boolean shadow = scene.interceptsRay(lightRay);
+                    if (!shadow) {
+                        Color incidentRadiance = lightSource.getColor();
+                        light = incidentRadiance
+                                .mul(bsdf.evaluate(ray.direction, lightRay.direction))
+                                .mulAdd(intensity * cosineIncident / lightRayCount, light);
+                    }
+                }
+            }
         }
+
         return light;
     }
 

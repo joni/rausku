@@ -1,8 +1,8 @@
 package rausku.lighting;
 
-import rausku.geometry.Intercept;
 import rausku.math.Ray;
 import rausku.math.Vec;
+import rausku.scenes.SceneIntercept;
 
 public class PointLight implements LightSource {
     private final Vec position;
@@ -14,8 +14,13 @@ public class PointLight implements LightSource {
     }
 
     @Override
-    public Ray sampleRay(Intercept intercept) {
-        return Ray.fromStartEnd(intercept.interceptPoint, position);
+    public Sample sample(SceneIntercept intercept, float s, float t) {
+        // TODO is the likelihood correct?
+        return new Sample(color, sampleRay(intercept, s, t), 1);
+    }
+
+    private Ray sampleRay(SceneIntercept intercept, float s, float t) {
+        return Ray.fromStartEnd(intercept.worldInterceptPoint, position);
     }
 
     @Override

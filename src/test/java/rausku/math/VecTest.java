@@ -7,8 +7,8 @@ import java.util.Random;
 
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.*;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static rausku.math.FloatMath.cos;
 import static rausku.math.FloatMath.sin;
 import static rausku.math.FloatMath.toRadians;
@@ -19,43 +19,44 @@ public class VecTest {
     public void testAdd() {
         Vec u = Vec.of(1, 2, -3);
         Vec v = Vec.of(2, -3, 1);
-        assertEquals(u.add(v), Vec.of(3, -1, -2));
+        assertEquals(Vec.of(3, -1, -2), u.add(v));
     }
 
     @Test
     public void testSub() {
         Vec u = Vec.of(1, 2, -3);
         Vec v = Vec.of(2, -3, 1);
-        assertEquals(u.sub(v), Vec.of(-1, 5, -4));
+        assertEquals(Vec.of(-1, 5, -4), u.sub(v));
     }
 
     @Test
     public void testDotProduct() {
         Vec v = Vec.of(1, 2, 3);
         Vec u = Vec.of(-3, 2, 1);
-        assertEquals(Vec.dot(v, u), 4f, 1e-5f);
+        assertEquals(4f, Vec.dot(v, u), 1e-5f);
     }
 
     @Test
     public void testCanonical() {
         Vec v = Vec.of(6, 4, 2, 2);
         Vec u = v.toCanonical();
-        assertEquals(u, Vec.point(3, 2, 1));
+        assertEquals(Vec.point(3, 2, 1), u);
     }
 
     @Test
     public void testCrossProduct() {
-        Vec i = Vec.of(1, 0, 0);
-        Vec j = Vec.of(0, 1, 0);
-        Vec k = Vec.of(0, 0, 1);
+        assertEquals(Vec.K, Vec.cross(Vec.I, Vec.J));
+        assertEquals(Vec.I, Vec.cross(Vec.J, Vec.K));
+        assertEquals(Vec.J, Vec.cross(Vec.K, Vec.I));
 
-        assertEquals(k, Vec.cross(i, j));
-        assertEquals(i, Vec.cross(j, k));
-        assertEquals(j, Vec.cross(k, i));
+        assertEquals(Vec.of(0, 0, -1), Vec.cross(Vec.J, Vec.I));
+        assertEquals(Vec.of(-1, 0, 0), Vec.cross(Vec.K, Vec.J));
+        assertEquals(Vec.of(0, -1, 0), Vec.cross(Vec.I, Vec.K));
+    }
 
-        assertEquals(Vec.of(0, 0, -1), Vec.cross(j, i));
-        assertEquals(Vec.of(-1, 0, 0), Vec.cross(k, j));
-        assertEquals(Vec.of(0, -1, 0), Vec.cross(i, k));
+    @Test
+    void testMulAdd() {
+        assertEquals(Vec.of(1, 2, 3), Vec.mulAdd(1, Vec.I, 2, Vec.J, 3, Vec.K));
     }
 
     @Test

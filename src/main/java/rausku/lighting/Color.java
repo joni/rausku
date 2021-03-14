@@ -3,9 +3,15 @@ package rausku.lighting;
 import java.util.Objects;
 
 import static java.lang.Math.exp;
-import static java.lang.Math.min;
+import static rausku.math.FloatMath.clamp;
 
+/**
+ * Representation of spectrum of light
+ */
 public class Color {
+
+    private static final Color BLACK = Color.of(0f);
+
     public final float r;
     public final float g;
     public final float b;
@@ -56,10 +62,14 @@ public class Color {
         return Color.of(r / 255f, g / 255f, b / 255f);
     }
 
+    public static Color black() {
+        return BLACK;
+    }
+
     public int toIntRGB() {
-        int r = min(255, (int) (256 * (1 - exp(-this.r))));
-        int g = min(255, (int) (256 * (1 - exp(-this.g))));
-        int b = min(255, (int) (256 * (1 - exp(-this.b))));
+        int r = clamp(0, 255, (int) (256 * (1 - exp(-this.r))));
+        int g = clamp(0, 255, (int) (256 * (1 - exp(-this.g))));
+        int b = clamp(0, 255, (int) (256 * (1 - exp(-this.b))));
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 
@@ -101,5 +111,9 @@ public class Color {
     @Override
     public int hashCode() {
         return Objects.hash(r, g, b);
+    }
+
+    public boolean isBlack() {
+        return this.r == 0f && this.g == 0f && this.b == 0f;
     }
 }

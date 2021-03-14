@@ -9,7 +9,7 @@ import rausku.texture.GinghamTexture;
 
 public interface Material {
     static Material matte(Color color) {
-        return new SolidColorMaterial(color, Color.of(0, 0, 0), 0);
+        return new BRDFMaterial(new LambertianBRDF(color));
     }
 
     static Material plastic(Color color, float reflectiveness) {
@@ -24,7 +24,7 @@ public interface Material {
 
     static Material glass() {
         // Glass is highly reflective and allows transmitting light through the surface
-        return new SolidColorMaterial(Color.of(0f, 0f, 0f), Color.of(1f, 1f, 1f), 1f, 1.5f);
+        return new BRDFMaterial(new SpecularBTDF(1.5f));
     }
 
     static Material checkerBoard(float scale) {
@@ -47,9 +47,17 @@ public interface Material {
         return new TextureMaterial(new GinghamTexture(scale, color1, color2, color3));
     }
 
+    static Material solidColorMatte(Color color) {
+        return new BRDFMaterial(new SolidColorBRDF(color));
+    }
+
+    static Material solidColor(Color diffuseColor, Color reflectiveColor, float reflectiveness) {
+        return new BRDFMaterial(new SolidColorBRDF(diffuseColor, reflectiveColor, reflectiveness));
+    }
+
     Color getDiffuseColor(Intercept intercept);
 
-    float getReflectiveness();
+    boolean hasSpecularReflection();
 
     Color getReflectiveColor(Intercept intercept);
 
@@ -60,4 +68,6 @@ public interface Material {
     default Vec getNormal(Intercept intercept, SceneObject sceneObject) {
         return sceneObject.getNormal(intercept);
     }
+
+    BRDF getBSDF(Intercept intercept);
 }

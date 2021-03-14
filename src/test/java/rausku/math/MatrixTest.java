@@ -108,7 +108,30 @@ public class MatrixTest {
         assertEquals(translate.transform(p), Vec.point(-2, 5, -3), "Translation changes points");
     }
 
+    @Test
+    void testOrthonormalBasis() {
+        Vec v = Vec.of(1, 1, 1);
+        Matrix matrix = Matrix.orthonormalBasis(v);
+        Vec basis1 = matrix.transform(Vec.I);
+        Vec basis2 = matrix.transform(Vec.J);
+        Vec basis3 = matrix.transform(Vec.K);
+        assertEquals(0f, basis1.dot(basis2), 1e-6f, "Basis vectors should be perpendicular to each other");
+        assertEquals(0f, basis2.dot(basis3), 1e-6f, "Basis vectors should be perpendicular to each other");
+        assertEquals(0f, basis3.dot(basis1), 1e-6f, "Basis vectors should be perpendicular to each other");
+
+        assertEquals(1f, basis1.sqLen(), 1e-6f, "Basis vectors should have unit length");
+        assertEquals(1f, basis2.sqLen(), 1e-6f, "Basis vectors should have unit length");
+        assertEquals(1f, basis3.sqLen(), 1e-6f, "Basis vectors should have unit length");
+
+
+        assertVecEquals(Vec.cross(basis1, basis2), basis3);
+        assertVecEquals(Vec.cross(basis2, basis3), basis1);
+        assertVecEquals(Vec.cross(basis3, basis1), basis2);
+
+        assertVecEquals(v.normalize(), basis2);
+    }
+
     private void assertVecEquals(Vec actual, Vec expected) {
-        assertEquals(actual.sub(expected).len(), 0, 1e-6f);
+        assertEquals(0f, actual.sub(expected).len(), 1e-6f);
     }
 }

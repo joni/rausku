@@ -35,8 +35,8 @@ public class SolidColorMaterial implements Material {
     }
 
     @Override
-    public float getReflectiveness() {
-        return reflectiveness;
+    public boolean hasSpecularReflection() {
+        return reflectiveness > 0;
     }
 
     @Override
@@ -52,6 +52,11 @@ public class SolidColorMaterial implements Material {
     @Override
     public float getIndexOfRefraction() {
         return indexOfRefraction;
+    }
+
+    @Override
+    public BRDF getBSDF(Intercept intercept) {
+        return new LambertianBRDF(diffuseColor);
     }
 
     @Override

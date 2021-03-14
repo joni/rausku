@@ -39,6 +39,10 @@ public class QuadraticForm implements CSGObject, SceneObject {
         return Matrix.mul(Matrix.diag(1, 1, 1, 0), Matrix.plus(matrix, matrix.transpose()));
     }
 
+    public static QuadraticForm createSphere(float radius) {
+        return createSphere(Vec.origin(), radius);
+    }
+
     public static QuadraticForm createSphere(Vec center, float radius) {
         Vec radiusVec = Vec.of(radius, radius, radius);
         return new QuadraticForm(Matrix.of(

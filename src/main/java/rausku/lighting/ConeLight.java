@@ -1,8 +1,8 @@
 package rausku.lighting;
 
-import rausku.geometry.Intercept;
 import rausku.math.Ray;
 import rausku.math.Vec;
+import rausku.scenes.SceneIntercept;
 
 import static rausku.math.FloatMath.cos;
 
@@ -26,8 +26,13 @@ public class ConeLight implements LightSource {
     }
 
     @Override
-    public Ray sampleRay(Intercept intercept) {
-        return Ray.fromStartEnd(intercept.interceptPoint, position);
+    public Sample sample(SceneIntercept intercept, float s, float t) {
+        // TODO compute likelihood
+        return new Sample(color.mul(getIntensity(intercept.worldInterceptPoint)), sampleRay(intercept, s, t), 1);
+    }
+
+    private Ray sampleRay(SceneIntercept intercept, float s, float t) {
+        return Ray.fromStartEnd(intercept.worldInterceptPoint, position);
     }
 
     @Override

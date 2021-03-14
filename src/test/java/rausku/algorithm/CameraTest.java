@@ -1,11 +1,11 @@
 package rausku.algorithm;
 
-import org.testng.annotations.Ignore;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static rausku.math.FloatMath.toRadians;
 
 public class CameraTest {
@@ -29,7 +29,7 @@ public class CameraTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testLookAt() {
         Camera camera = Camera.createCamera(
                 Vec.origin(),

@@ -79,6 +79,15 @@ public class Matrix {
         );
     }
 
+    public static Matrix ofColumns(Vec A, Vec B, Vec C) {
+        return Matrix.of(
+                A.x, B.x, C.x, 0,
+                A.y, B.y, C.y, 0,
+                A.z, B.z, C.z, 0,
+                0, 0, 0, 1
+        );
+    }
+
     public static Matrix ofColumns(Vec A, Vec B, Vec C, Vec D) {
         return Matrix.of(
                 A.x, B.x, C.x, D.x,
@@ -86,6 +95,13 @@ public class Matrix {
                 A.z, B.z, C.z, D.z,
                 A.w, B.w, C.w, D.w
         );
+    }
+
+    public static Matrix orthonormalBasis(Vec v) {
+        Vec w = v.normalize();
+        Vec perp1 = w.perpendicular();
+        Vec perp2 = Vec.cross(w, perp1);
+        return Matrix.ofColumns(perp2, w, perp1);
     }
 
     public Matrix transpose() {
