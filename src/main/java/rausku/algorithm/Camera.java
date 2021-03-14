@@ -30,12 +30,16 @@ public class Camera {
         );
     }
 
-    public static Camera createCamera(Vec position, Vec lookAt, int imageWidth, int imageHeight, float angleOfView) {
-        return createCamera(position, lookAt, Vec.of(0, 1, 0), imageWidth, imageHeight, angleOfView);
+    public static Camera createCamera(Vec position, Vec lookDirection, int imageWidth, int imageHeight, float angleOfView) {
+        return createCamera(position, lookDirection, Vec.of(0, 1, 0), imageWidth, imageHeight, angleOfView);
     }
 
-    public static Camera createCamera(Vec position, Vec lookAt, Vec up, int imageWidth, int imageHeight, float angleOfView) {
-        Vec forward = lookAt.normalize();
+    public static Camera lookAt(Vec position, Vec lookAtPoint, int imageWidth, int imageHeight, float angleOfView) {
+        return createCamera(position, lookAtPoint.sub(position), Vec.of(0, 1, 0), imageWidth, imageHeight, angleOfView);
+    }
+
+    public static Camera createCamera(Vec position, Vec lookDirection, Vec up, int imageWidth, int imageHeight, float angleOfView) {
+        Vec forward = lookDirection.normalize();
         Vec left = Vec.cross(up, forward).normalize();
         Vec realUp = Vec.cross(forward, left);
         Matrix matrix = Matrix.ofColumns(left, realUp, forward, position);

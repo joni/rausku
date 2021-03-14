@@ -20,11 +20,11 @@ import static rausku.math.FloatMath.abs;
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
-    public static final int MAX_DEPTH = 2;
+    public static final int MAX_DEPTH = 4;
     private boolean debug;
     private Scene scene;
 
-    private int lightRayCount = 16;
+    private int lightRayCount = 8;
 
     public MonteCarloRayTracer(Scene scene) {
         this.scene = scene;
@@ -73,7 +73,7 @@ public class MonteCarloRayTracer implements RayTracer {
         Vec interceptPoint = sceneIntercept.worldInterceptPoint;
         Vec objectNormal = material.getNormal(intercept, sceneObject);
 
-        Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
+        Vec worldNormal = objectToWorld.transposeTransform(objectNormal).toVector().normalize();
 
         Matrix localBase = Matrix.orthonormalBasis(worldNormal);
         Matrix localInvert = localBase.transpose();
@@ -94,7 +94,7 @@ public class MonteCarloRayTracer implements RayTracer {
 
         // sample light from BSDF
         Color light = Color.black();
-        int bsdfSamples = 16;
+        int bsdfSamples = 4;
 
         for (int i = 0; i < bsdfSamples; i++) {
 

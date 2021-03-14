@@ -55,6 +55,10 @@ public interface Material {
         return new BRDFMaterial(new SolidColorBRDF(diffuseColor, reflectiveColor, reflectiveness));
     }
 
+    static Material mirror() {
+        return new BRDFMaterial(new SpecularBRDF(Color.of(1f)));
+    }
+
     Color getDiffuseColor(Intercept intercept);
 
     boolean hasSpecularReflection();
