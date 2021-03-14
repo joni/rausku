@@ -12,6 +12,7 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.Scene;
 import rausku.scenes.SceneIntercept;
+import rausku.scenes.SceneObjectInstance;
 
 import static rausku.math.FloatMath.abs;
 
@@ -42,16 +43,15 @@ public class RecursiveRayTracer implements RayTracer {
             if (this.debug) {
                 addDebugString(ray, "Max depth reached");
             }
-            return scene.getAmbientLight().getColor();
+            return Color.black();
         }
 
         SceneIntercept sceneIntercept = scene.getIntercept(ray);
         Intercept intercept = sceneIntercept.intercept;
-        int index = sceneIntercept.objectIndex;
 
         if (this.debug) {
-            if (index >= 0) {
-                addDebugString(ray, "depth=%d object=%d %s", depth, index, intercept);
+            if (sceneIntercept.isValid()) {
+                addDebugString(ray, "depth=%d object=%d %s", depth, sceneIntercept.sceneObjectInstance, intercept);
             } else {
                 addDebugString(ray, "depth=%d no intercept", depth);
             }
@@ -124,11 +124,11 @@ public class RecursiveRayTracer implements RayTracer {
 
     private Color getColorFromObject(int depth, SceneIntercept intercept, Ray ray) {
 
-        int index = intercept.objectIndex;
-        Matrix objectToWorld = scene.getTransform(index);
-        Matrix worldToObject = scene.getInverseTransform(index);
-        SceneObject sceneObject = scene.getObject(index);
-        Material material = scene.getMaterial(index);
+        SceneObjectInstance sceneObjectInstance = intercept.sceneObjectInstance;
+        Matrix objectToWorld = sceneObjectInstance.transform;
+        Matrix worldToObject = sceneObjectInstance.inverseTransform;
+        SceneObject sceneObject = sceneObjectInstance.object;
+        Material material = sceneObjectInstance.material;
 
         Vec interceptPoint = intercept.worldInterceptPoint; // objectToWorld.transform(intercept.interceptPoint);
         Vec objectNormal = material.getNormal(intercept.intercept, sceneObject);

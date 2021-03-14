@@ -11,7 +11,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene9_Antialias extends Scene {
+public class Scene9_Antialias extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(0, 2, 10),

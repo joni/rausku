@@ -13,7 +13,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene0_ReflectingSphere extends Scene {
+public class Scene0_ReflectingSphere extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(0, 2, 8),

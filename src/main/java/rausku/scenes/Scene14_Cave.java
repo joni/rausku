@@ -12,7 +12,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene14_Cave extends Scene {
+public class Scene14_Cave extends DefaultSceneDefinition {
     {
 
         setCamera(Camera.createCamera(

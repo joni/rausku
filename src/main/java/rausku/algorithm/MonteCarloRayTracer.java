@@ -64,12 +64,11 @@ public class MonteCarloRayTracer implements RayTracer {
 
     private Color getColorFromObject(int depth, SceneIntercept sceneIntercept, Ray ray) {
 
-        int interceptIndex = sceneIntercept.objectIndex;
         Intercept intercept = sceneIntercept.intercept;
-        Matrix objectToWorld = scene.getTransform(interceptIndex);
-        Matrix worldToObject = scene.getInverseTransform(interceptIndex);
-        SceneObject sceneObject = scene.getObject(interceptIndex);
-        Material material = scene.getMaterial(interceptIndex);
+        Matrix objectToWorld = sceneIntercept.sceneObjectInstance.transform;
+        Matrix worldToObject = sceneIntercept.sceneObjectInstance.inverseTransform;
+        SceneObject sceneObject = sceneIntercept.sceneObjectInstance.object;
+        Material material = sceneIntercept.sceneObjectInstance.material;
 
         Vec interceptPoint = sceneIntercept.worldInterceptPoint;
         Vec objectNormal = material.getNormal(intercept, sceneObject);

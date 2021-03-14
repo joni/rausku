@@ -10,7 +10,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene3 extends Scene {
+public class Scene3 extends DefaultSceneDefinition {
     public Scene3() {
         addObject(new Cube(), Material.plastic(Color.of(1, 1, 1), .8f));
         addObject(QuadraticForm.createSphere(Vec.of(0, 0, 0f), 1.2f), Material.plastic(Color.of(.8f, .2f, .2f), .9f));

@@ -10,7 +10,7 @@ import rausku.math.Vec;
 import static rausku.math.FloatMath.sqrt;
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene12_ConeLight extends Scene {
+public class Scene12_ConeLight extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(0, 2, 10),

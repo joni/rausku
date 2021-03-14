@@ -11,7 +11,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene13_Hyperboloid extends Scene {
+public class Scene13_Hyperboloid extends DefaultSceneDefinition {
     {
 
         setCamera(Camera.createCamera(

@@ -10,7 +10,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene5_CSG extends Scene {
+public class Scene5_CSG extends DefaultSceneDefinition {
     public Scene5_CSG() {
         setCamera(Camera.createCamera(
                 Vec.point(-6, 6, 12),

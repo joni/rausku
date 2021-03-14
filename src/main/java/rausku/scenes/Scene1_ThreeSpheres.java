@@ -6,7 +6,7 @@ import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.math.Vec;
 
-public class Scene1_ThreeSpheres extends Scene {
+public class Scene1_ThreeSpheres extends DefaultSceneDefinition {
     {
         Color red = Color.of(.9f, .2f, .2f);
         Color green = Color.of(.2f, .9f, .2f);

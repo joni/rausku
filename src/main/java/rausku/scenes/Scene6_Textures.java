@@ -17,7 +17,7 @@ import java.io.IOException;
 import static rausku.math.FloatMath.PI;
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene6_Textures extends Scene {
+public class Scene6_Textures extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(0, 0, 15),

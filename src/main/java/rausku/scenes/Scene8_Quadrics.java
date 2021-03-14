@@ -16,7 +16,7 @@ import java.util.List;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene8_Quadrics extends Scene {
+public class Scene8_Quadrics extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(7, 7, 7),

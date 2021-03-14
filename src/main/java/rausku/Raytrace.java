@@ -1,8 +1,12 @@
 package rausku;
 
-import rausku.algorithm.*;
+import rausku.algorithm.RayTracer;
+import rausku.algorithm.RecursiveRayTracer;
+import rausku.algorithm.RenderStrategy;
+import rausku.algorithm.Sampler;
 import rausku.scenes.Scene;
 import rausku.scenes.Scene7_Teapot;
+import rausku.scenes.SceneDefinition;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -13,18 +17,17 @@ public class Raytrace {
 
     public static void main(String... args) {
 
-        Scene scene = new Scene7_Teapot();
+        SceneDefinition sceneDefinition = new Scene7_Teapot();
 
+        Scene scene = new Scene(sceneDefinition);
         RayTracer rayTracer = new RecursiveRayTracer(scene, new RecursiveRayTracer.Params());
-
-        Camera camera = scene.getCamera();
 
         Sampler sampler = new Sampler.GaussianRandomSubSampler(64);
 //        Sampler sampler = new Sampler.Naive();
 
         RenderStrategy renderer = new RenderStrategy.TimedStrategyDecorator(new RenderStrategy.PerLineThreaded());
 
-        BufferedImage image = renderer.render(rayTracer, camera, sampler, i -> {
+        BufferedImage image = renderer.render(rayTracer, sceneDefinition.getCamera(), sampler, i -> {
             System.out.printf("\r%d%% ", i);
             System.out.flush();
         });

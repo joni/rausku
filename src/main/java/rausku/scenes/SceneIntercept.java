@@ -4,12 +4,12 @@ import rausku.geometry.Intercept;
 import rausku.math.Vec;
 
 public class SceneIntercept {
-    public final int objectIndex;
+    public final SceneObjectInstance sceneObjectInstance;
     public final Vec worldInterceptPoint;
     public final Intercept intercept;
 
-    public SceneIntercept(int objectIndex, Vec worldInterceptPoint, Intercept intercept) {
-        this.objectIndex = objectIndex;
+    public SceneIntercept(SceneObjectInstance sceneObjectInstance, Vec worldInterceptPoint, Intercept intercept) {
+        this.sceneObjectInstance = sceneObjectInstance;
         this.worldInterceptPoint = worldInterceptPoint;
         this.intercept = intercept;
     }

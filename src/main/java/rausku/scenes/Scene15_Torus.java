@@ -17,7 +17,7 @@ import java.util.List;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene15_Torus extends Scene {
+public class Scene15_Torus extends DefaultSceneDefinition {
     {
 
         addLight(new DirectionalLight(Vec.of(+1f, -2f, +1f), Color.of(1f, 1f, 1f)));

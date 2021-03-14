@@ -14,7 +14,7 @@ import rausku.texture.NoiseTexture;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene10_Materials extends Scene {
+public class Scene10_Materials extends DefaultSceneDefinition {
     {
         setCamera(Camera.createCamera(
                 Vec.point(0, 0, 10),

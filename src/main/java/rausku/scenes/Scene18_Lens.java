@@ -11,7 +11,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.toRadians;
 
-public class Scene18_Lens extends Scene {
+public class Scene18_Lens extends DefaultSceneDefinition {
     {
 
         setCamera(Camera.createCamera(
