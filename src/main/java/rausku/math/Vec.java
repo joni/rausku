@@ -9,51 +9,29 @@ import static rausku.math.FloatMath.sqrt;
 public class Vec {
 
     private static final Vec ORIGIN = Vec.point(0, 0, 0);
+    public static final Vec I = Vec.of(1, 0, 0);
+    public static final Vec J = Vec.of(0, 1, 0);
+    public static final Vec K = Vec.of(0, 0, 1);
 
     public final float x;
     public final float y;
     public final float z;
     public final float w;
 
-    public Vec(float x, float y, float z, float w) {
+    private Vec(float x, float y, float z, float w) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    /**
-     * Computes a linear combination tU + V
-     */
-    public static Vec mulAdd(float t, Vec u, Vec v) {
-        return new Vec(u.x * t + v.x,
-                u.y * t + v.y,
-                u.z * t + v.z,
-                u.w * t + v.w);
-    }
-
-    /**
-     * Computes a general linear combination sU + tV
-     */
-    public static Vec mulAdd(float s, Vec u, float t, Vec v) {
-        return new Vec(u.x * s + v.x * t,
-                u.y * s + v.y * t,
-                u.z * s + v.z * t,
-                u.w * s + v.w * t);
-    }
-
-    /**
-     * Computes a general linear combination rW + sU + tV
-     */
-    public static Vec mulAdd(float r, Vec w, float s, Vec u, float t, Vec v) {
-        return new Vec(u.x * s + v.x * t + r * w.x,
-                u.y * s + v.y * t + r * w.y,
-                u.z * s + v.z * t + r * w.z,
-                u.w * s + v.w * t + r * w.w);
-    }
-
     public static Vec of(float x, float y, float z) {
         return new Vec(x, y, z, 0);
+    }
+
+    public static Vec unit(float x, float y, float z) {
+        float l = sqrt(x * x + y * y + z * z);
+        return new Vec(x / l, y / l, z / l, 0);
     }
 
     public static Vec of(float x, float y, float z, float w) {
@@ -84,6 +62,50 @@ public class Vec {
         return Vec.of(x / a, y / a, z / a, w / a);
     }
 
+    public static Vec cross(Vec v, Vec w) {
+        return Vec.of(
+                v.y * w.z - v.z * w.y,
+                v.z * w.x - v.x * w.z,
+                v.x * w.y - v.y * w.x
+        );
+    }
+
+    /**
+     * Computes a linear combination tU + V
+     */
+    public static Vec mulAdd(float t, Vec u, Vec v) {
+        return new Vec(
+                u.x * t + v.x,
+                u.y * t + v.y,
+                u.z * t + v.z,
+                u.w * t + v.w
+        );
+    }
+
+    /**
+     * Computes a general linear combination sU + tV
+     */
+    public static Vec mulAdd(float s, Vec u, float t, Vec v) {
+        return new Vec(
+                u.x * s + v.x * t,
+                u.y * s + v.y * t,
+                u.z * s + v.z * t,
+                u.w * s + v.w * t
+        );
+    }
+
+    /**
+     * Computes a general linear combination rU + sV + tW
+     */
+    public static Vec mulAdd(float r, Vec u, float s, Vec v, float t, Vec w) {
+        return new Vec(
+                r * u.x + s * v.x + t * w.x,
+                r * u.y + s * v.y + t * w.y,
+                r * u.z + s * v.z + t * w.z,
+                r * u.w + s * v.w + t * w.w
+        );
+    }
+
     public float l1norm() {
         return max(abs(x), max(abs(y), abs(z)));
     }
@@ -108,10 +130,6 @@ public class Vec {
         return sqrt(sqLen());
     }
 
-    public static Vec cross(Vec v, Vec w) {
-        return Vec.of(v.y * w.z - v.z * w.y, v.z * w.x - v.x * w.z, v.x * w.y - v.y * w.x);
-    }
-
     public Vec normalize() {
         float len = sqrt(sqLen());
         return div(len);
@@ -133,33 +151,49 @@ public class Vec {
         if (abs(x) > abs(y)) {
             if (abs(y) > abs(z)) {
                 // x > y > z
-                return Vec.of(-y, x, 0);
+                return Vec.unit(-y, x, 0);
             } else if (abs(x) > abs(z)) {
                 // x > z > y
-                return Vec.of(-z, 0, x);
+                return Vec.unit(-z, 0, x);
             } else {
                 // z > x > y
-                return Vec.of(z, 0, -x);
+                return Vec.unit(z, 0, -x);
             }
         } else {
             if (abs(z) > abs(x)) {
                 // y > z > x
-                return Vec.of(0, -z, y);
+                return Vec.unit(0, -z, y);
             } else if (abs(x) > abs(z)) {
                 // y > x > z
-                return Vec.of(y, -x, 0);
+                return Vec.unit(y, -x, 0);
             } else {
                 // z > y > x
-                return Vec.of(0, z, -y);
+                return Vec.unit(0, z, -y);
             }
         }
     }
 
+    /**
+     * Compute the reflection of {@code v} around this vector. In other words, the current vector is a normal vector and
+     * light arrives with direction {@code v}, the reflected light leaves in the direction returned by this method.
+     *
+     * @param v a unit vector
+     * @return reflection of v
+     */
     public Vec reflected(Vec v) {
         // assert normalized
         return mulAdd(-2 * this.dot(v), this, v);
     }
 
+    /**
+     * Compute the refraction of {@code v} around this vector. In other words, the current vector is a normal vector and
+     * light arrives with direction {@code v}, the light is transmitted to the other side of the surface in the
+     * direction returned by this method.
+     *
+     * @param v a unit vector
+     * @param r index of refraction
+     * @return refracted direction
+     */
     public Vec refracted(Vec v, float r) {
         // assert normalized
         float dot = this.dot(v);
@@ -183,7 +217,7 @@ public class Vec {
 
     @Override
     public String toString() {
-        return String.format("[%f %f %f %f]", x, y, z, w);
+        return String.format("[%.2f %.2f %.2f %.2f]", x, y, z, w);
     }
 
     @Override

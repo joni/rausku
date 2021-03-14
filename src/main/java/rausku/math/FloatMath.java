@@ -1,5 +1,8 @@
 package rausku.math;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class FloatMath {
 
     public static float PI = (float) Math.PI;
@@ -34,6 +37,10 @@ public class FloatMath {
 
     public static float pow(float x, float y) {
         return ((float) Math.pow(x, y));
+    }
+
+    public static int clamp(int min, int max, int value) {
+        return max(min, min(max, value));
     }
 
     public static float abs(float x) {
