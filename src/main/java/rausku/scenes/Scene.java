@@ -31,7 +31,7 @@ public class Scene {
         List<SceneObjectInstance> objects = sceneDefinition.getObjects();
         for (SceneObjectInstance sceneObjectInstance : objects) {
             SceneObject object = sceneObjectInstance.object;
-            Matrix transform = sceneObjectInstance.transform;
+            Matrix transform = sceneObjectInstance.worldToObject;
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
             float intercept = intercept2.intercept;
@@ -57,7 +57,7 @@ public class Scene {
         List<SceneObjectInstance> objects = sceneDefinition.getObjects();
         for (SceneObjectInstance sceneObjectInstance : objects) {
             SceneObject object = sceneObjectInstance.object;
-            Matrix transform = sceneObjectInstance.transform;
+            Matrix transform = sceneObjectInstance.worldToObject;
             Ray transformed = transform.transform(ray);
             Intercept objectIntercept = object.getIntercept(transformed);
             float interceptValue = objectIntercept.intercept;

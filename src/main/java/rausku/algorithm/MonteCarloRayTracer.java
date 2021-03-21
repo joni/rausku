@@ -24,7 +24,7 @@ public class MonteCarloRayTracer implements RayTracer {
     private boolean debug;
     private Scene scene;
 
-    private int lightRayCount = 8;
+    private int lightRayCount = 2;
 
     public MonteCarloRayTracer(Scene scene) {
         this.scene = scene;
@@ -65,20 +65,20 @@ public class MonteCarloRayTracer implements RayTracer {
     private Color getColorFromObject(int depth, SceneIntercept sceneIntercept, Ray ray) {
 
         Intercept intercept = sceneIntercept.intercept;
-        Matrix objectToWorld = sceneIntercept.sceneObjectInstance.transform;
-        Matrix worldToObject = sceneIntercept.sceneObjectInstance.inverseTransform;
+        Matrix worldToObject = sceneIntercept.sceneObjectInstance.worldToObject;
+        Matrix objectToWorld = sceneIntercept.sceneObjectInstance.objectToWorld;
         SceneObject sceneObject = sceneIntercept.sceneObjectInstance.object;
         Material material = sceneIntercept.sceneObjectInstance.material;
 
         Vec interceptPoint = sceneIntercept.worldInterceptPoint;
         Vec objectNormal = material.getNormal(intercept, sceneObject);
 
-        Vec worldNormal = objectToWorld.transposeTransform(objectNormal).toVector().normalize();
+        Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        Matrix localBase = Matrix.orthonormalBasis(worldNormal);
-        Matrix localInvert = localBase.transpose();
+        Matrix shadingToGlobal = Matrix.orthonormalBasis(worldNormal);
+        Matrix globalToShading = shadingToGlobal.transpose();
 
-        Vec localOutgoing = localInvert.transform(ray.direction);
+        Vec localOutgoing = globalToShading.transform(ray.direction);
 
         if (this.debug) {
             addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, worldNormal);
@@ -90,17 +90,17 @@ public class MonteCarloRayTracer implements RayTracer {
         BRDF bsdf = material.getBSDF(intercept);
 
         // sample light coming directly from light source
-        Color directLight = sampleDirectLighting(sceneIntercept, ray, worldNormal, rng, bsdf);
+        Color directLight = sampleDirectLighting(sceneIntercept, ray, worldNormal, rng, bsdf, localOutgoing, globalToShading);
 
         // sample light from BSDF
         Color light = Color.black();
-        int bsdfSamples = 4;
+        int bsdfSamples = 2;
 
         for (int i = 0; i < bsdfSamples; i++) {
 
             BRDF.Sample sample = bsdf.sample(localOutgoing, rng.nextFloat(), rng.nextFloat());
 
-            Vec globalIncidentDirection = localBase.transform(sample.incident).normalize();
+            Vec globalIncidentDirection = shadingToGlobal.transform(sample.incident).normalize();
 
             float cosineIncident = abs(sample.incident.y); // = normal.dot(incidentRay.direction)
 
@@ -113,12 +113,22 @@ public class MonteCarloRayTracer implements RayTracer {
 
             Color incidentRadiance = resolveRayColor(incidentRay, depth + 1);
 
+            if (this.debug) {
+                addDebugString(ray, "sample.color: %s cosThetaI: %f likelihood: %f", sample.color, cosineIncident, sample.likelihood);
+                ray.addDebug(incidentRay);
+            }
+
             light = incidentRadiance
                     .mul(sample.color)
                     .mulAdd(cosineIncident / sample.likelihood, light);
         }
+        Color totalLight;
+        if (bsdfSamples > 0) {
+            totalLight = light.mulAdd(1f / bsdfSamples, directLight);
+        } else {
+            totalLight = directLight;
 
-        Color totalLight = light.mulAdd(1f / bsdfSamples, directLight);
+        }
 
         if (debug) {
             addDebugString(ray, "light %s", totalLight);
@@ -127,7 +137,7 @@ public class MonteCarloRayTracer implements RayTracer {
         return totalLight;
     }
 
-    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, Random rng, BRDF bsdf) {
+    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, Random rng, BRDF bsdf, Vec localOutgoing, Matrix globalToShading) {
         Color light = Color.black();
 
         Vec interceptPoint = intercept.worldInterceptPoint;
@@ -151,7 +161,7 @@ public class MonteCarloRayTracer implements RayTracer {
                     if (!shadow) {
                         Color incidentRadiance = lightSource.getColor();
                         light = incidentRadiance
-                                .mul(bsdf.evaluate(ray.direction, lightRay.direction))
+                                .mul(bsdf.evaluate(localOutgoing, globalToShading.transform(lightRay.direction)))
                                 .mulAdd(intensity * cosineIncident / lightRayCount, light);
                     }
                 }

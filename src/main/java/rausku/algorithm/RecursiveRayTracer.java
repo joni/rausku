@@ -125,8 +125,8 @@ public class RecursiveRayTracer implements RayTracer {
     private Color getColorFromObject(int depth, SceneIntercept intercept, Ray ray) {
 
         SceneObjectInstance sceneObjectInstance = intercept.sceneObjectInstance;
-        Matrix objectToWorld = sceneObjectInstance.transform;
-        Matrix worldToObject = sceneObjectInstance.inverseTransform;
+        Matrix worldToObject = sceneObjectInstance.worldToObject;
+        Matrix objectToWorld = sceneObjectInstance.objectToWorld;
         SceneObject sceneObject = sceneObjectInstance.object;
         Material material = sceneObjectInstance.material;
 
@@ -136,7 +136,7 @@ public class RecursiveRayTracer implements RayTracer {
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);
 //        }
-        Vec normal = objectToWorld.transposeTransform(objectNormal).toVector().normalize();
+        Vec normal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
         if (this.debug) {
             addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, normal);

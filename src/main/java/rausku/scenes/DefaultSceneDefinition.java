@@ -3,9 +3,13 @@ package rausku.scenes;
 import rausku.algorithm.Camera;
 import rausku.geometry.Group;
 import rausku.geometry.SceneObject;
+import rausku.lighting.AmbientLight;
+import rausku.lighting.Color;
+import rausku.lighting.DirectionalLight;
 import rausku.lighting.LightSource;
 import rausku.material.Material;
 import rausku.math.Matrix;
+import rausku.math.Vec;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -13,6 +17,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class DefaultSceneDefinition implements SceneDefinition {
+
+    private static final List<LightSource> DEFAULT_LIGHTS = List.of(
+            new DirectionalLight(Vec.unit(1, -1, -.5f), Color.of(.8f, .8f, .7f)),
+            new AmbientLight(Color.of(.2f, .25f, .3f)));
 
     private final List<LightSource> lights = new ArrayList<>();
     private final List<SceneObjectInstance> objects = new ArrayList<>();
@@ -42,6 +50,7 @@ public class DefaultSceneDefinition implements SceneDefinition {
 
     @Override
     public Collection<LightSource> getLights() {
+        if (lights.isEmpty()) return DEFAULT_LIGHTS;
         return lights;
     }
 
@@ -55,8 +64,8 @@ public class DefaultSceneDefinition implements SceneDefinition {
     }
 
     protected void addObject(Matrix transform, SceneObject object, Material material) {
-        Matrix matrix = Matrix.mul(transformStack.peek(), transform);
-        objects.add(new SceneObjectInstance(object, matrix, matrix.inverse(), material));
+        Matrix objectToWorld = Matrix.mul(transformStack.peek(), transform);
+        objects.add(new SceneObjectInstance(object, objectToWorld.inverse(), objectToWorld, material));
     }
 
     protected void addObject(SceneObject object, Material material) {
