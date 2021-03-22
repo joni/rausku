@@ -6,7 +6,7 @@ import rausku.math.Vec;
 
 public class Torus implements SceneObject {
 
-    public static final float TOLERANCE = 1e-6f;
+    public static final float TOLERANCE = 1e-3f;
     private final float R;
     private final float r;
     private BoundingBox bbox;

@@ -14,8 +14,8 @@ public class CheckerBoardTexture implements Texture {
         this(scale, Color.of(.25f, .25f, .25f));
     }
 
-    public CheckerBoardTexture(float scale, Color diffuseColor) {
-        this(scale, diffuseColor, Color.of(1, 1, 1));
+    public CheckerBoardTexture(float scale, Color color) {
+        this(scale, color, color.mul(.5f));
     }
 
     public CheckerBoardTexture(float scale, Color color1, Color color2) {

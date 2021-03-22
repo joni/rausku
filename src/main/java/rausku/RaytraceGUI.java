@@ -4,7 +4,7 @@ import rausku.algorithm.*;
 import rausku.math.Ray;
 import rausku.scenes.Scene;
 import rausku.scenes.SceneDefinition;
-import rausku.scenes.v2.Scene4_Transformations;
+import rausku.scenes.v2.Scene2_AmbientLightWithReflectingObjects;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -29,7 +29,7 @@ public class RaytraceGUI {
 
     public RaytraceGUI() {
 
-        SceneDefinition sceneDefinition = new Scene4_Transformations();
+        SceneDefinition sceneDefinition = new Scene2_AmbientLightWithReflectingObjects();
 
         camera = sceneDefinition.getCamera();
 

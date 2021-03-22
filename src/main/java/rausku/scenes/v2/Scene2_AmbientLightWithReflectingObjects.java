@@ -1,8 +1,8 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.HalfSpace;
-import rausku.geometry.QuadraticForm;
+import rausku.geometry.SceneObject;
+import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
 import rausku.material.Material;
@@ -24,18 +24,18 @@ public class Scene2_AmbientLightWithReflectingObjects extends DefaultSceneDefini
 
         Material mirror = Material.mirror();
         Material matteRed = Material.matte(Color.of(.10f, .01f, .01f));
-        Material matteWhite = Material.matte(Color.of(.10f));
+        Material matteWhite = Material.checkerBoard(.5f, Color.of(.1f));
 
-        QuadraticForm sphere = QuadraticForm.createSphere(1f);
-        addObject(sphere, matteRed);
+        SceneObject object = StandardObjects.sphere();
 
-        Matrix translate = Matrix.translate(0f, 0f, +3f);
-        for (int i = 0; i < 360; i += 60) {
-            Matrix rotateY = Matrix.rotateY(toRadians(i));
-            addObject(Matrix.mul(translate, rotateY), sphere, mirror);
+        addObject(object, matteRed);
+
+        Matrix translate = Matrix.translate(0f, 0f, +2.5f);
+        for (int i = 0; i < 6; i++) {
+            Matrix rotateY = Matrix.rotateY(toRadians(60 * i));
+            addObject(Matrix.mul(rotateY, translate), object, mirror);
         }
 
-        HalfSpace plane = HalfSpace.horizontalPlane(-1f);
-        addObject(plane, matteWhite);
+        addObject(StandardObjects.floorPlane(), matteWhite);
     }
 }
