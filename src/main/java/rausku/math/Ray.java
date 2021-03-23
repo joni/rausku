@@ -32,7 +32,7 @@ public class Ray implements Debuggable {
 
     public static Ray fromStartEnd(Vec startPoint, Vec endPoint) {
         Vec direction = endPoint.sub(startPoint);
-        return new Ray(startPoint, direction, 1f);
+        return new Ray(startPoint, direction.normalize(), direction.len());
     }
 
     public Vec apply(float t) {

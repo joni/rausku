@@ -32,6 +32,6 @@ public class Scene0_ReflectingSphere extends DefaultSceneDefinition {
         addObject(Matrix.translate(+1, 0, 0), sphere, Material.solidColor(white, white, .8f));
 
         HalfSpace plane = HalfSpace.horizontalPlane(-1f);
-        addObject(plane, Material.matte(Color.of(.02f)));
+        addObject(plane, Material.lambertian(Color.of(.02f)));
     }
 }

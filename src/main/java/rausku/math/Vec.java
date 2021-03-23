@@ -147,6 +147,10 @@ public class Vec {
         return Vec.of(x, y, z);
     }
 
+    public Vec toPoint() {
+        return Vec.point(x, y, z);
+    }
+
     public Vec perpendicular() {
         if (abs(x) > abs(y)) {
             if (abs(y) > abs(z)) {

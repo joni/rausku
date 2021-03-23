@@ -23,8 +23,8 @@ public class Scene1_AmbientLightWithMatteObjects extends DefaultSceneDefinition 
 
         addLight(new AmbientLight(Color.of(15f)));
 
-        Material matteRed = Material.matte(Color.of(.10f, .01f, .01f));
-        Material matteWhite = Material.matte(Color.of(.10f));
+        Material matteRed = Material.lambertian(Color.of(.10f, .01f, .01f));
+        Material matteWhite = Material.lambertian(Color.of(.10f));
         QuadraticForm sphere = QuadraticForm.createSphere(1f);
         Cube cube = new Cube();
         addObject(sphere, matteRed);

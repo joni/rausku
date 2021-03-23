@@ -28,7 +28,7 @@ public class Scene10_Materials extends DefaultSceneDefinition {
         Color silver = Color.of(.8f, .8f, .8f);
         QuadraticForm object = new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f));
 
-        addObject(Matrix.translate(-2, 2, 0), object, Material.matte(silver));
+        addObject(Matrix.translate(-2, 2, 0), object, Material.lambertian(silver));
         addObject(Matrix.translate(0, 2, 0), object, Material.metallic(silver, .99f));
         addObject(Matrix.translate(+2, 2, 0), object, Material.glass());
 

@@ -16,7 +16,8 @@ public class PointLight implements LightSource {
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
         // TODO is the likelihood correct?
-        return new Sample(color, sampleRay(intercept, s, t), 1);
+        var squaredDistance = position.sub(intercept.worldInterceptPoint).sqLen();
+        return new Sample(color, sampleRay(intercept, s, t), squaredDistance);
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
@@ -36,7 +37,6 @@ public class PointLight implements LightSource {
 
     @Override
     public float getIntensity(Vec interceptPoint) {
-        // TODO intensity should decrease as distance increases
         return 1;
     }
 }

@@ -33,7 +33,7 @@ public class Scene7_Teapot extends DefaultSceneDefinition {
         addLight(new DirectionalLight(Vec.of(-1f, -2f, -1f), FloatMath.PI / 8, Color.of(1f, 1f, 1f)));
         addLight(new AmbientLight(Color.of(.9f)));
 
-        Material material = Material.matte(Color.of(1f, .9f, .8f));
+        Material material = Material.lambertian(Color.of(1f, .9f, .8f));
 //        Material material = Material.plastic(Color.of(1f, .9f, .8f), .1f);
 
         try (ObjReader reader = new ObjReader(new FileInputStream("data/teapot.obj"))) {

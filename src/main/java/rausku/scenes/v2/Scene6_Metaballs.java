@@ -29,8 +29,8 @@ public class Scene6_Metaballs extends DefaultSceneDefinition {
         addLight(new DirectionalLight(Vec.unit(+1, -1, -1), Color.of(5f)));
         addLight(new AmbientLight(Color.of(5f)));
 
-        Material red = Material.matte(Color.of(1 / 8f, .01f, .01f));
-        Material white = Material.matte(Color.of(1 / 8f));
+        Material red = Material.lambertian(Color.of(1 / 8f, .01f, .01f));
+        Material white = Material.lambertian(Color.of(1 / 8f));
         Material mirror = Material.mirror();
 
         QuadraticForm sphere = QuadraticForm.createSphere(1f);

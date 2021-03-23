@@ -138,7 +138,7 @@ public class BSPTree {
 
                 for (Polygon polygon : ownPolys) {
                     Intercept intercept = polygon.getIntercept(ray);
-                    if (intercept.isValid() && tmin < intercept.intercept && intercept.intercept < tmax && intercept.intercept < closestIntercept.intercept) {
+                    if (intercept.isValid() && tmin <= intercept.intercept && intercept.intercept <= tmax && intercept.intercept < closestIntercept.intercept) {
                         closestIntercept = intercept;
                     }
                 }

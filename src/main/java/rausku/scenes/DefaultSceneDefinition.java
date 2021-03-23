@@ -55,6 +55,16 @@ public class DefaultSceneDefinition implements SceneDefinition {
     }
 
     protected void addLight(LightSource lightSource) {
+        if (lightSource instanceof SceneObject) {
+            this.addObject(((SceneObject) lightSource), Material.lambertian(Color.of(1f)));
+        }
+        this.lights.add(lightSource);
+    }
+
+    protected void addLight(Matrix transform, LightSource lightSource) {
+        if (lightSource instanceof SceneObject) {
+            this.addObject(transform, ((SceneObject) lightSource), Material.lambertian(Color.of(1f)));
+        }
         this.lights.add(lightSource);
     }
 

@@ -25,9 +25,9 @@ public class Scene4_Transformations extends DefaultSceneDefinition {
 //        addLight(new DirectionalLight(Vec.unit(1, -1, -1), PI/32, Color.of(10f)));
         addLight(new AmbientLight(Color.of(10f)));
 
-        Material white = Material.matte(Color.of(.125f));
+        Material white = Material.lambertian(Color.of(.125f));
         Material mirror = Material.mirror();
-        Material red = Material.matte(Color.of(1 / 8f, 1 / 128f, 1 / 128f));
+        Material red = Material.lambertian(Color.of(1 / 8f, 1 / 128f, 1 / 128f));
         Material objectMat = Material.mirror();
         Material glossy = Material.glossy(Color.of(.8f), PI / 8);
         SceneObject object = QuadraticForm.createSphere(1f);

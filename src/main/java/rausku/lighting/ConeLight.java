@@ -32,6 +32,7 @@ public class ConeLight implements LightSource {
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
+        // TODO actually sample it
         return Ray.fromStartEnd(intercept.worldInterceptPoint, position);
     }
 

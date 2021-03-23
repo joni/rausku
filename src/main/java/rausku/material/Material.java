@@ -8,7 +8,7 @@ import rausku.texture.CheckerBoardTexture;
 import rausku.texture.GinghamTexture;
 
 public interface Material {
-    static Material matte(Color color) {
+    static Material lambertian(Color color) {
         return new BRDFMaterial(new LambertianBRDF(color));
     }
 

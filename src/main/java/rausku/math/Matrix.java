@@ -249,6 +249,10 @@ public class Matrix {
         return Matrix.diag(f, f, f, 1);
     }
 
+    public static Matrix scale(float x, float y, float z) {
+        return Matrix.diag(x, y, z, 1);
+    }
+
     public static Matrix translate(float x, float y, float z) {
         return new Matrix(
                 1, 0, 0, x,

@@ -23,8 +23,8 @@ public class Scene5_CSG extends DefaultSceneDefinition {
 
         addLight(new DirectionalLight(Vec.of(1, -2, -1), Color.of(.8f, .8f, .7f)));
 
-        Material red = Material.matte(Color.of(1 / 8f, .01f, .01f));
-        Material white = Material.matte(Color.of(1 / 8f));
+        Material red = Material.lambertian(Color.of(1 / 8f, .01f, .01f));
+        Material white = Material.lambertian(Color.of(1 / 8f));
 
         Cube cube = new Cube();
         QuadraticForm sphere = QuadraticForm.createSphere(1.33f);

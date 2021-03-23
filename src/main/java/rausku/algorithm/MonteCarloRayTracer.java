@@ -20,11 +20,11 @@ import static rausku.math.FloatMath.abs;
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
-    public static final int MAX_DEPTH = 4;
+    public static final int MAX_DEPTH = 3;
     private boolean debug;
     private Scene scene;
 
-    private int lightRayCount = 2;
+    private int lightRayCount = 4;
 
     public MonteCarloRayTracer(Scene scene) {
         this.scene = scene;
@@ -33,7 +33,7 @@ public class MonteCarloRayTracer implements RayTracer {
     @Override
     public Color resolveRayColor(Ray ray, int depth) {
 
-        if (depth > MAX_DEPTH) {
+        if (depth >= MAX_DEPTH) {
             return Color.black();
         }
 
@@ -94,7 +94,13 @@ public class MonteCarloRayTracer implements RayTracer {
 
         // sample light from BSDF
         Color light = Color.black();
-        int bsdfSamples = 2;
+
+        if (sceneObject instanceof LightSource) {
+            var lightSource = (LightSource) sceneObject;
+            light = light.add(lightSource.getColor()); // TODO pretty sure this has to be multiplied by cosine or something
+        }
+
+        int bsdfSamples = 4;
 
         for (int i = 0; i < bsdfSamples; i++) {
 
@@ -162,7 +168,7 @@ public class MonteCarloRayTracer implements RayTracer {
                         Color incidentRadiance = lightSource.getColor();
                         light = incidentRadiance
                                 .mul(bsdf.evaluate(localOutgoing, globalToShading.transform(lightRay.direction)))
-                                .mulAdd(intensity * cosineIncident / lightRayCount, light);
+                                .mulAdd(intensity * cosineIncident / (sample.likelihood * lightRayCount), light);
                     }
                 }
             }

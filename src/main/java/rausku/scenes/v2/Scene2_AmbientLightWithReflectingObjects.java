@@ -23,7 +23,7 @@ public class Scene2_AmbientLightWithReflectingObjects extends DefaultSceneDefini
         addLight(new AmbientLight(Color.of(10f)));
 
         Material mirror = Material.mirror();
-        Material matteRed = Material.matte(Color.of(.10f, .01f, .01f));
+        Material matteRed = Material.lambertian(Color.of(.10f, .01f, .01f));
         Material matteWhite = Material.checkerBoard(.5f, Color.of(.1f));
 
         SceneObject object = StandardObjects.sphere();

@@ -19,7 +19,7 @@ public class Rand {
     }
 
     /**
-     * Returns a uniformly sampled vector on the +Z hemisphere
+     * Returns a uniformly sampled vector on the +Y hemisphere
      *
      * @param s number 0-1
      * @param t number 0-1
@@ -56,5 +56,11 @@ public class Rand {
      */
     public static Vec uniformCone(float s, float t, float theta) {
         return hemisphere(1 - s * theta / (2 * PI), t);
+    }
+
+    public static Vec uniformDisk(float s, float t) {
+        float r = sqrt(s);
+        float u = 2 * PI * t;
+        return Vec.of(r * cos(u), 0, r * sin(u));
     }
 }
