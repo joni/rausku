@@ -29,10 +29,23 @@ public interface BRDF {
          */
         public final float likelihood;
 
+        /**
+         * Indicates if the sample was from a specular interaction
+         */
+        public final boolean isSpecular;
+
         public Sample(Color color, Vec incident, float likelihood) {
             this.color = color;
             this.incident = incident;
             this.likelihood = likelihood;
+            this.isSpecular = false;
+        }
+
+        public Sample(Color color, Vec incident, float likelihood, boolean isSpecular) {
+            this.color = color;
+            this.incident = incident;
+            this.likelihood = likelihood;
+            this.isSpecular = isSpecular;
         }
     }
 }

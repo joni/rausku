@@ -29,7 +29,7 @@ public class SpecularBTDF implements BRDF {
 
         if (incidentT == null) {
             // total internal reflection
-            return new Sample(Color.of(1 / incidentR.y), incidentR, 1);
+            return new Sample(Color.of(1 / incidentR.y), incidentR, 1, true);
         }
 
         float reflectance;
@@ -43,7 +43,7 @@ public class SpecularBTDF implements BRDF {
 
         if (s < reflectance) {
             // pick reflected ray
-            return new Sample(Color.of(reflectance / incidentR.y), incidentR, reflectance);
+            return new Sample(Color.of(reflectance / incidentR.y), incidentR, reflectance, true);
         }
 
         // pick transmitted ray
@@ -52,12 +52,12 @@ public class SpecularBTDF implements BRDF {
             // ray exits material
             float absCosTheta = incidentT.y;
             Color color = Color.of(transmittance / absCosTheta);
-            return new Sample(color, incidentT, transmittance);
+            return new Sample(color, incidentT, transmittance, true);
         } else {
-            // ray exits material
+            // ray enters material
             float absCosTheta = -incidentT.y;
             Color color = Color.of(transmittance / absCosTheta);
-            return new Sample(color, incidentT, transmittance);
+            return new Sample(color, incidentT, transmittance, true);
         }
     }
 }

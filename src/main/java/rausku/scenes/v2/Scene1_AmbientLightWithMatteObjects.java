@@ -1,9 +1,8 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.Cube;
-import rausku.geometry.HalfSpace;
-import rausku.geometry.QuadraticForm;
+import rausku.geometry.SceneObject;
+import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
 import rausku.material.Material;
@@ -21,19 +20,19 @@ public class Scene1_AmbientLightWithMatteObjects extends DefaultSceneDefinition 
                 500, 500,
                 toRadians(30)));
 
-        addLight(new AmbientLight(Color.of(15f)));
+        addLight(new AmbientLight(Color.of(2f)));
 
-        Material matteRed = Material.lambertian(Color.of(.10f, .01f, .01f));
-        Material matteWhite = Material.lambertian(Color.of(.10f));
-        QuadraticForm sphere = QuadraticForm.createSphere(1f);
-        Cube cube = new Cube();
+        Material matteRed = Material.lambertian(Color.of(.4f, .1f, .1f));
+        Material matteWhite = Material.lambertian(Color.of(.3f));
+        SceneObject sphere = StandardObjects.sphere();
+        SceneObject cube = StandardObjects.cube();
+
         addObject(sphere, matteRed);
         addObject(Matrix.translate(-2, 0, -2), cube, matteWhite);
         addObject(Matrix.translate(+2, 0, -2), cube, matteWhite);
         addObject(Matrix.translate(-2, 0, +2), cube, matteWhite);
         addObject(Matrix.translate(+2, 0, +2), cube, matteWhite);
 
-        HalfSpace plane = HalfSpace.horizontalPlane(-1f);
-        addObject(plane, matteWhite);
+        addObject(StandardObjects.floorPlane(), matteWhite);
     }
 }

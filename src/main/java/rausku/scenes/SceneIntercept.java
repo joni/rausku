@@ -17,4 +17,13 @@ public class SceneIntercept {
     public boolean isValid() {
         return intercept.isValid();
     }
+
+    @Override
+    public String toString() {
+        return "SceneIntercept{" +
+                "sceneObjectInstance=" + sceneObjectInstance +
+                ", worldInterceptPoint=" + worldInterceptPoint +
+                ", intercept=" + intercept +
+                '}';
+    }
 }

@@ -20,7 +20,7 @@ public class Scene2_AmbientLightWithReflectingObjects extends DefaultSceneDefini
                 500, 500,
                 toRadians(30)));
 
-        addLight(new AmbientLight(Color.of(10f)));
+        addLight(new AmbientLight(Color.of(5f)));
 
         Material mirror = Material.mirror();
         Material matteRed = Material.lambertian(Color.of(.10f, .01f, .01f));

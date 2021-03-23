@@ -4,7 +4,7 @@ import rausku.algorithm.Camera;
 import rausku.geometry.HalfSpace;
 import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
-import rausku.lighting.DiskLight;
+import rausku.lighting.RectangleLight;
 import rausku.material.Material;
 import rausku.math.Vec;
 import rausku.scenes.DefaultSceneDefinition;
@@ -23,10 +23,8 @@ public class Scene7_CornellBox extends DefaultSceneDefinition {
                 500, 500,
                 toRadians(30)));
 
-//        addLight(new RectangleLight(translate(0, 2.99f, 0), Color.of(16f)));
         var translate = translate(0, 2.99f, 0);
-        addLight(translate, new DiskLight(translate, Color.of(16f)));
-//         addLight(new PointLight(Vec.point(0, 2.99f, 0), Color.of(2f)));
+        addLight(translate, new RectangleLight(translate, Color.of(16f)));
 
         Material red = Material.lambertian(Color.of(.8f, .2f, .2f));
         Material green = Material.lambertian(Color.of(.2f, .4f, .8f));

@@ -24,7 +24,7 @@ public class Scene3_RefractingObject extends DefaultSceneDefinition {
         addLight(new DirectionalLight(Vec.unit(+1, -1, -1), PI / 16, Color.of(10f)));
 
         Material glass = Material.glass();
-        Material red = Material.lambertian(Color.of(.10f, .01f, .01f));
+        Material red = Material.lambertian(Color.of(.8f, .2f, .2f));
 
         SceneObject sphere = StandardObjects.sphere();
         addObject(Matrix.translate(7f, 7f, 7f), sphere, glass);
@@ -35,7 +35,7 @@ public class Scene3_RefractingObject extends DefaultSceneDefinition {
             }
         }
 
-        Material floorMaterial = Material.checkerBoard(.5f, Color.of(.10f));
+        Material floorMaterial = Material.checkerBoard(.5f, Color.of(.5f));
         addObject(StandardObjects.floorPlane(), floorMaterial);
     }
 }

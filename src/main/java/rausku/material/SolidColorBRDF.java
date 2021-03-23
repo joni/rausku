@@ -31,6 +31,6 @@ public class SolidColorBRDF implements BRDF {
     @Override
     public Sample sample(Vec outgoing, float s, float t) {
         Vec incident = Vec.J.reflected(outgoing);
-        return new Sample(reflectiveColor.mul(reflectiveness / incident.y), incident, 1);
+        return new Sample(reflectiveColor.mul(reflectiveness / incident.y), incident, 1, true);
     }
 }

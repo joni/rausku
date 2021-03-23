@@ -3,6 +3,7 @@ package rausku.lighting;
 import java.util.Objects;
 
 import static java.lang.Math.exp;
+import static java.lang.Math.max;
 import static rausku.math.FloatMath.clamp;
 
 /**
@@ -88,14 +89,18 @@ public class Color {
         return Color.of(r * color.r, g * color.g, b * color.b);
     }
 
-    public Color mul(float c) {
-        return new Color(r * c, g * c, b * c);
+    public Color mul(float scalar) {
+        return Color.of(r * scalar, g * scalar, b * scalar);
+    }
+
+    public Color div(float scalar) {
+        return Color.of(r / scalar, g / scalar, b / scalar);
     }
 
 
     @Override
     public String toString() {
-        return String.format("Color{r=%s, g=%s, b=%s}", r, g, b);
+        return String.format("<%.2f %.2f %.2f>", r, g, b);
     }
 
     @Override
@@ -115,5 +120,9 @@ public class Color {
 
     public boolean isBlack() {
         return this.r == 0f && this.g == 0f && this.b == 0f;
+    }
+
+    public float norm() {
+        return max(max(r, g), b);
     }
 }

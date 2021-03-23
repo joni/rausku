@@ -51,7 +51,7 @@ public class RecursiveRayTracer implements RayTracer {
 
         if (this.debug) {
             if (sceneIntercept.isValid()) {
-                addDebugString(ray, "depth=%d object=%d %s", depth, sceneIntercept.sceneObjectInstance, intercept);
+                addDebugString(ray, "depth=%d object=%s %s", depth, sceneIntercept.sceneObjectInstance, intercept);
             } else {
                 addDebugString(ray, "depth=%d no intercept", depth);
             }
@@ -168,7 +168,7 @@ public class RecursiveRayTracer implements RayTracer {
                 // check shadow
                 if (!scene.interceptsRay(lightRay)) {
                     Color materialColor = material.getBSDF(intercept.intercept).evaluate(ray.direction, lightRay.direction);
-                    light = sample.color.mul(materialColor).mulAdd(diffuseReflectionEnergy, light);
+                    light = sample.color.mul(materialColor).mulAdd(diffuseReflectionEnergy / sample.likelihood, light);
                 }
             }
         }

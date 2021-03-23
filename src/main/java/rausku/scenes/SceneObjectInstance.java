@@ -16,4 +16,9 @@ public class SceneObjectInstance {
         this.objectToWorld = objectToWorld;
         this.material = material;
     }
+
+    @Override
+    public String toString() {
+        return object.toString();
+    }
 }

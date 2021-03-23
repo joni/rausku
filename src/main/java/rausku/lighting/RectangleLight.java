@@ -8,6 +8,8 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
+import static rausku.math.FloatMath.abs;
+
 public class RectangleLight implements LightSource, SceneObject {
     private final Matrix transform;
     private final Matrix inverse;
@@ -27,7 +29,7 @@ public class RectangleLight implements LightSource, SceneObject {
 
         Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint);
         var squaredDistance = toLight.sqLen();
-        return new Sample(color, ray, squaredDistance * .25f / ray.direction.y);
+        return new Sample(color, ray, squaredDistance * .25f / abs(ray.direction.y));
     }
 
     @Override
