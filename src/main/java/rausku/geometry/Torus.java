@@ -24,7 +24,7 @@ public class Torus implements SceneObject {
     @Override
     public Vec getNormal(Intercept intercept) {
         Vec pointOnRay = ((Vec) intercept.info);
-        Vec pointOnCircle = Vec.of(pointOnRay.x, 0, pointOnRay.z).normalize().mul(R);
+        Vec pointOnCircle = Vec.of(pointOnRay.x(), 0, pointOnRay.z()).normalize().mul(R);
         return pointOnRay.sub(pointOnCircle).normalize();
     }
 
@@ -53,10 +53,10 @@ public class Torus implements SceneObject {
     }
 
     private float signedTorusDistance(Vec pointOnRay) {
-        if (pointOnRay.x == 0 && pointOnRay.z == 0) {
-            return FloatMath.hypot(R, pointOnRay.y) - r;
+        if (pointOnRay.x() == 0 && pointOnRay.z() == 0) {
+            return FloatMath.hypot(R, pointOnRay.y()) - r;
         }
-        Vec pointOnCircle = Vec.of(pointOnRay.x, 0, pointOnRay.z).normalize().mul(R);
+        Vec pointOnCircle = Vec.of(pointOnRay.x(), 0, pointOnRay.z()).normalize().mul(R);
         float distanceToCircle = pointOnCircle.sub(pointOnRay).len();
         return distanceToCircle - r;
     }

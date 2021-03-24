@@ -29,33 +29,33 @@ public class SpecularBTDF implements BRDF {
 
         if (incidentT == null) {
             // total internal reflection
-            return new Sample(Color.of(1 / incidentR.y), incidentR, 1, true);
+            return new Sample(Color.of(1 / incidentR.y()), incidentR, 1, true);
         }
 
         float reflectance;
-        if (incidentT.y > 0) {
+        if (incidentT.y() > 0) {
             // ray exits material
-            reflectance = FresnelReflectance.dielectric(incidentT.y, r, outgoing.y, 1);
+            reflectance = FresnelReflectance.dielectric(incidentT.y(), r, outgoing.y(), 1);
         } else {
             // ray enters material
-            reflectance = FresnelReflectance.dielectric(-incidentT.y, 1, -outgoing.y, r);
+            reflectance = FresnelReflectance.dielectric(-incidentT.y(), 1, -outgoing.y(), r);
         }
 
         if (s < reflectance) {
             // pick reflected ray
-            return new Sample(Color.of(reflectance / incidentR.y), incidentR, reflectance, true);
+            return new Sample(Color.of(reflectance / incidentR.y()), incidentR, reflectance, true);
         }
 
         // pick transmitted ray
         float transmittance = 1 - reflectance;
-        if (incidentT.y > 0) {
+        if (incidentT.y() > 0) {
             // ray exits material
-            float absCosTheta = incidentT.y;
+            float absCosTheta = incidentT.y();
             Color color = Color.of(transmittance / absCosTheta);
             return new Sample(color, incidentT, transmittance, true);
         } else {
             // ray enters material
-            float absCosTheta = -incidentT.y;
+            float absCosTheta = -incidentT.y();
             Color color = Color.of(transmittance / absCosTheta);
             return new Sample(color, incidentT, transmittance, true);
         }

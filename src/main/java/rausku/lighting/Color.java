@@ -1,7 +1,5 @@
 package rausku.lighting;
 
-import java.util.Objects;
-
 import static java.lang.Math.exp;
 import static java.lang.Math.max;
 import static rausku.math.FloatMath.clamp;
@@ -9,22 +7,12 @@ import static rausku.math.FloatMath.clamp;
 /**
  * Representation of spectrum of light
  */
-public class Color {
+public record Color(float r, float g, float b) {
 
     private static final Color BLACK = Color.of(0f);
 
-    public final float r;
-    public final float g;
-    public final float b;
-
-    private Color(float r, float g, float b) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-    }
-
     public static Color of(float gray) {
-        return of(gray, gray, gray);
+        return new Color(gray, gray, gray);
     }
 
     public static Color of(float r, float g, float b) {
@@ -67,6 +55,10 @@ public class Color {
         return BLACK;
     }
 
+    public boolean isBlack() {
+        return this.r == 0f && this.g == 0f && this.b == 0f;
+    }
+
     public int toIntRGB() {
         int r = clamp(0, 255, (int) (256 * (1 - exp(-this.r))));
         int g = clamp(0, 255, (int) (256 * (1 - exp(-this.g))));
@@ -97,32 +89,12 @@ public class Color {
         return Color.of(r / scalar, g / scalar, b / scalar);
     }
 
+    public float norm() {
+        return max(max(r, g), b);
+    }
 
     @Override
     public String toString() {
         return String.format("<%.2f %.2f %.2f>", r, g, b);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Color color = (Color) o;
-        return Float.compare(color.r, r) == 0 &&
-                Float.compare(color.g, g) == 0 &&
-                Float.compare(color.b, b) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(r, g, b);
-    }
-
-    public boolean isBlack() {
-        return this.r == 0f && this.g == 0f && this.b == 0f;
-    }
-
-    public float norm() {
-        return max(max(r, g), b);
     }
 }

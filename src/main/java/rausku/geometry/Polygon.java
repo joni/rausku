@@ -19,9 +19,9 @@ public class Polygon {
 
     public Polygon(Vertex p0, Vertex p1, Vertex p2) {
         this.vertices = List.of(p0, p1, p2);
-        this.v0 = p0.position;
-        this.v1 = p1.position;
-        this.v2 = p2.position;
+        this.v0 = p0.position();
+        this.v1 = p1.position();
+        this.v2 = p2.position();
         Vec side1 = v1.sub(v0);
         Vec side2 = v2.sub(v0);
         this.normal = Vec.cross(side2, side1).normalize();
@@ -33,12 +33,12 @@ public class Polygon {
         Vec U = Vec.mulAdd(c, side1, -b, side2).div(determinant);
         Vec V = Vec.mulAdd(a, side2, -b, side1).div(determinant);
 
-        m00 = U.x;
-        m01 = U.y;
-        m02 = U.z;
-        m10 = V.x;
-        m11 = V.y;
-        m12 = V.z;
+        m00 = U.x();
+        m01 = U.y();
+        m02 = U.z();
+        m10 = V.x();
+        m11 = V.y();
+        m12 = V.z();
 
         this.U = U;
         this.V = V;
@@ -60,12 +60,12 @@ public class Polygon {
         Vec U = Vec.mulAdd(c, side1, -b, side2).div(determinant);
         Vec V = Vec.mulAdd(a, side2, -b, side1).div(determinant);
 
-        m00 = U.x;
-        m01 = U.y;
-        m02 = U.z;
-        m10 = V.x;
-        m11 = V.y;
-        m12 = V.z;
+        m00 = U.x();
+        m01 = U.y();
+        m02 = U.z();
+        m10 = V.x();
+        m11 = V.y();
+        m12 = V.z();
 
         this.U = U;
         this.V = V;
@@ -94,8 +94,8 @@ public class Polygon {
 
         // is the intercept inside the triangle?
         Vec interceptPoint = Vec.mulAdd(planeIntercept, ray.direction, sub);
-        float u = m00 * interceptPoint.x + m01 * interceptPoint.y + m02 * interceptPoint.z;
-        float v = m10 * interceptPoint.x + m11 * interceptPoint.y + m12 * interceptPoint.z;
+        float u = m00 * interceptPoint.x() + m01 * interceptPoint.y() + m02 * interceptPoint.z();
+        float v = m10 * interceptPoint.x() + m11 * interceptPoint.y() + m12 * interceptPoint.z();
         if (0 <= u && 0 <= v && u + v < 1) {
             return new Intercept(planeIntercept, ray.apply(planeIntercept), new InterceptInfo(u, v));
         } else {
@@ -106,8 +106,8 @@ public class Polygon {
     public Color getColor(Vec interceptPoint) {
         interceptPoint = interceptPoint.sub(v0);
 
-        float u = m00 * interceptPoint.x + m01 * interceptPoint.y + m02 * interceptPoint.z;
-        float v = m10 * interceptPoint.x + m11 * interceptPoint.y + m12 * interceptPoint.z;
+        float u = m00 * interceptPoint.x() + m01 * interceptPoint.y() + m02 * interceptPoint.z();
+        float v = m10 * interceptPoint.x() + m11 * interceptPoint.y() + m12 * interceptPoint.z();
 
         return Color.of(1 - u - v, u, v);
     }
@@ -137,9 +137,9 @@ public class Polygon {
                 return normal;
 
             return Vec.mulAdd(
-                    1 - u - v, vertices.get(0).normal,
-                    u, vertices.get(1).normal,
-                    v, vertices.get(2).normal)
+                    1 - u - v, vertices.get(0).normal(),
+                    u, vertices.get(1).normal(),
+                    v, vertices.get(2).normal())
                     .normalize();
         }
     }

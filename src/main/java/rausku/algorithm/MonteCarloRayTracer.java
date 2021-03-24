@@ -23,7 +23,7 @@ import static rausku.math.FloatMath.abs;
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
-    public static final int MAX_DEPTH = 4;
+    public static final int MAX_DEPTH = 6;
     private boolean debug;
     private Scene scene;
 
@@ -73,10 +73,9 @@ public class MonteCarloRayTracer implements RayTracer {
 
         Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        if (sceneObject instanceof LightSource) {
+        if (sceneObject instanceof LightSource lightSource) {
             // Light sources are already accounted for in the previous step, except for specular case
             if (isSpecular) {
-                var lightSource = (LightSource) sceneObject;
                 return lightSource.getColor().mul(abs(Vec.dot(ray.direction, worldNormal)));
             } else {
                 return Color.black();
@@ -145,8 +144,7 @@ public class MonteCarloRayTracer implements RayTracer {
                 Ray lightRay = sample.ray;
                 float cosineIncident = normal.dot(lightRay.direction);
                 if (this.debug) {
-                    addDebugString(ray, "shadow ray: %f %s", cosineIncident, lightRay);
-//                    ray.addDebug(lightRay);
+                    addDebugString(ray, "sample: %s", sample);
                 }
                 if (cosineIncident > 0) {
                     boolean shadow = scene.interceptsRay(lightRay);
@@ -176,7 +174,7 @@ public class MonteCarloRayTracer implements RayTracer {
 
             Vec globalIncidentDirection = shadingToGlobal.transform(sample.incident).normalize();
 
-            float cosineIncident = abs(sample.incident.y); // = normal.dot(incidentRay.direction)
+            float cosineIncident = abs(sample.incident.y()); // = normal.dot(incidentRay.direction)
             var beta = cosineIncident / sample.likelihood;
 
             Ray incidentRay = Ray.fromOriginDirection(interceptPoint, globalIncidentDirection);
@@ -186,7 +184,6 @@ public class MonteCarloRayTracer implements RayTracer {
                 ray.addDebug(incidentRay);
             }
 
-            // TODO _specular_ sample needs special treatment
             Color incidentRadiance = traceToIntercept(sample.isSpecular, incidentRay, depth + 1, scalar * beta * sample.color.norm());
 
             if (this.debug) {
@@ -209,7 +206,11 @@ public class MonteCarloRayTracer implements RayTracer {
     }
 
     private int getLightSampleCount(int depth) {
-        return (16 >> depth) + 1;
+        if (depth == 1) {
+            return 16;
+        } else {
+            return 1;
+        }
     }
 
     @Override

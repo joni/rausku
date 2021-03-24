@@ -46,10 +46,10 @@ public class QuadraticForm implements CSGObject, SceneObject {
     public static QuadraticForm createSphere(Vec center, float radius) {
         Vec radiusVec = Vec.of(radius, radius, radius);
         return new QuadraticForm(Matrix.of(
-                1, 0, 0, -center.x,
-                0, 1, 0, -center.y,
-                0, 0, 1, -center.z,
-                -center.x, -center.y, -center.z, center.sqLen() - radius * radius),
+                1, 0, 0, -center.x(),
+                0, 1, 0, -center.y(),
+                0, 0, 1, -center.z(),
+                -center.x(), -center.y(), -center.z(), center.sqLen() - radius * radius),
                 new BoundingBox(center.sub(radiusVec), center.add(radiusVec)));
     }
 
@@ -105,17 +105,17 @@ public class QuadraticForm implements CSGObject, SceneObject {
             float intercept = (-B - sqrtDeterminant) / (2 * A);
             Vec interceptPoint = ray.apply(intercept);
             if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
-                float phi = (float) Math.atan2(interceptPoint.z, interceptPoint.x);
+                float phi = (float) Math.atan2(interceptPoint.z(), interceptPoint.x());
                 float r = interceptPoint.len();
-                float theta = (float) Math.acos(interceptPoint.y / r);
+                float theta = (float) Math.acos(interceptPoint.y() / r);
                 return new Intercept(intercept, interceptPoint, phi, theta, interceptPoint);
             }
             intercept = (-B + sqrtDeterminant) / (2 * A);
             interceptPoint = ray.apply(intercept);
             if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
-                float phi = (float) Math.atan2(interceptPoint.z, interceptPoint.x);
+                float phi = (float) Math.atan2(interceptPoint.z(), interceptPoint.x());
                 float r = interceptPoint.len();
-                float theta = (float) Math.acos(interceptPoint.y / r);
+                float theta = (float) Math.acos(interceptPoint.y() / r);
                 return new Intercept(intercept, interceptPoint, phi, theta, interceptPoint);
             }
         }

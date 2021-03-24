@@ -24,13 +24,13 @@ public class DiskLight implements LightSource, SceneObject {
         Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint);
         var squaredDistance = toLight.sqLen();
         Ray ray = Ray.fromStartEnd(intercept.worldInterceptPoint, worldLightPoint);
-        return new Sample(color, ray, squaredDistance / (FloatMath.PI * ray.direction.y));
+        return new Sample(color, ray, squaredDistance / (FloatMath.PI * ray.direction.y()));
     }
 
     @Override
     public boolean intercepts(Ray globalRay) {
         Ray localRay = inverse.transform(globalRay);
-        float intercept = -localRay.origin.y / localRay.direction.y;
+        float intercept = -localRay.origin.y() / localRay.direction.y();
         Vec interceptPoint = localRay.apply(intercept);
         return interceptPoint.sqLen() < 2;
     }
@@ -52,7 +52,7 @@ public class DiskLight implements LightSource, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float intercept = -ray.origin.y / ray.direction.y;
+        float intercept = -ray.origin.y() / ray.direction.y();
         Vec interceptPoint = ray.apply(intercept);
         if (interceptPoint.sqLen() < 2) {
             return new Intercept(intercept, interceptPoint, null);

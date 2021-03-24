@@ -29,16 +29,16 @@ public class RectangleLight implements LightSource, SceneObject {
 
         Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint);
         var squaredDistance = toLight.sqLen();
-        return new Sample(color, ray, squaredDistance * .25f / abs(ray.direction.y));
+        return new Sample(color, ray, squaredDistance * .25f / abs(ray.direction.y()));
     }
 
     @Override
     public boolean intercepts(Ray globalRay) {
         Ray localRay = inverse.transform(globalRay);
-        float intercept = -localRay.origin.y / localRay.direction.y;
+        float intercept = -localRay.origin.y() / localRay.direction.y();
         Vec interceptPoint = localRay.apply(intercept);
-        return -1 <= interceptPoint.x && interceptPoint.x <= 1 &&
-                -1 <= interceptPoint.z && interceptPoint.z <= 1;
+        return -1 <= interceptPoint.x() && interceptPoint.x() <= 1 &&
+                -1 <= interceptPoint.z() && interceptPoint.z() <= 1;
     }
 
     @Override
@@ -58,11 +58,11 @@ public class RectangleLight implements LightSource, SceneObject {
 
     @Override
     public Intercept getIntercept(Ray ray) {
-        float intercept = -ray.origin.y / ray.direction.y;
+        float intercept = -ray.origin.y() / ray.direction.y();
         Vec interceptPoint = ray.apply(intercept);
 
-        if (-1 <= interceptPoint.x && interceptPoint.x <= 1 &&
-                -1 <= interceptPoint.z && interceptPoint.z <= 1) {
+        if (-1 <= interceptPoint.x() && interceptPoint.x() <= 1 &&
+                -1 <= interceptPoint.z() && interceptPoint.z() <= 1) {
             return new Intercept(intercept, interceptPoint, null);
         } else {
             return Intercept.noIntercept();

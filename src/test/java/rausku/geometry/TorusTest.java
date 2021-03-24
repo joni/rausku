@@ -68,8 +68,8 @@ public class TorusTest {
         Intercept intercept = torus.getIntercept(ray);
         Vec normal = torus.getNormal(intercept);
         assertNotNull(normal);
-        assertEquals(normal.x, 1, 1e-6);
-        assertEquals(normal.y, 0, 1e-6);
-        assertEquals(normal.z, 0, 1e-6);
+        assertEquals(normal.x(), 1, 1e-6);
+        assertEquals(normal.y(), 0, 1e-6);
+        assertEquals(normal.z(), 0, 1e-6);
     }
 }

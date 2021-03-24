@@ -1,62 +1,16 @@
 package rausku.math;
 
-import java.util.Objects;
 import java.util.Random;
 
 import static rausku.math.FloatMath.cos;
 import static rausku.math.FloatMath.sin;
 
-public class Matrix {
+public record Matrix(float f11, float f12, float f13, float f14,
+                     float f21, float f22, float f23, float f24,
+                     float f31, float f32, float f33, float f34,
+                     float f41, float f42, float f43, float f44) {
 
     private static final Matrix EYE = diag(1f);
-
-    private final float f11;
-    private final float f12;
-    private final float f13;
-    private final float f14;
-    private final float f21;
-    private final float f22;
-    private final float f23;
-    private final float f24;
-    private final float f31;
-    private final float f32;
-    private final float f33;
-    private final float f34;
-    private final float f41;
-    private final float f42;
-    private final float f43;
-    private final float f44;
-
-    private Matrix(float f11, float f12, float f13, float f14,
-                   float f21, float f22, float f23, float f24,
-                   float f31, float f32, float f33, float f34,
-                   float f41, float f42, float f43, float f44) {
-
-        this.f11 = f11;
-        this.f12 = f12;
-        this.f13 = f13;
-        this.f14 = f14;
-        this.f21 = f21;
-        this.f22 = f22;
-        this.f23 = f23;
-        this.f24 = f24;
-        this.f31 = f31;
-        this.f32 = f32;
-        this.f33 = f33;
-        this.f34 = f34;
-        this.f41 = f41;
-        this.f42 = f42;
-        this.f43 = f43;
-        this.f44 = f44;
-    }
-
-    private Matrix(float f) {
-        f11 = f22 = f33 = f44 = f;
-        f12 = f13 = f14 = 0;
-        f21 = f23 = f24 = 0;
-        f31 = f32 = f34 = 0;
-        f41 = f42 = f43 = 0;
-    }
 
     public static Matrix eye() {
         return EYE;
@@ -81,19 +35,19 @@ public class Matrix {
 
     public static Matrix ofColumns(Vec A, Vec B, Vec C) {
         return Matrix.of(
-                A.x, B.x, C.x, 0,
-                A.y, B.y, C.y, 0,
-                A.z, B.z, C.z, 0,
+                A.x(), B.x(), C.x(), 0,
+                A.y(), B.y(), C.y(), 0,
+                A.z(), B.z(), C.z(), 0,
                 0, 0, 0, 1
         );
     }
 
     public static Matrix ofColumns(Vec A, Vec B, Vec C, Vec D) {
         return Matrix.of(
-                A.x, B.x, C.x, D.x,
-                A.y, B.y, C.y, D.y,
-                A.z, B.z, C.z, D.z,
-                A.w, B.w, C.w, D.w
+                A.x(), B.x(), C.x(), D.x(),
+                A.y(), B.y(), C.y(), D.y(),
+                A.z(), B.z(), C.z(), D.z(),
+                A.w(), B.w(), C.w(), D.w()
         );
     }
 
@@ -242,7 +196,12 @@ public class Matrix {
     }
 
     public static Matrix diag(float f) {
-        return new Matrix(f);
+        return new Matrix(
+                f, 0, 0, 0,
+                0, f, 0, 0,
+                0, 0, f, 0,
+                0, 0, 0, f
+        );
     }
 
     public static Matrix scale(float f) {
@@ -301,9 +260,9 @@ public class Matrix {
     public static Matrix rotate(Vec axis, float angle) {
         axis = axis.normalize();
         Matrix K = Matrix.of(
-                0, -axis.z, axis.y, 0,
-                axis.z, 0, -axis.x, 0,
-                -axis.y, axis.x, 0, 0,
+                0, -axis.z(), axis.y(), 0,
+                axis.z(), 0, -axis.x(), 0,
+                -axis.y(), axis.x(), 0, 0,
                 0, 0, 0, 0
         );
         return plus(EYE, plus(K.mul(sin(angle)), mul(K, K).mul(1 - cos(angle))));
@@ -374,19 +333,19 @@ public class Matrix {
 
     public Vec transform(Vec v) {
         return Vec.of(
-                f11 * v.x + f12 * v.y + f13 * v.z + f14 * v.w,
-                f21 * v.x + f22 * v.y + f23 * v.z + f24 * v.w,
-                f31 * v.x + f32 * v.y + f33 * v.z + f34 * v.w,
-                f41 * v.x + f42 * v.y + f43 * v.z + f44 * v.w
+                f11 * v.x() + f12 * v.y() + f13 * v.z() + f14 * v.w(),
+                f21 * v.x() + f22 * v.y() + f23 * v.z() + f24 * v.w(),
+                f31 * v.x() + f32 * v.y() + f33 * v.z() + f34 * v.w(),
+                f41 * v.x() + f42 * v.y() + f43 * v.z() + f44 * v.w()
         );
     }
 
     public Vec transposeTransform(Vec v) {
         return Vec.of(
-                f11 * v.x + f21 * v.y + f31 * v.z + f41 * v.w,
-                f12 * v.x + f22 * v.y + f32 * v.z + f42 * v.w,
-                f13 * v.x + f23 * v.y + f33 * v.z + f43 * v.w,
-                f14 * v.x + f24 * v.y + f34 * v.z + f44 * v.w
+                f11 * v.x() + f21 * v.y() + f31 * v.z() + f41 * v.w(),
+                f12 * v.x() + f22 * v.y() + f32 * v.z() + f42 * v.w(),
+                f13 * v.x() + f23 * v.y() + f33 * v.z() + f43 * v.w(),
+                f14 * v.x() + f24 * v.y() + f34 * v.z() + f44 * v.w()
         );
     }
 
@@ -398,33 +357,5 @@ public class Matrix {
     public String toString() {
         return String.format("[[%s %s %s %s], [%s %s %s %s], [%s %s %s %s], [%s %s %s %s]]",
                 f11, f12, f13, f14, f21, f22, f23, f24, f31, f32, f33, f34, f41, f42, f43, f44);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Matrix matrix = (Matrix) o;
-        return Float.compare(matrix.f11, f11) == 0 &&
-                Float.compare(matrix.f12, f12) == 0 &&
-                Float.compare(matrix.f13, f13) == 0 &&
-                Float.compare(matrix.f14, f14) == 0 &&
-                Float.compare(matrix.f21, f21) == 0 &&
-                Float.compare(matrix.f22, f22) == 0 &&
-                Float.compare(matrix.f23, f23) == 0 &&
-                Float.compare(matrix.f24, f24) == 0 &&
-                Float.compare(matrix.f31, f31) == 0 &&
-                Float.compare(matrix.f32, f32) == 0 &&
-                Float.compare(matrix.f33, f33) == 0 &&
-                Float.compare(matrix.f34, f34) == 0 &&
-                Float.compare(matrix.f41, f41) == 0 &&
-                Float.compare(matrix.f42, f42) == 0 &&
-                Float.compare(matrix.f43, f43) == 0 &&
-                Float.compare(matrix.f44, f44) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(f11, f12, f13, f14, f21, f22, f23, f24, f31, f32, f33, f34, f41, f42, f43, f44);
     }
 }

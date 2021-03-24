@@ -19,6 +19,6 @@ public class SpecularBRDF implements BRDF {
     @Override
     public Sample sample(Vec outgoing, float s, float t) {
         Vec incident = Vec.J.reflected(outgoing);
-        return new Sample(color.mul(1 / incident.y), incident, 1, true);
+        return new Sample(color.mul(1 / incident.y()), incident, 1, true);
     }
 }

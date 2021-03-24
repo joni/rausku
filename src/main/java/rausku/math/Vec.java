@@ -1,29 +1,16 @@
 package rausku.math;
 
-import java.util.Objects;
-
 import static java.lang.Float.max;
 import static rausku.math.FloatMath.abs;
 import static rausku.math.FloatMath.sqrt;
 
-public class Vec {
+public record Vec(float x, float y, float z, float w) {
 
     private static final Vec ORIGIN = Vec.point(0, 0, 0);
     public static final Vec I = Vec.of(1, 0, 0);
     public static final Vec J = Vec.of(0, 1, 0);
     public static final Vec K = Vec.of(0, 0, 1);
 
-    public final float x;
-    public final float y;
-    public final float z;
-    public final float w;
-
-    private Vec(float x, float y, float z, float w) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
-    }
 
     public static Vec of(float x, float y, float z) {
         return new Vec(x, y, z, 0);
@@ -222,21 +209,5 @@ public class Vec {
     @Override
     public String toString() {
         return String.format("[%.2f %.2f %.2f %.2f]", x, y, z, w);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Vec vec = (Vec) o;
-        return Float.compare(vec.x, x) == 0 &&
-                Float.compare(vec.y, y) == 0 &&
-                Float.compare(vec.z, z) == 0 &&
-                Float.compare(vec.w, w) == 0;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z, w);
     }
 }

@@ -30,12 +30,12 @@ public class Cube implements CSGObject, SceneObject {
     @Override
     public Intercept[] getAllInterceptObjects(Ray ray) {
         float[] intercepts = {
-                (+1 - ray.origin.x) / ray.direction.x,
-                (-1 - ray.origin.x) / ray.direction.x,
-                (+1 - ray.origin.y) / ray.direction.y,
-                (-1 - ray.origin.y) / ray.direction.y,
-                (+1 - ray.origin.z) / ray.direction.z,
-                (-1 - ray.origin.z) / ray.direction.z,
+                (+1 - ray.origin.x()) / ray.direction.x(),
+                (-1 - ray.origin.x()) / ray.direction.x(),
+                (+1 - ray.origin.y()) / ray.direction.y(),
+                (-1 - ray.origin.y()) / ray.direction.y(),
+                (+1 - ray.origin.z()) / ray.direction.z(),
+                (-1 - ray.origin.z()) / ray.direction.z(),
         };
 
         Intercept[] interceptObjs = new Intercept[2];
@@ -58,12 +58,12 @@ public class Cube implements CSGObject, SceneObject {
 
     public Intercept getIntercept(Ray ray) {
         float[] intercepts = {
-                (+1 - ray.origin.x) / ray.direction.x,
-                (-1 - ray.origin.x) / ray.direction.x,
-                (+1 - ray.origin.y) / ray.direction.y,
-                (-1 - ray.origin.y) / ray.direction.y,
-                (+1 - ray.origin.z) / ray.direction.z,
-                (-1 - ray.origin.z) / ray.direction.z,
+                (+1 - ray.origin.x()) / ray.direction.x(),
+                (-1 - ray.origin.x()) / ray.direction.x(),
+                (+1 - ray.origin.y()) / ray.direction.y(),
+                (-1 - ray.origin.y()) / ray.direction.y(),
+                (+1 - ray.origin.z()) / ray.direction.z(),
+                (-1 - ray.origin.z()) / ray.direction.z(),
         };
         int face = -1;
         float closestIntercept = Float.POSITIVE_INFINITY;
@@ -90,7 +90,7 @@ public class Cube implements CSGObject, SceneObject {
 
     private boolean isOk(Ray ray, float intercept) {
         Vec interceptPoint = ray.apply(intercept);
-        return abs(interceptPoint.x) < BOUNDS && abs(interceptPoint.y) < BOUNDS && abs(interceptPoint.z) < BOUNDS;
+        return abs(interceptPoint.x()) < BOUNDS && abs(interceptPoint.y()) < BOUNDS && abs(interceptPoint.z()) < BOUNDS;
     }
 
     static class IInfo {

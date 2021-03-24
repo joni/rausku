@@ -35,5 +35,14 @@ public interface LightSource {
             this.ray = ray;
             this.likelihood = likelihood;
         }
+
+        @Override
+        public String toString() {
+            return "Sample{" +
+                    "color=" + color +
+                    ", ray=" + ray +
+                    ", likelihood=" + likelihood +
+                    '}';
+        }
     }
 }

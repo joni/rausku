@@ -104,8 +104,8 @@ public class RaytraceGUI {
             private DefaultMutableTreeNode buildDebugTree(Debuggable debuggable) {
                 DefaultMutableTreeNode root = new DefaultMutableTreeNode(debuggable);
                 for (Object debugInfo : debuggable.getDebugInfo()) {
-                    if (debugInfo instanceof Debuggable) {
-                        DefaultMutableTreeNode childTree = buildDebugTree((Debuggable) debugInfo);
+                    if (debugInfo instanceof Debuggable deb) {
+                        DefaultMutableTreeNode childTree = buildDebugTree(deb);
                         root.add(childTree);
                     } else {
                         DefaultMutableTreeNode node = new DefaultMutableTreeNode(debugInfo);

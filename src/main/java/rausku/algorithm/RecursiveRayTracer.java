@@ -114,7 +114,7 @@ public class RecursiveRayTracer implements RayTracer {
                 addDebugString(ray, "reflected ray: %s", reflected);
                 ray.addDebug(reflected);
             }
-            float cosineIncident = abs(sample.incident.y); // = normal.dot(incidentRay.direction)
+            float cosineIncident = abs(sample.incident.y()); // = normal.dot(incidentRay.direction)
 
             return resolveRayColor(depth + 1, reflected).mul(f).mul(cosineIncident);
         } else {

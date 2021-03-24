@@ -20,12 +20,12 @@ public class CameraTest {
                 toRadians(90));
 
         Ray topLeft = camera.getRayFromOriginToCanvas(0, 0);
-        assertEquals(topLeft.direction.y, topLeft.direction.z, 1e-6);
-        assertEquals(topLeft.direction.x, topLeft.direction.z, 1e-6);
+        assertEquals(topLeft.direction.y(), topLeft.direction.z(), 1e-6);
+        assertEquals(topLeft.direction.x(), topLeft.direction.z(), 1e-6);
 
         Ray middleRight = camera.getRayFromOriginToCanvas(1000, 500);
-        assertEquals(middleRight.direction.y, 0, 1e-6);
-        assertEquals(middleRight.direction.x, -middleRight.direction.z, 1e-6);
+        assertEquals(middleRight.direction.y(), 0, 1e-6);
+        assertEquals(middleRight.direction.x(), -middleRight.direction.z(), 1e-6);
     }
 
     @Test
@@ -39,11 +39,11 @@ public class CameraTest {
                 toRadians(90));
 
         Ray topLeft = camera.getRayFromOriginToCanvas(0, 0);
-        assertEquals(topLeft.direction.y, -topLeft.direction.z, 1e-6);
-        assertEquals(topLeft.direction.x, topLeft.direction.z, 1e-6);
+        assertEquals(topLeft.direction.y(), -topLeft.direction.z(), 1e-6);
+        assertEquals(topLeft.direction.x(), topLeft.direction.z(), 1e-6);
 
         Ray middleRight = camera.getRayFromOriginToCanvas(1000, 500);
-        assertEquals(middleRight.direction.y, 0, 1e-6);
-        assertEquals(middleRight.direction.x, -middleRight.direction.z, 1e-6);
+        assertEquals(middleRight.direction.y(), 0, 1e-6);
+        assertEquals(middleRight.direction.x(), -middleRight.direction.z(), 1e-6);
     }
 }

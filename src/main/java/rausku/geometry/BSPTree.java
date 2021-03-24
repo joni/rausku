@@ -57,7 +57,7 @@ public class BSPTree {
         public Split doSplit(List<Polygon> polygons) {
             float splitAt = splitAt(polygons);
             Split split = new Split();
-            Vec splitVector = Vec.of(normal.x, normal.y, normal.z, -splitAt);
+            Vec splitVector = Vec.of(normal.x(), normal.y(), normal.z(), -splitAt);
             split.splitVector = splitVector;
 
             for (Polygon polygon : polygons) {

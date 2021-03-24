@@ -46,12 +46,12 @@ public class BoundingBox {
     }
 
     public BoundingBox(Vec minPoint, Vec maxPoint) {
-        this.minX = minPoint.x;
-        this.minY = minPoint.y;
-        this.minZ = minPoint.z;
-        this.maxX = maxPoint.x;
-        this.maxY = maxPoint.y;
-        this.maxZ = maxPoint.z;
+        this.minX = minPoint.x();
+        this.minY = minPoint.y();
+        this.minZ = minPoint.z();
+        this.maxX = maxPoint.x();
+        this.maxY = maxPoint.y();
+        this.maxZ = maxPoint.z();
     }
 
     public static BoundingBox unbounded() {
@@ -82,9 +82,9 @@ public class BoundingBox {
         Vec rayOrigin = ray.origin;
         Vec rayDirection = ray.direction;
 
-        Range xRange = new Range(minX, maxX, rayOrigin.x, rayDirection.x);
-        Range yRange = new Range(minY, maxY, rayOrigin.y, rayDirection.y);
-        Range zRange = new Range(minZ, maxZ, rayOrigin.z, rayDirection.z);
+        Range xRange = new Range(minX, maxX, rayOrigin.x(), rayDirection.x());
+        Range yRange = new Range(minY, maxY, rayOrigin.y(), rayDirection.y());
+        Range zRange = new Range(minZ, maxZ, rayOrigin.z(), rayDirection.z());
 
         float max = Math.min(Math.min(xRange.max, yRange.max), zRange.max);
         float min = Math.max(Math.max(xRange.min, yRange.min), zRange.min);
@@ -96,9 +96,9 @@ public class BoundingBox {
         Vec rayOrigin = ray.origin;
         Vec rayDirection = ray.direction;
 
-        Range xRange = new Range(minX, maxX, rayOrigin.x, rayDirection.x);
-        Range yRange = new Range(minY, maxY, rayOrigin.y, rayDirection.y);
-        Range zRange = new Range(minZ, maxZ, rayOrigin.z, rayDirection.z);
+        Range xRange = new Range(minX, maxX, rayOrigin.x(), rayDirection.x());
+        Range yRange = new Range(minY, maxY, rayOrigin.y(), rayDirection.y());
+        Range zRange = new Range(minZ, maxZ, rayOrigin.z(), rayDirection.z());
 
         float max = Math.min(Math.min(xRange.max, yRange.max), zRange.max);
         float min = Math.max(Math.max(xRange.min, yRange.min), zRange.min);
@@ -111,9 +111,9 @@ public class BoundingBox {
     }
 
     public boolean contains(Vec point) {
-        return minX <= point.x && point.x < maxX
-                && minY <= point.y && point.y < maxY
-                && minZ <= point.z && point.z < maxZ;
+        return minX <= point.x() && point.x() < maxX
+                && minY <= point.y() && point.y() < maxY
+                && minZ <= point.z() && point.z() < maxZ;
     }
 
     private static class Range {
@@ -174,12 +174,12 @@ public class BoundingBox {
         }
 
         public Builder addPoint(Vec point) {
-            minX = Math.min(minX, point.x);
-            maxX = Math.max(maxX, point.x);
-            minY = Math.min(minY, point.y);
-            maxY = Math.max(maxY, point.y);
-            minZ = Math.min(minZ, point.z);
-            maxZ = Math.max(maxZ, point.z);
+            minX = Math.min(minX, point.x());
+            maxX = Math.max(maxX, point.x());
+            minY = Math.min(minY, point.y());
+            maxY = Math.max(maxY, point.y());
+            minZ = Math.min(minZ, point.z());
+            maxZ = Math.max(maxZ, point.z());
             return this;
         }
 
