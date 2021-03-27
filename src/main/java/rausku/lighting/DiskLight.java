@@ -1,12 +1,12 @@
 package rausku.lighting;
 
 import rausku.geometry.BoundingBox;
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.math.*;
 import rausku.scenes.SceneIntercept;
 
-public class DiskLight implements LightSource, SceneObject {
+public class DiskLight implements LightSource, Geometry {
     private final Matrix transform;
     private final Matrix inverse;
     private final Color color;

@@ -3,7 +3,7 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class CSGSubtraction implements CSGObject, SceneObject {
+public class CSGSubtraction implements CSGObject, Geometry {
 
     private final CSGObject obj1;
     private final CSGObject obj2;

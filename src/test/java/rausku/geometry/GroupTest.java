@@ -12,10 +12,10 @@ public class GroupTest {
     @Test
     void testIntercept() {
 
-        List<SceneObject> objs = List.of(new Cube(), QuadraticForm.createSphere(Vec.origin(), 1));
+        List<Geometry> objs = List.of(new Cube(), QuadraticForm.createSphere(Vec.origin(), 1));
 
         Group group = new Group();
-        for (SceneObject obj : objs) {
+        for (Geometry obj : objs) {
             group.addObject(obj);
         }
 
@@ -25,9 +25,9 @@ public class GroupTest {
 
     @Test
     void testBoundingBox() {
-        List<SceneObject> objs = List.of(new Cube(), QuadraticForm.createSphere(Vec.origin(), 1));
+        List<Geometry> objs = List.of(new Cube(), QuadraticForm.createSphere(Vec.origin(), 1));
         Group group = new Group();
-        for (SceneObject obj : objs) {
+        for (Geometry obj : objs) {
             group.addObject(obj);
         }
 

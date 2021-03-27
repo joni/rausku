@@ -1,7 +1,7 @@
 package rausku.algorithm;
 
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.lighting.LightSource;
 import rausku.material.BRDF;
@@ -13,7 +13,6 @@ import rausku.scenes.Scene;
 import rausku.scenes.SceneIntercept;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static rausku.math.FloatMath.abs;
 
@@ -65,15 +64,15 @@ public class MonteCarloRayTracer implements RayTracer {
         Intercept intercept = sceneIntercept.intercept;
         Matrix worldToObject = sceneIntercept.sceneObjectInstance.worldToObject;
         Matrix objectToWorld = sceneIntercept.sceneObjectInstance.objectToWorld;
-        SceneObject sceneObject = sceneIntercept.sceneObjectInstance.object;
+        Geometry geometry = sceneIntercept.sceneObjectInstance.object;
         Material material = sceneIntercept.sceneObjectInstance.material;
 
         Vec interceptPoint = sceneIntercept.worldInterceptPoint;
-        Vec objectNormal = material.getNormal(intercept, sceneObject);
+        Vec objectNormal = material.getNormal(intercept, geometry);
 
         Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        if (sceneObject instanceof LightSource lightSource) {
+        if (geometry instanceof LightSource lightSource) {
             // Light sources are already accounted for in the previous step, except for specular case
             if (isSpecular) {
                 return lightSource.getColor().mul(abs(Vec.dot(ray.direction, worldNormal)));
@@ -125,7 +124,7 @@ public class MonteCarloRayTracer implements RayTracer {
 
     private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, BRDF bsdf, Vec
             localOutgoing, Matrix globalToShading, int depth) {
-        Random rng = ThreadLocalRandom.current();
+        Random rng = getRng(ray);
         Color light = Color.black();
 
         Vec interceptPoint = intercept.worldInterceptPoint;
@@ -163,9 +162,14 @@ public class MonteCarloRayTracer implements RayTracer {
         return light;
     }
 
+    private Random getRng(Ray ray) {
+        return new Random(ray.hashCode());
+//        return ThreadLocalRandom.current();
+    }
+
     private Color extendPath(int depth, Ray ray, Vec interceptPoint, Matrix shadingToGlobal, Vec
             localOutgoing, BRDF bsdf, float scalar) {
-        Random rng = ThreadLocalRandom.current();
+        Random rng = getRng(ray);
         Color light = Color.black();
         var bsdfSampleCount = getBSDFSampleCount(depth);
         for (int i = 0; i < bsdfSampleCount; i++) {

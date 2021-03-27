@@ -11,24 +11,24 @@ public class Group {
     private final List<Material> materials = new ArrayList<>();
     private final List<Matrix> transforms = new ArrayList<>();
 
-    private List<SceneObject> objects = new ArrayList<>();
+    private List<Geometry> objects = new ArrayList<>();
     private BoundingBox bbox = BoundingBox.empty();
 
     public Group() {
     }
 
-    public void addObject(Matrix transform, SceneObject object, Material material) {
+    public void addObject(Matrix transform, Geometry object, Material material) {
         transforms.add(transform);
         objects.add(object);
         materials.add(material);
         bbox = BoundingBox.union(bbox, object.getBoundingBox());
     }
 
-    public void addObject(SceneObject object, Material material) {
+    public void addObject(Geometry object, Material material) {
         addObject(Matrix.eye(), object, material);
     }
 
-    public void addObject(SceneObject object) {
+    public void addObject(Geometry object) {
         addObject(Matrix.eye(), object, null);
     }
 
@@ -48,7 +48,7 @@ public class Group {
         return transforms.get(index);
     }
 
-    public SceneObject getObject(int index) {
+    public Geometry getObject(int index) {
         return objects.get(index);
     }
 

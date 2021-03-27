@@ -11,15 +11,15 @@ public class StandardObjects {
     private StandardObjects() {
     }
 
-    public static SceneObject sphere() {
+    public static Geometry sphere() {
         return new QuadraticForm(Matrix.diag(1f, 1f, 1f, -1f), UNIT_BOX);
     }
 
-    public static SceneObject cylinder() {
+    public static Geometry cylinder() {
         return new QuadraticForm(Matrix.diag(1f, 0f, 1f, -1f), UNIT_BOX);
     }
 
-    public static SceneObject cone() {
+    public static Geometry cone() {
         return new QuadraticForm(Matrix.of(
                 1f, 0, 0, 0,
                 0, -.25f, 0, .25f,
@@ -28,11 +28,11 @@ public class StandardObjects {
         ), UNIT_BOX);
     }
 
-    public static SceneObject cube() {
+    public static Geometry cube() {
         return new Cube();
     }
 
-    public static SceneObject torus() {
+    public static Geometry torus() {
         return new Torus(.66667f, .3333f);
     }
 
@@ -41,7 +41,7 @@ public class StandardObjects {
      *
      * @return a standard floor plane
      */
-    public static SceneObject floorPlane() {
+    public static Geometry floorPlane() {
         return HalfSpace.horizontalPlane(-1f);
     }
 }

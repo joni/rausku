@@ -5,7 +5,7 @@ import rausku.math.Vec;
 
 import java.util.List;
 
-public class PolygonMesh implements SceneObject {
+public class PolygonMesh implements Geometry {
 
     private final String name;
     private final BSPTree bspTree;

@@ -1,8 +1,8 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
+import rausku.geometry.Geometry;
 import rausku.geometry.HalfSpace;
-import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.lighting.RectangleLight;
 import rausku.material.Material;
@@ -30,7 +30,7 @@ public class Scene7_CornellBox extends DefaultSceneDefinition {
         Material green = Material.lambertian(Color.of(.2f, .4f, .8f));
         Material white = Material.lambertian(Color.of(.7f));
 
-        SceneObject object = cube();
+        Geometry object = cube();
         addObject(mul(translate(-1f, -1, -1.f), rotateY(PI / 12), scale(1, 2, 1)), object, white);
         addObject(mul(translate(+1, -2, +1), rotateY(-PI / 12)), sphere(), white);
 

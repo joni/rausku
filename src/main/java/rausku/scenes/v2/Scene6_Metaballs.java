@@ -1,9 +1,9 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
+import rausku.geometry.Geometry;
 import rausku.geometry.HalfSpace;
 import rausku.geometry.Metaballs;
-import rausku.geometry.SceneObject;
 import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -33,8 +33,8 @@ public class Scene6_Metaballs extends DefaultSceneDefinition {
         Material white = Material.lambertian(Color.of(1 / 8f));
         Material mirror = Material.mirror();
 
-        SceneObject sphere = StandardObjects.sphere();
-        SceneObject cube = StandardObjects.cube();
+        Geometry sphere = StandardObjects.sphere();
+        Geometry cube = StandardObjects.cube();
         Metaballs metaballs = new Metaballs(List.of(
                 Vec.point(0, 0, 1),
                 Vec.point(0, 0, -1),

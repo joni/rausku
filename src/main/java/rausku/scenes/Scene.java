@@ -1,7 +1,7 @@
 package rausku.scenes;
 
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.lighting.LightSource;
 import rausku.math.Matrix;
 import rausku.math.Ray;
@@ -30,7 +30,7 @@ public class Scene {
     public boolean interceptsRay(Ray ray) {
         List<SceneObjectInstance> objects = sceneDefinition.getObjects();
         for (SceneObjectInstance sceneObjectInstance : objects) {
-            SceneObject object = sceneObjectInstance.object;
+            Geometry object = sceneObjectInstance.object;
             Matrix transform = sceneObjectInstance.worldToObject;
             Ray transform1 = transform.transform(ray);
             Intercept intercept2 = object.getIntercept(transform1);
@@ -56,12 +56,12 @@ public class Scene {
 
         List<SceneObjectInstance> objects = sceneDefinition.getObjects();
         for (SceneObjectInstance sceneObjectInstance : objects) {
-            SceneObject object = sceneObjectInstance.object;
+            Geometry object = sceneObjectInstance.object;
             Matrix transform = sceneObjectInstance.worldToObject;
             Ray transformed = transform.transform(ray);
             Intercept objectIntercept = object.getIntercept(transformed);
             float interceptValue = objectIntercept.intercept;
-            if (interceptValue > SceneObject.INTERCEPT_NEAR && interceptValue < closestIntercept) {
+            if (interceptValue > Geometry.INTERCEPT_NEAR && interceptValue < closestIntercept) {
                 closestIntercept = interceptValue;
                 intercept = objectIntercept;
                 closestSceneObjectInstance = sceneObjectInstance;

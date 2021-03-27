@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 import static java.lang.Math.abs;
 
-public class Cube implements CSGObject, SceneObject {
+public class Cube implements CSGObject, Geometry {
 
     private static final double BOUNDS = 1.000001;
     private BoundingBox bbox = new BoundingBox(Vec.point(-1, -1, -1), Vec.point(1, 1, 1));
@@ -69,7 +69,7 @@ public class Cube implements CSGObject, SceneObject {
         float closestIntercept = Float.POSITIVE_INFINITY;
         for (int i = 0; i < intercepts.length; i++) {
             float intercept1 = intercepts[i];
-            if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 > SceneObject.INTERCEPT_NEAR) {
+            if (isOk(ray, intercept1) && intercept1 < closestIntercept && intercept1 > Geometry.INTERCEPT_NEAR) {
                 closestIntercept = intercept1;
                 face = i;
             }

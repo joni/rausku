@@ -5,7 +5,7 @@ import rausku.math.Vec;
 
 import java.util.List;
 
-public class Metaballs implements SceneObject {
+public class Metaballs implements Geometry {
 
     private static final float TOLERANCE = 1e-3f;
 

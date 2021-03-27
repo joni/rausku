@@ -1,7 +1,7 @@
 package rausku.algorithm;
 
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.lighting.LightSource;
 import rausku.material.BRDF;
@@ -127,11 +127,11 @@ public class RecursiveRayTracer implements RayTracer {
         SceneObjectInstance sceneObjectInstance = intercept.sceneObjectInstance;
         Matrix worldToObject = sceneObjectInstance.worldToObject;
         Matrix objectToWorld = sceneObjectInstance.objectToWorld;
-        SceneObject sceneObject = sceneObjectInstance.object;
+        Geometry geometry = sceneObjectInstance.object;
         Material material = sceneObjectInstance.material;
 
         Vec interceptPoint = intercept.worldInterceptPoint; // objectToWorld.transform(intercept.interceptPoint);
-        Vec objectNormal = material.getNormal(intercept.intercept, sceneObject);
+        Vec objectNormal = material.getNormal(intercept.intercept, geometry);
 
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);

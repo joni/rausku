@@ -1,8 +1,8 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
+import rausku.geometry.Geometry;
 import rausku.geometry.HalfSpace;
-import rausku.geometry.SceneObject;
 import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -30,7 +30,7 @@ public class Scene4_Transformations extends DefaultSceneDefinition {
         Material red = Material.lambertian(Color.of(1 / 8f, 1 / 128f, 1 / 128f));
         Material objectMat = Material.mirror();
         Material glossy = Material.glossy(Color.of(.8f), PI / 8);
-        SceneObject object = StandardObjects.sphere();
+        Geometry object = StandardObjects.sphere();
 
         addObject(Matrix.mul(Matrix.translate(0, 0, -3), Matrix.diag(5f, 5f, 1, 1)), object, objectMat);
         addObject(Matrix.mul(Matrix.translate(-3, 0, 0), Matrix.diag(1, 5f, 1, 1)), object, objectMat);

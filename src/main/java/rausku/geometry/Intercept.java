@@ -40,7 +40,7 @@ public class Intercept {
     }
 
     public boolean isValid() {
-        return Float.isFinite(intercept) && intercept > SceneObject.INTERCEPT_NEAR;
+        return Float.isFinite(intercept) && intercept > Geometry.INTERCEPT_NEAR;
     }
 
     @Override

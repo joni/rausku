@@ -1,7 +1,7 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.SceneObject;
+import rausku.geometry.Geometry;
 import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -26,7 +26,7 @@ public class Scene2_AmbientLightWithReflectingObjects extends DefaultSceneDefini
         Material matteRed = Material.lambertian(Color.of(.10f, .01f, .01f));
         Material matteWhite = Material.checkerBoard(.5f, Color.of(.1f));
 
-        SceneObject object = StandardObjects.sphere();
+        Geometry object = StandardObjects.sphere();
 
         addObject(object, matteRed);
 

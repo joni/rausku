@@ -3,7 +3,7 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class CSGUnion implements CSGObject, SceneObject {
+public class CSGUnion implements CSGObject, Geometry {
 
     private CSGObject obj1;
     private CSGObject obj2;

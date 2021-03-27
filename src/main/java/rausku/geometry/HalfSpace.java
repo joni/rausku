@@ -3,7 +3,7 @@ package rausku.geometry;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class HalfSpace implements CSGObject, SceneObject {
+public class HalfSpace implements CSGObject, Geometry {
     private final Vec normal;
 
     Vec u, v;
@@ -44,7 +44,7 @@ public class HalfSpace implements CSGObject, SceneObject {
     private float getIntercept0(Ray ray) {
         // v.(dt+o) = 0  <=> (v.d)t = - v.o  <=> t = -v.o/v.d
         float intercept = -Vec.dot(normal, ray.origin) / Vec.dot(normal, ray.direction);
-        if (intercept > SceneObject.INTERCEPT_NEAR) {
+        if (intercept > Geometry.INTERCEPT_NEAR) {
             return intercept;
         } else {
             return Float.NaN;

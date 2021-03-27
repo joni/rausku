@@ -1,8 +1,8 @@
 package rausku.lighting;
 
 import rausku.geometry.BoundingBox;
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
@@ -10,7 +10,7 @@ import rausku.scenes.SceneIntercept;
 
 import static rausku.math.FloatMath.abs;
 
-public class RectangleLight implements LightSource, SceneObject {
+public class RectangleLight implements LightSource, Geometry {
     private final Matrix transform;
     private final Matrix inverse;
     private final Color color;

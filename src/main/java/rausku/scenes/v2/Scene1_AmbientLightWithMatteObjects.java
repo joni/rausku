@@ -1,7 +1,7 @@
 package rausku.scenes.v2;
 
 import rausku.algorithm.Camera;
-import rausku.geometry.SceneObject;
+import rausku.geometry.Geometry;
 import rausku.geometry.StandardObjects;
 import rausku.lighting.AmbientLight;
 import rausku.lighting.Color;
@@ -24,8 +24,8 @@ public class Scene1_AmbientLightWithMatteObjects extends DefaultSceneDefinition 
 
         Material matteRed = Material.lambertian(Color.of(.4f, .1f, .1f));
         Material matteWhite = Material.lambertian(Color.of(.3f));
-        SceneObject sphere = StandardObjects.sphere();
-        SceneObject cube = StandardObjects.cube();
+        Geometry sphere = StandardObjects.sphere();
+        Geometry cube = StandardObjects.cube();
 
         addObject(sphere, matteRed);
         addObject(Matrix.translate(-2, 0, -2), cube, matteWhite);

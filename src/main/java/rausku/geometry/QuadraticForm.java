@@ -6,7 +6,7 @@ import rausku.math.Vec;
 
 import static rausku.math.FloatMath.sqrt;
 
-public class QuadraticForm implements CSGObject, SceneObject {
+public class QuadraticForm implements CSGObject, Geometry {
 
     private static final Intercept[] NO_INTERCEPT = {};
 
@@ -104,7 +104,7 @@ public class QuadraticForm implements CSGObject, SceneObject {
             float sqrtDeterminant = Math.copySign(sqrt(determinant), A);
             float intercept = (-B - sqrtDeterminant) / (2 * A);
             Vec interceptPoint = ray.apply(intercept);
-            if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
+            if (intercept > Geometry.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
                 float phi = (float) Math.atan2(interceptPoint.z(), interceptPoint.x());
                 float r = interceptPoint.len();
                 float theta = (float) Math.acos(interceptPoint.y() / r);
@@ -112,7 +112,7 @@ public class QuadraticForm implements CSGObject, SceneObject {
             }
             intercept = (-B + sqrtDeterminant) / (2 * A);
             interceptPoint = ray.apply(intercept);
-            if (intercept > SceneObject.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
+            if (intercept > Geometry.INTERCEPT_NEAR && bbox.contains(interceptPoint)) {
                 float phi = (float) Math.atan2(interceptPoint.z(), interceptPoint.x());
                 float r = interceptPoint.len();
                 float theta = (float) Math.acos(interceptPoint.y() / r);

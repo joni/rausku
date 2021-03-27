@@ -1,9 +1,9 @@
 package rausku.scenes.v1;
 
 import rausku.algorithm.Camera;
+import rausku.geometry.Geometry;
 import rausku.geometry.HalfSpace;
 import rausku.geometry.QuadraticForm;
-import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.material.Material;
 import rausku.math.Matrix;
@@ -21,7 +21,7 @@ public class Scene4_Transforms extends DefaultSceneDefinition {
                 toRadians(45)));
 
         Material material = Material.plastic(Color.of(1, 1, 1), .3f);
-        SceneObject object1 = QuadraticForm.createSphere(Vec.origin(), 1f);
+        Geometry object1 = QuadraticForm.createSphere(Vec.origin(), 1f);
 
         addObject(Matrix.mul(Matrix.translate(0, 0, -3), Matrix.diag(5f, 5f, 1, 1)), object1, material);
         addObject(Matrix.mul(Matrix.translate(-3, 0, 0), Matrix.diag(1, 4, 1, 1)), object1, material);

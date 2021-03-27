@@ -4,6 +4,7 @@ import rausku.Debuggable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Ray implements Debuggable {
@@ -66,6 +67,11 @@ public class Ray implements Debuggable {
     @Override
     public String toString() {
         return String.format("Ray{origin=%s, direction=%s, bound=%s}", origin, direction, bound);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origin, direction);
     }
 
     public Ray jitterDirection() {

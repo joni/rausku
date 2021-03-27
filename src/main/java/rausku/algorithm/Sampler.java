@@ -11,6 +11,8 @@ import java.awt.image.WritableRaster;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static rausku.math.FloatMath.abs;
+
 public interface Sampler {
 
     void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y);
@@ -55,12 +57,18 @@ public interface Sampler {
         public void sample(RayTracer rayTracer, Camera camera, BufferedImage image, int x, int y) {
             Random rnd = ThreadLocalRandom.current();
 
+            float weight = 0;
+
             Color[] colors = new Color[samplesPerPixel];
             for (int i = 0; i < samplesPerPixel; i++) {
-                Ray ray = camera.getRayFromOriginToCanvas(x + (float) rnd.nextGaussian() / 2, y + (float) rnd.nextGaussian() / 2);
-                colors[i] = rayTracer.resolveRayColor(ray);
+                var dx = (float) rnd.nextGaussian() / 2;
+                var dy = (float) rnd.nextGaussian() / 2;
+                var w = abs((.5f - abs(dx)) * (.5f - abs(dy)));
+                Ray ray = camera.getRayFromOriginToCanvas(x + dx, y + dy);
+                colors[i] = rayTracer.resolveRayColor(ray).mul(w);
+                weight += w;
             }
-            image.setRGB(x, y, Color.average(colors).toIntRGB());
+            image.setRGB(x, y, Color.average(colors).div(weight / samplesPerPixel).toIntRGB());
         }
     }
 

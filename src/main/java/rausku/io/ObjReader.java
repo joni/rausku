@@ -19,7 +19,7 @@ public class ObjReader implements Closeable, AutoCloseable {
     List<Vec> vertices = new ArrayList<>();
     List<Vec> normals = new ArrayList<>();
     List<Polygon> faces = new ArrayList<>();
-    List<SceneObject> objects = new ArrayList<>();
+    List<Geometry> objects = new ArrayList<>();
 
     public ObjReader(InputStream inputStream) {
         fileScanner = new Scanner(inputStream);

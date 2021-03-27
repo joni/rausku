@@ -4,7 +4,7 @@ import rausku.math.FloatMath;
 import rausku.math.Ray;
 import rausku.math.Vec;
 
-public class Torus implements SceneObject {
+public class Torus implements Geometry {
 
     public static final float TOLERANCE = 1e-3f;
     private final float R;
