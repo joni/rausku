@@ -24,9 +24,7 @@ public class Scene7_CornellBox extends DefaultSceneDefinition {
                 500, 500,
                 toRadians(30)));
 
-        var translate = translate(0, 2.99f, 0);
-//        addLight(translate, new PointLight(Vec.point(0,2.99f, 0), Color.of(16f)));
-//        addLight(translate, new DiskLight(translate, Color.of(16f)));
+        var translate = mul(translate(0, 2.999f, 0), scale(1, -1, 1));
         addLight(new AreaLight(translate, Color.of(16f), new Rectangle()));
 
         Material red = Material.lambertian(Color.of(.8f, .2f, .2f));

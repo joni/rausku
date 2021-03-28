@@ -350,7 +350,12 @@ public record Matrix(float f11, float f12, float f13, float f14,
     }
 
     public Ray transform(Ray ray) {
-        return Ray.fromOriginDirection(transform(ray.origin), transform(ray.direction));
+        if (Float.isInfinite(ray.bound)) {
+            return Ray.fromOriginDirection(transform(ray.origin), transform(ray.direction));
+        } else {
+            var endPoint = ray.apply(ray.bound);
+            return Ray.fromStartEnd(transform(ray.origin), transform(endPoint));
+        }
     }
 
     @Override

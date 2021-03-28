@@ -13,6 +13,6 @@ public class SpecularBRDFTest {
     void testIncidentDirection() {
         SpecularBRDF specularBRDF = new SpecularBRDF(Color.of(1));
         BRDF.Sample sample = specularBRDF.sample(unit(+1, -1, 0), 0, 0);
-        assertEquals(Vec.unit(+1, +1, 0), sample.incident);
+        assertEquals(Vec.unit(+1, +1, 0), sample.incidentDirection());
     }
 }

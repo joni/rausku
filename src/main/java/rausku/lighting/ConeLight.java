@@ -28,12 +28,12 @@ public class ConeLight implements LightSource {
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
         // TODO compute likelihood
-        return new Sample(color.mul(getIntensity(intercept.worldInterceptPoint)), sampleRay(intercept, s, t), 1);
+        return new Sample(color.mul(getIntensity(intercept.worldInterceptPoint())), sampleRay(intercept, s, t), 1);
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
         // TODO actually sample it
-        return Ray.fromStartEnd(intercept.worldInterceptPoint, position);
+        return Ray.fromStartEnd(intercept.worldInterceptPoint(), position);
     }
 
     @Override

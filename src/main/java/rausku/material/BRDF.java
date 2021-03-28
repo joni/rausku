@@ -9,36 +9,25 @@ import rausku.math.Vec;
  */
 public interface BRDF {
 
-    Color evaluate(Vec outgoing, Vec incident);
+    /**
+     * Evaluate the distribution of incident light to outgoing light.
+     *
+     * @param outgoingDirection direction of outgoing light
+     * @param incidentDirection direction of incident light
+     * @return the value of the distribution function
+     */
+    Color evaluate(Vec outgoingDirection, Vec incidentDirection);
 
-    Sample sample(Vec outgoing, float s, float t);
+    /**
+     * Sample the reflection distribution function for a given outgoing direction.
+     *
+     * @param outgoingDirection direction of outgoing light
+     * @param s                 random number 0-1 to choose the sample
+     * @param t                 random number 0-1 to choose the sample
+     * @return a sample of the distribution
+     */
+    Sample sample(Vec outgoingDirection, float s, float t);
 
-    class Sample {
-        /**
-         * Spectrum
-         */
-        public final Color color;
-
-        /**
-         * Incident light direction
-         */
-        public final Vec incident;
-
-        /**
-         * Likelihood of incident light direction
-         */
-        public final float likelihood;
-
-        /**
-         * Indicates if the sample was from a specular interaction
-         */
-        public final boolean isSpecular;
-
-        public Sample(Color color, Vec incident, float likelihood, boolean isSpecular) {
-            this.color = color;
-            this.incident = incident;
-            this.likelihood = likelihood;
-            this.isSpecular = isSpecular;
-        }
+    record Sample(Color value, Vec incidentDirection, float likelihood, boolean isSpecular) {
     }
 }

@@ -12,13 +12,13 @@ public class SpecularBTDFTest {
     void testSampleReflected() {
         SpecularBTDF specularBTDF = new SpecularBTDF(2);
         BRDF.Sample sample = specularBTDF.sample(Vec.unit(+1, -1, 0), 0, 0);
-        assertEquals(Vec.unit(+1, +1, 0), sample.incident);
+        assertEquals(Vec.unit(+1, +1, 0), sample.incidentDirection());
     }
 
     @Test
     void testSampleRefracted() {
         SpecularBTDF specularBTDF = new SpecularBTDF(2);
         BRDF.Sample sample = specularBTDF.sample(Vec.unit(+1, -1, 0), 1, 0);
-        assertEquals(Vec.unit(+1f, -sqrt(7f), 0), sample.incident);
+        assertEquals(Vec.unit(+1f, -sqrt(7f), 0), sample.incidentDirection());
     }
 }

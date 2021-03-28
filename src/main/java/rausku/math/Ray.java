@@ -1,6 +1,7 @@
 package rausku.math;
 
 import rausku.Debuggable;
+import rausku.geometry.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Ray implements Debuggable {
 
     public static Ray fromStartEnd(Vec startPoint, Vec endPoint) {
         Vec direction = endPoint.sub(startPoint);
-        return new Ray(startPoint, direction.normalize(), direction.len());
+        return new Ray(startPoint, direction.normalize(), direction.len() - Geometry.INTERCEPT_NEAR);
     }
 
     public Vec apply(float t) {

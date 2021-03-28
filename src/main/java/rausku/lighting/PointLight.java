@@ -22,13 +22,13 @@ public class PointLight implements LightSource {
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        var squaredDistance = position.sub(intercept.worldInterceptPoint).sqLen();
+        var squaredDistance = position.sub(intercept.worldInterceptPoint()).sqLen();
         var radiance = flux.div(squaredDistance);
         return new Sample(radiance, sampleRay(intercept, s, t), 1f);
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
-        return Ray.fromStartEnd(intercept.worldInterceptPoint, position);
+        return Ray.fromStartEnd(intercept.worldInterceptPoint(), position);
     }
 
     @Override

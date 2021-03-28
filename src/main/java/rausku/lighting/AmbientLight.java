@@ -20,7 +20,7 @@ public class AmbientLight implements LightSource {
     public Sample sample(SceneIntercept intercept, float s, float t) {
         // TODO could be better - we could pick the hemisphere
         Vec direction = Rand.sphere(s, t);
-        var rayToLight = Ray.fromOriginDirection(intercept.worldInterceptPoint, direction);
+        var rayToLight = Ray.fromOriginDirection(intercept.worldInterceptPoint(), direction);
         return new Sample(color, rayToLight, 1 / (4 * FloatMath.PI));
     }
 

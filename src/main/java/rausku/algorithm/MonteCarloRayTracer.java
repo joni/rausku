@@ -14,6 +14,7 @@ import rausku.scenes.SceneIntercept;
 
 import java.util.Random;
 
+import static java.lang.Math.max;
 import static rausku.math.FloatMath.abs;
 
 /**
@@ -34,8 +35,8 @@ public class MonteCarloRayTracer implements RayTracer {
     }
 
     @Override
-    public Color resolveRayColor(Ray ray, int depth) {
-        return traceToIntercept(true, ray, depth + 1, 1);
+    public Color resolveRayColor(Ray ray) {
+        return traceToIntercept(true, ray, 1, 1);
     }
 
     private Color traceToIntercept(boolean isSpecular, Ray ray, int depth, float scalar) {
@@ -61,21 +62,22 @@ public class MonteCarloRayTracer implements RayTracer {
 
     private Color tracePathSegment(int depth, SceneIntercept sceneIntercept, Ray ray, boolean isSpecular, float scalar) {
 
-        Intercept intercept = sceneIntercept.intercept;
-        Matrix worldToObject = sceneIntercept.sceneObjectInstance.worldToObject;
-        Matrix objectToWorld = sceneIntercept.sceneObjectInstance.objectToWorld;
-        Geometry geometry = sceneIntercept.sceneObjectInstance.object;
-        Material material = sceneIntercept.sceneObjectInstance.material;
+        Intercept intercept = sceneIntercept.intercept();
+        Matrix worldToObject = sceneIntercept.sceneObjectInstance().worldToObject;
+        Matrix objectToWorld = sceneIntercept.sceneObjectInstance().objectToWorld;
+        Geometry geometry = sceneIntercept.sceneObjectInstance().object;
+        Material material = sceneIntercept.sceneObjectInstance().material;
 
-        Vec interceptPoint = sceneIntercept.worldInterceptPoint;
+        Vec interceptPoint = sceneIntercept.worldInterceptPoint();
         Vec objectNormal = material.getNormal(intercept, geometry);
 
         Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        if (sceneIntercept.sceneObjectInstance.areaLight != null) {
+        if (sceneIntercept.sceneObjectInstance().areaLight != null) {
             // Light sources are already accounted for in the previous step, except for specular case
             if (isSpecular) {
-                return sceneIntercept.sceneObjectInstance.areaLight.evaluate().mul(abs(Vec.dot(ray.direction, worldNormal)));
+                var cosIncident = -Vec.dot(ray.direction, worldNormal);
+                return sceneIntercept.sceneObjectInstance().areaLight.evaluate().mul(max(0, cosIncident));
             } else {
                 return Color.black();
             }
@@ -84,22 +86,22 @@ public class MonteCarloRayTracer implements RayTracer {
         Matrix shadingToGlobal = Matrix.orthonormalBasis(worldNormal);
         Matrix globalToShading = shadingToGlobal.transpose();
 
-        Vec localOutgoing = globalToShading.transform(ray.direction);
+        Vec shadingOutgoing = globalToShading.transform(ray.direction).normalize();
 
         if (this.debug) {
             addDebugString(ray, "world intercept: %s world normal: %s", interceptPoint, worldNormal);
-            addDebugString(ray, "local outgoing: %s", localOutgoing);
+            addDebugString(ray, "shading outgoing: %s", shadingOutgoing);
         }
 
         BRDF bsdf = material.getBSDF(intercept);
 
         // sample light coming directly from light source
-        Color directLight = sampleDirectLighting(sceneIntercept, ray, worldNormal, bsdf, localOutgoing, globalToShading, depth);
+        Color directLight = sampleDirectLighting(sceneIntercept, ray, worldNormal, bsdf, shadingOutgoing, globalToShading, depth);
 
         Color totalLight;
         if (depth < MAX_DEPTH && scalar > 1e-4f) {
             // extend the path to sample reflected light
-            Color light = extendPath(depth, ray, interceptPoint, shadingToGlobal, localOutgoing, bsdf, scalar);
+            Color light = extendPath(depth, ray, interceptPoint, shadingToGlobal, shadingOutgoing, bsdf, scalar);
             totalLight = directLight.add(light);
         } else {
             totalLight = directLight;
@@ -122,12 +124,17 @@ public class MonteCarloRayTracer implements RayTracer {
         return totalLight;
     }
 
-    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, BRDF bsdf,
-                                       Vec localOutgoing, Matrix globalToShading, int depth) {
+    private Color sampleDirectLighting(SceneIntercept intercept,
+                                       Ray ray,
+                                       Vec normal,
+                                       BRDF bsdf,
+                                       Vec shadingOutgoingDirection,
+                                       Matrix globalToShading,
+                                       int depth) {
         Random rng = getRng(ray);
         Color light = Color.black();
 
-        Vec interceptPoint = intercept.worldInterceptPoint;
+        Vec interceptPoint = intercept.worldInterceptPoint();
 
         var lightRayCount = getLightSampleCount(depth);
 
@@ -140,19 +147,20 @@ public class MonteCarloRayTracer implements RayTracer {
 
             var sampleCount = Math.min(lightSource.getSampleCount(), lightRayCount);
             for (int i = 0; i < sampleCount; i++) {
-                LightSource.Sample sample = lightSource.sample(intercept, rng.nextFloat(), rng.nextFloat());
-                Ray lightRay = sample.rayToLight();
+                LightSource.Sample lightSample = lightSource.sample(intercept, rng.nextFloat(), rng.nextFloat());
+                Ray lightRay = lightSample.rayToLight();
                 float cosineIncident = normal.dot(lightRay.direction);
                 if (this.debug) {
-                    addDebugString(ray, "light sample: %s", sample);
+                    addDebugString(ray, "light sample: %s", lightSample);
                 }
                 if (cosineIncident > 0) {
                     boolean shadow = scene.interceptsRay(lightRay);
                     if (!shadow) {
-                        Color incidentRadiance = sample.radiance();
+                        Color incidentRadiance = lightSample.radiance();
+                        var shadingIncidentDirection = globalToShading.transform(lightRay.direction);
                         light = incidentRadiance
-                                .mul(bsdf.evaluate(localOutgoing, globalToShading.transform(lightRay.direction)))
-                                .mulAdd(cosineIncident / (sample.likelihood() * sampleCount), light);
+                                .mul(bsdf.evaluate(shadingOutgoingDirection, shadingIncidentDirection))
+                                .mulAdd(cosineIncident / (lightSample.likelihood() * sampleCount), light);
                     }
                 }
             }
@@ -168,35 +176,40 @@ public class MonteCarloRayTracer implements RayTracer {
 //        return ThreadLocalRandom.current();
     }
 
-    private Color extendPath(int depth, Ray ray, Vec interceptPoint, Matrix shadingToGlobal, Vec
-            localOutgoing, BRDF bsdf, float scalar) {
+    private Color extendPath(int depth,
+                             Ray ray,
+                             Vec interceptPoint,
+                             Matrix shadingToGlobal,
+                             Vec shadingOutgoingDirection,
+                             BRDF bsdf,
+                             float scalar) {
         Random rng = getRng(ray);
         Color light = Color.black();
         var bsdfSampleCount = getBSDFSampleCount(depth);
         for (int i = 0; i < bsdfSampleCount; i++) {
 
-            BRDF.Sample sample = bsdf.sample(localOutgoing, rng.nextFloat(), rng.nextFloat());
+            BRDF.Sample sample = bsdf.sample(shadingOutgoingDirection, rng.nextFloat(), rng.nextFloat());
 
-            Vec globalIncidentDirection = shadingToGlobal.transform(sample.incident).normalize();
+            Vec globalIncidentDirection = shadingToGlobal.transform(sample.incidentDirection()).normalize();
 
-            float cosineIncident = abs(sample.incident.y()); // = normal.dot(incidentRay.direction)
-            var beta = cosineIncident / sample.likelihood;
+            float cosineIncident = abs(sample.incidentDirection().y()); // = normal.dot(incidentRay.direction)
+            var beta = cosineIncident / sample.likelihood();
 
             Ray incidentRay = Ray.fromOriginDirection(interceptPoint, globalIncidentDirection);
 
             if (this.debug) {
-                addDebugString(ray, "local incident: %s", sample.incident);
+                addDebugString(ray, "local incidentDirection: %s", sample.incidentDirection());
                 ray.addDebug(incidentRay);
             }
 
-            Color incidentRadiance = traceToIntercept(sample.isSpecular, incidentRay, depth + 1, scalar * beta * sample.color.norm());
+            Color incidentRadiance = traceToIntercept(sample.isSpecular(), incidentRay, depth + 1, scalar * beta * sample.value().norm());
 
             if (this.debug) {
-                addDebugString(ray, "beta: %f sample.radiance: %s cosThetaI: %f likelihood: %f", beta, sample.color, cosineIncident, sample.likelihood);
+                addDebugString(ray, "beta: %f sample.radiance: %s cosThetaI: %f likelihood: %f", beta, sample.value(), cosineIncident, sample.likelihood());
             }
 
             light = incidentRadiance
-                    .mul(sample.color)
+                    .mul(sample.value())
                     .mulAdd(beta, light);
         }
         return light.div(bsdfSampleCount);
@@ -221,7 +234,6 @@ public class MonteCarloRayTracer implements RayTracer {
     @Override
     public void setDebug(boolean enable) {
         this.debug = enable;
-        scene.setDebug(true);
     }
 
     void addDebugString(Ray ray, String messageFormat, Object... args) {

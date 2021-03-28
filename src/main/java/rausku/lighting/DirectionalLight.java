@@ -52,11 +52,11 @@ public class DirectionalLight implements LightSource {
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
         if (angle == 0) {
-            return Ray.fromOriginDirection(intercept.worldInterceptPoint, towardsLight);
+            return Ray.fromOriginDirection(intercept.worldInterceptPoint(), towardsLight);
         } else {
             Vec cone = Rand.uniformCone(s, t, angle);
             Vec direction = Vec.mulAdd(cone.x(), perp1, cone.y(), towardsLight, cone.z(), perp2);
-            return Ray.fromOriginDirection(intercept.worldInterceptPoint, direction);
+            return Ray.fromOriginDirection(intercept.worldInterceptPoint(), direction);
         }
     }
 

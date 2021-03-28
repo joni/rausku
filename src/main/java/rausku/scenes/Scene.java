@@ -13,8 +13,6 @@ public class Scene {
 
     private final SceneDefinition sceneDefinition;
 
-    private boolean debug = false;
-
     public Scene(SceneDefinition sceneDefinition) {
         this.sceneDefinition = sceneDefinition;
     }
@@ -23,28 +21,15 @@ public class Scene {
         return sceneDefinition.getLights();
     }
 
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
     public boolean interceptsRay(Ray ray) {
         List<SceneObjectInstance> objects = sceneDefinition.getObjects();
         for (SceneObjectInstance sceneObjectInstance : objects) {
             Geometry object = sceneObjectInstance.object;
             Matrix transform = sceneObjectInstance.worldToObject;
             Ray transform1 = transform.transform(ray);
-            Intercept intercept2 = object.getIntercept(transform1);
-            float intercept = intercept2.intercept;
-            if (Float.isFinite(intercept) && intercept > 0 && intercept < ray.bound) {
-                if (debug) {
-                    ray.addDebug(transform1);
-                    ray.addDebug(String.format("intercept %s, %s", sceneObjectInstance, intercept2));
-                }
+            if (object.hasIntercept(transform1)) {
                 return true;
             }
-        }
-        if (debug) {
-            ray.addDebug("no intercept");
         }
         return false;
     }

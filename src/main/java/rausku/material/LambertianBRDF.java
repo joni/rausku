@@ -6,18 +6,18 @@ import rausku.math.Vec;
 
 public class LambertianBRDF implements BRDF {
 
-    final Color color;
+    final Color value;
 
-    public LambertianBRDF(Color color) {
-        this.color = color;
+    public LambertianBRDF(Color value) {
+        this.value = value;
     }
 
-    public Color evaluate(Vec outgoing, Vec incident) {
-        return color;
+    public Color evaluate(Vec outgoingDirection, Vec incidentDirection) {
+        return value;
     }
 
-    public Sample sample(Vec outgoing, float s, float t) {
+    public Sample sample(Vec outgoingDirection, float s, float t) {
         Vec hemisphere = Rand.cosineHemisphere(s, t);
-        return new Sample(color, hemisphere, hemisphere.y(), false);
+        return new Sample(value, hemisphere, hemisphere.y(), false);
     }
 }

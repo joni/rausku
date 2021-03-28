@@ -7,7 +7,7 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
-import static rausku.math.FloatMath.abs;
+import static java.lang.Math.max;
 
 public class AreaLight implements LightSource {
 
@@ -25,19 +25,24 @@ public class AreaLight implements LightSource {
 
     @Override
     public int getSampleCount() {
-        return 4;
+        return 16;
     }
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        Vec sampledPoint = geometry.sample(s, t);
-        Vec worldLightPoint = objectToWorld.transform(sampledPoint);
-        Ray ray = Ray.fromStartEnd(intercept.worldInterceptPoint, worldLightPoint);
+        var sample = geometry.sample(s, t);
+        Vec worldLightPoint = objectToWorld.transform(sample.point());
+        var worldNormal = worldToObject.transposeTransform(sample.normal());
+        Ray rayToLight = Ray.fromStartEnd(intercept.worldInterceptPoint(), worldLightPoint);
 
-        Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint);
+        Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint());
         var squaredDistance = toLight.sqLen();
-        var likelihood = squaredDistance / (geometry.area() * abs(ray.direction.y()));
-        return new Sample(radiance, ray, likelihood);
+        var cosine = -Vec.dot(rayToLight.direction, worldNormal);
+        if (cosine < 0) {
+            return new Sample(Color.black(), rayToLight, Float.POSITIVE_INFINITY);
+        }
+        var likelihood = sample.likelihood() * squaredDistance / max(0, cosine);
+        return new Sample(radiance, rayToLight, likelihood);
     }
 
     @Override

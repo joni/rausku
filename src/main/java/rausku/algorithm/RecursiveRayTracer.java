@@ -35,10 +35,14 @@ public class RecursiveRayTracer implements RayTracer {
     @Override
     public void setDebug(boolean debug) {
         this.debug = debug;
-        scene.setDebug(debug);
     }
 
-    Color resolveRayColor(int depth, Ray ray) {
+    @Override
+    public Color resolveRayColor(Ray ray) {
+        return recursiveResolveRayColor(ray, 0);
+    }
+
+    private Color recursiveResolveRayColor(Ray ray, int depth) {
         if (depth > maxDepth) {
             if (this.debug) {
                 addDebugString(ray, "Max depth reached");
@@ -47,11 +51,11 @@ public class RecursiveRayTracer implements RayTracer {
         }
 
         SceneIntercept sceneIntercept = scene.getIntercept(ray);
-        Intercept intercept = sceneIntercept.intercept;
+        Intercept intercept = sceneIntercept.intercept();
 
         if (this.debug) {
             if (sceneIntercept.isValid()) {
-                addDebugString(ray, "depth=%d object=%s %s", depth, sceneIntercept.sceneObjectInstance, intercept);
+                addDebugString(ray, "depth=%d object=%s %s", depth, sceneIntercept.sceneObjectInstance(), intercept);
             } else {
                 addDebugString(ray, "depth=%d no intercept", depth);
             }
@@ -93,30 +97,25 @@ public class RecursiveRayTracer implements RayTracer {
         else return value;
     }
 
-    @Override
-    public Color resolveRayColor(Ray ray, int depth) {
-        return resolveRayColor(depth, ray);
-    }
-
     Color getSpecularReflection(int depth, Ray ray, SceneIntercept intercept, Vec normal, Material material) {
 
         Matrix localBase = Matrix.orthonormalBasis(normal);
         Matrix localInvert = localBase.transpose();
         Vec localOutgoing = localInvert.transform(ray.direction);
 
-        BRDF.Sample sample = material.getBSDF(intercept.intercept).sample(localOutgoing, 0, 0);
-        Vec worldIncidentDirection = localBase.transform(sample.incident).normalize();
+        BRDF.Sample sample = material.getBSDF(intercept.intercept()).sample(localOutgoing, 0, 0);
+        Vec worldIncidentDirection = localBase.transform(sample.incidentDirection()).normalize();
 
-        Color f = sample.color;
+        Color f = sample.value();
         if (!f.isBlack()) {
-            Ray reflected = Ray.fromOriginDirection(intercept.worldInterceptPoint, worldIncidentDirection);
+            Ray reflected = Ray.fromOriginDirection(intercept.worldInterceptPoint(), worldIncidentDirection);
             if (this.debug) {
                 addDebugString(ray, "reflected rayToLight: %s", reflected);
                 ray.addDebug(reflected);
             }
-            float cosineIncident = abs(sample.incident.y()); // = normal.dot(incidentRay.direction)
+            float cosineIncident = abs(sample.incidentDirection().y()); // = normal.dot(incidentRay.direction)
 
-            return resolveRayColor(depth + 1, reflected).mul(f).mul(cosineIncident);
+            return recursiveResolveRayColor(reflected, depth + 1).mul(f).mul(cosineIncident);
         } else {
             return Color.black();
         }
@@ -124,14 +123,14 @@ public class RecursiveRayTracer implements RayTracer {
 
     private Color getColorFromObject(int depth, SceneIntercept intercept, Ray ray) {
 
-        SceneObjectInstance sceneObjectInstance = intercept.sceneObjectInstance;
+        SceneObjectInstance sceneObjectInstance = intercept.sceneObjectInstance();
         Matrix worldToObject = sceneObjectInstance.worldToObject;
         Matrix objectToWorld = sceneObjectInstance.objectToWorld;
         Geometry geometry = sceneObjectInstance.object;
         Material material = sceneObjectInstance.material;
 
-        Vec interceptPoint = intercept.worldInterceptPoint; // objectToWorld.transform(intercept.interceptPoint);
-        Vec objectNormal = material.getNormal(intercept.intercept, geometry);
+        Vec interceptPoint = intercept.worldInterceptPoint(); // objectToWorld.transform(intercept.interceptPoint);
+        Vec objectNormal = material.getNormal(intercept.intercept(), geometry);
 
 //        if (Vec.dot(objectNormal, ray.direction) > 0) {
 //            objectNormal = objectNormal.mul(-1);
@@ -167,7 +166,7 @@ public class RecursiveRayTracer implements RayTracer {
             if (diffuseReflectionEnergy > 0) {
                 // check shadow
                 if (!scene.interceptsRay(lightRay)) {
-                    Color materialColor = material.getBSDF(intercept.intercept).evaluate(ray.direction, lightRay.direction);
+                    Color materialColor = material.getBSDF(intercept.intercept()).evaluate(ray.direction, lightRay.direction);
                     light = sample.radiance().mul(materialColor).mulAdd(diffuseReflectionEnergy / sample.likelihood(), light);
                 }
             }
@@ -204,7 +203,7 @@ public class RecursiveRayTracer implements RayTracer {
             }
             if (transmitted != null) {
                 ray.addDebug(transmitted);
-                Color transmittedLight = resolveRayColor(depth + 1, transmitted);
+                Color transmittedLight = recursiveResolveRayColor(transmitted, depth + 1);
 
                 light = transmittedLight.mulAdd(1 - reflectionCoeff, light);
             }
