@@ -22,11 +22,11 @@ import static rausku.math.FloatMath.abs;
 public class MonteCarloRayTracer implements RayTracer {
 
     public static final double MIN_INTENSITY = 1e-6;
-    public static final int MAX_DEPTH = 6;
+    public static final int MAX_DEPTH = 2;
     private boolean debug;
     private Scene scene;
 
-    private int pathSamples = 32;
+    private int pathSamples = 16;
 
 
     public MonteCarloRayTracer(Scene scene) {
@@ -72,10 +72,10 @@ public class MonteCarloRayTracer implements RayTracer {
 
         Vec worldNormal = worldToObject.transposeTransform(objectNormal).toVector().normalize();
 
-        if (geometry instanceof LightSource lightSource) {
+        if (sceneIntercept.sceneObjectInstance.areaLight != null) {
             // Light sources are already accounted for in the previous step, except for specular case
             if (isSpecular) {
-                return lightSource.getColor().mul(abs(Vec.dot(ray.direction, worldNormal)));
+                return sceneIntercept.sceneObjectInstance.areaLight.evaluate().mul(abs(Vec.dot(ray.direction, worldNormal)));
             } else {
                 return Color.black();
             }
@@ -115,15 +115,15 @@ public class MonteCarloRayTracer implements RayTracer {
     private Color getEnvironmentLight(Ray ray) {
         Color totalLight = Color.black();
         for (LightSource light : scene.getLights()) {
-            if (light.intercepts(ray)) {
-                totalLight = totalLight.add(light.getColor());
+            if (light.hasIntercept(ray)) {
+                totalLight = totalLight.add(light.evaluate());
             }
         }
         return totalLight;
     }
 
-    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, BRDF bsdf, Vec
-            localOutgoing, Matrix globalToShading, int depth) {
+    private Color sampleDirectLighting(SceneIntercept intercept, Ray ray, Vec normal, BRDF bsdf,
+                                       Vec localOutgoing, Matrix globalToShading, int depth) {
         Random rng = getRng(ray);
         Color light = Color.black();
 
@@ -138,20 +138,21 @@ public class MonteCarloRayTracer implements RayTracer {
                 continue;
             }
 
-            for (int i = 0; i < lightRayCount; i++) {
+            var sampleCount = Math.min(lightSource.getSampleCount(), lightRayCount);
+            for (int i = 0; i < sampleCount; i++) {
                 LightSource.Sample sample = lightSource.sample(intercept, rng.nextFloat(), rng.nextFloat());
-                Ray lightRay = sample.ray;
+                Ray lightRay = sample.rayToLight();
                 float cosineIncident = normal.dot(lightRay.direction);
                 if (this.debug) {
-                    addDebugString(ray, "sample: %s", sample);
+                    addDebugString(ray, "light sample: %s", sample);
                 }
                 if (cosineIncident > 0) {
                     boolean shadow = scene.interceptsRay(lightRay);
                     if (!shadow) {
-                        Color incidentRadiance = lightSource.getColor();
+                        Color incidentRadiance = sample.radiance();
                         light = incidentRadiance
                                 .mul(bsdf.evaluate(localOutgoing, globalToShading.transform(lightRay.direction)))
-                                .mulAdd(intensity * cosineIncident / (sample.likelihood * lightRayCount), light);
+                                .mulAdd(cosineIncident / (sample.likelihood() * sampleCount), light);
                     }
                 }
             }
@@ -191,7 +192,7 @@ public class MonteCarloRayTracer implements RayTracer {
             Color incidentRadiance = traceToIntercept(sample.isSpecular, incidentRay, depth + 1, scalar * beta * sample.color.norm());
 
             if (this.debug) {
-                addDebugString(ray, "beta: %f sample.color: %s cosThetaI: %f likelihood: %f", beta, sample.color, cosineIncident, sample.likelihood);
+                addDebugString(ray, "beta: %f sample.radiance: %s cosThetaI: %f likelihood: %f", beta, sample.color, cosineIncident, sample.likelihood);
             }
 
             light = incidentRadiance

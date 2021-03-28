@@ -1,8 +1,6 @@
 package rausku.lighting;
 
-import rausku.geometry.BoundingBox;
-import rausku.geometry.Geometry;
-import rausku.geometry.Intercept;
+import rausku.geometry.Rectangle;
 import rausku.math.Matrix;
 import rausku.math.Ray;
 import rausku.math.Vec;
@@ -10,21 +8,28 @@ import rausku.scenes.SceneIntercept;
 
 import static rausku.math.FloatMath.abs;
 
-public class RectangleLight implements LightSource, Geometry {
-    private final Matrix transform;
-    private final Matrix inverse;
+public class RectangleLight implements LightSource {
+    private final Matrix objectToWorld;
+    private final Matrix worldToObject;
     private final Color color;
+    private final Rectangle rectangle;
 
-    public RectangleLight(Matrix transform, Color color) {
-        this.transform = transform;
-        this.inverse = transform.inverse();
+    public RectangleLight(Matrix objectToWorld, Color color) {
+        this.objectToWorld = objectToWorld;
+        this.worldToObject = objectToWorld.inverse();
         this.color = color;
+        this.rectangle = new Rectangle();
+    }
+
+    @Override
+    public int getSampleCount() {
+        return 4;
     }
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        Vec sampledPoint = Vec.point(2 * s - 1, 0, 2 * t - 1);
-        Vec worldLightPoint = transform.transform(sampledPoint);
+        Vec sampledPoint = rectangle.sample(s, t);
+        Vec worldLightPoint = objectToWorld.transform(sampledPoint);
         Ray ray = Ray.fromStartEnd(intercept.worldInterceptPoint, worldLightPoint);
 
         Vec toLight = worldLightPoint.sub(intercept.worldInterceptPoint);
@@ -33,16 +38,13 @@ public class RectangleLight implements LightSource, Geometry {
     }
 
     @Override
-    public boolean intercepts(Ray globalRay) {
-        Ray localRay = inverse.transform(globalRay);
-        float intercept = -localRay.origin.y() / localRay.direction.y();
-        Vec interceptPoint = localRay.apply(intercept);
-        return -1 <= interceptPoint.x() && interceptPoint.x() <= 1 &&
-                -1 <= interceptPoint.z() && interceptPoint.z() <= 1;
+    public boolean hasIntercept(Ray globalRay) {
+        Ray localRay = worldToObject.transform(globalRay);
+        return rectangle.hasIntercept(localRay);
     }
 
     @Override
-    public Color getColor() {
+    public Color evaluate() {
         return color;
     }
 
@@ -51,26 +53,4 @@ public class RectangleLight implements LightSource, Geometry {
         return 1;
     }
 
-    @Override
-    public Vec getNormal(Intercept intercept) {
-        return Vec.J.mul(-1);
-    }
-
-    @Override
-    public Intercept getIntercept(Ray ray) {
-        float intercept = -ray.origin.y() / ray.direction.y();
-        Vec interceptPoint = ray.apply(intercept);
-
-        if (-1 <= interceptPoint.x() && interceptPoint.x() <= 1 &&
-                -1 <= interceptPoint.z() && interceptPoint.z() <= 1) {
-            return new Intercept(intercept, interceptPoint, null);
-        } else {
-            return Intercept.noIntercept();
-        }
-    }
-
-    @Override
-    public BoundingBox getBoundingBox() {
-        return new BoundingBox(-1, 1, 0, 0, -1, 1);
-    }
 }

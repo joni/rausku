@@ -4,45 +4,47 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
+/**
+ * Representation of a source of light.
+ */
 public interface LightSource {
 
+    /**
+     * Sample the light source
+     *
+     * @param intercept
+     * @param s
+     * @param t
+     * @return a sample of the light source
+     */
     Sample sample(SceneIntercept intercept, float s, float t);
 
-    boolean intercepts(Ray ray);
+    /**
+     * Returns the recommended number of samples
+     *
+     * @return
+     */
+    default int getSampleCount() {
+        return 1;
+    }
 
-    Color getColor();
+    /**
+     * Check if the ray intercepts this light source
+     *
+     * @param ray the ray to check
+     * @return true iff the ray hits this light source
+     */
+    boolean hasIntercept(Ray ray);
+
+    /**
+     * Returns the radiance arriving from the light source to the intercept point.
+     *
+     * @return radiance
+     */
+    Color evaluate();
 
     float getIntensity(Vec interceptPoint);
 
-    class Sample {
-        /**
-         * Spectrum of the light
-         */
-        public final Color color;
-
-        /**
-         * Ray to the light source
-         */
-        public final Ray ray;
-
-        /**
-         * Likelihood of the sample (value of the probability distribution function)
-         */
-        public final float likelihood;
-
-        public Sample(Color color, Ray ray, float likelihood) {
-            this.color = color;
-            this.ray = ray;
-            this.likelihood = likelihood;
-        }
-
-        @Override
-        public String toString() {
-            return "Sample{" +
-                    "color=" + color +
-                    ", ray=" + ray +
-                    ", likelihood=" + likelihood +
-                    '}';
-        }
+    record Sample(Color radiance, Ray rayToLight, float likelihood) {
     }
 }

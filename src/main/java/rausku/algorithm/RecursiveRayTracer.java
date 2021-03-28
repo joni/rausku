@@ -65,8 +65,8 @@ public class RecursiveRayTracer implements RayTracer {
 
         // Specular reflection of the light source itself when nothing is hit
         for (LightSource light : scene.getLights()) {
-            if (light.intercepts(ray)) {
-                return light.getColor();
+            if (light.hasIntercept(ray)) {
+                return light.evaluate();
             }
         }
 
@@ -111,7 +111,7 @@ public class RecursiveRayTracer implements RayTracer {
         if (!f.isBlack()) {
             Ray reflected = Ray.fromOriginDirection(intercept.worldInterceptPoint, worldIncidentDirection);
             if (this.debug) {
-                addDebugString(ray, "reflected ray: %s", reflected);
+                addDebugString(ray, "reflected rayToLight: %s", reflected);
                 ray.addDebug(reflected);
             }
             float cosineIncident = abs(sample.incident.y()); // = normal.dot(incidentRay.direction)
@@ -158,9 +158,9 @@ public class RecursiveRayTracer implements RayTracer {
                 continue;
             }
             LightSource.Sample sample = lightSource.sample(intercept, 0, 1);
-            Ray lightRay = sample.ray;
+            Ray lightRay = sample.rayToLight();
             if (this.debug) {
-                addDebugString(ray, "shadow ray: %s", lightRay);
+                addDebugString(ray, "shadow rayToLight: %s", lightRay);
                 ray.addDebug(lightRay);
             }
             float diffuseReflectionEnergy = normal.dot(lightRay.direction);
@@ -168,7 +168,7 @@ public class RecursiveRayTracer implements RayTracer {
                 // check shadow
                 if (!scene.interceptsRay(lightRay)) {
                     Color materialColor = material.getBSDF(intercept.intercept).evaluate(ray.direction, lightRay.direction);
-                    light = sample.color.mul(materialColor).mulAdd(diffuseReflectionEnergy / sample.likelihood, light);
+                    light = sample.radiance().mul(materialColor).mulAdd(diffuseReflectionEnergy / sample.likelihood(), light);
                 }
             }
         }
@@ -200,7 +200,7 @@ public class RecursiveRayTracer implements RayTracer {
             // Light transmitted through the surface
             Ray transmitted = ray.getTransmitted(normal, interceptPoint, material.getIndexOfRefraction());
             if (this.debug) {
-                addDebugString(ray, "transmitted ray: %s", transmitted);
+                addDebugString(ray, "transmitted rayToLight: %s", transmitted);
             }
             if (transmitted != null) {
                 ray.addDebug(transmitted);

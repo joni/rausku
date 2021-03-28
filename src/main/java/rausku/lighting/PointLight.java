@@ -4,20 +4,27 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
+/**
+ * Represents a single point as a light source.
+ */
 public class PointLight implements LightSource {
     private final Vec position;
-    private final Color color;
+    private final Color flux;
 
-    public PointLight(Vec position, Color color) {
+    /**
+     * @param position
+     * @param flux
+     */
+    public PointLight(Vec position, Color flux) {
         this.position = position;
-        this.color = color;
+        this.flux = flux;
     }
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        // TODO is the likelihood correct?
         var squaredDistance = position.sub(intercept.worldInterceptPoint).sqLen();
-        return new Sample(color, sampleRay(intercept, s, t), squaredDistance);
+        var radiance = flux.div(squaredDistance);
+        return new Sample(radiance, sampleRay(intercept, s, t), 1f);
     }
 
     private Ray sampleRay(SceneIntercept intercept, float s, float t) {
@@ -25,14 +32,13 @@ public class PointLight implements LightSource {
     }
 
     @Override
-    public boolean intercepts(Ray ray) {
-        // TODO compute ray-point distance
+    public boolean hasIntercept(Ray ray) {
         return false;
     }
 
     @Override
-    public Color getColor() {
-        return color;
+    public Color evaluate() {
+        return flux;
     }
 
     @Override

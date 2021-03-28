@@ -1,7 +1,7 @@
 package rausku.material;
 
+import rausku.geometry.Geometry;
 import rausku.geometry.Intercept;
-import rausku.geometry.SceneObject;
 import rausku.lighting.Color;
 import rausku.math.Vec;
 import rausku.texture.CheckerBoardTexture;
@@ -59,18 +59,12 @@ public interface Material {
         return new BRDFMaterial(new SpecularBRDF(Color.of(1f)));
     }
 
-    Color getDiffuseColor(Intercept intercept);
-
-    boolean hasSpecularReflection();
-
-    Color getReflectiveColor(Intercept intercept);
-
     boolean hasRefraction();
 
     float getIndexOfRefraction();
 
-    default Vec getNormal(Intercept intercept, SceneObject sceneObject) {
-        return sceneObject.getNormal(intercept);
+    default Vec getNormal(Intercept intercept, Geometry geometry) {
+        return geometry.getNormal(intercept);
     }
 
     BRDF getBSDF(Intercept intercept);

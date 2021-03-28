@@ -8,9 +8,7 @@ import java.util.List;
 
 public interface SceneDefinition {
 
-    default Camera getCamera() {
-        return Camera.initialCamera();
-    }
+    Camera getCamera();
 
     Collection<LightSource> getLights();
 

@@ -5,11 +5,11 @@ import rausku.lighting.Color;
 import rausku.math.Vec;
 
 /**
- * Material of a single constant color
+ * Material of a single constant radiance
  */
 public class SolidColorMaterial implements Material {
     /**
-     * Base color of the object
+     * Base radiance of the object
      */
     private Color diffuseColor;
     /**
@@ -35,16 +35,6 @@ public class SolidColorMaterial implements Material {
     }
 
     @Override
-    public boolean hasSpecularReflection() {
-        return reflectiveness > 0;
-    }
-
-    @Override
-    public Color getReflectiveColor(Intercept intercept) {
-        return reflectiveColor;
-    }
-
-    @Override
     public boolean hasRefraction() {
         return indexOfRefraction != 1;
     }
@@ -57,15 +47,6 @@ public class SolidColorMaterial implements Material {
     @Override
     public BRDF getBSDF(Intercept intercept) {
         return new LambertianBRDF(diffuseColor);
-    }
-
-    @Override
-    public Color getDiffuseColor(Intercept intercept) {
-//        if (intercept.info instanceof Polygon) {
-//            return ((Polygon) intercept.info).getColor(intercept.interceptPoint);
-//        } else {
-        return getDiffuseColor(intercept.interceptPoint);
-//        }
     }
 
     public Color getDiffuseColor(Vec interceptPoint) {

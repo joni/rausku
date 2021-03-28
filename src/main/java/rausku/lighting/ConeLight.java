@@ -37,13 +37,13 @@ public class ConeLight implements LightSource {
     }
 
     @Override
-    public boolean intercepts(Ray ray) {
+    public boolean hasIntercept(Ray ray) {
         // TODO compute ray-point distance
         return false;
     }
 
     @Override
-    public Color getColor() {
+    public Color evaluate() {
         return color;
     }
 

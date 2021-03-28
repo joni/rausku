@@ -1,7 +1,6 @@
 package rausku.material;
 
 import rausku.geometry.Intercept;
-import rausku.lighting.Color;
 import rausku.texture.Texture;
 
 public class TextureMaterial implements Material {
@@ -26,21 +25,6 @@ public class TextureMaterial implements Material {
     @Override
     public BRDF getBSDF(Intercept intercept) {
         return new LambertianBRDF(diffuseTexture.getColor(intercept));
-    }
-
-    @Override
-    public boolean hasSpecularReflection() {
-        return false;
-    }
-
-    @Override
-    public Color getDiffuseColor(Intercept intercept) {
-        return diffuseTexture.getColor(intercept);
-    }
-
-    @Override
-    public Color getReflectiveColor(Intercept intercept) {
-        return specularTexture.getColor(intercept);
     }
 
 }

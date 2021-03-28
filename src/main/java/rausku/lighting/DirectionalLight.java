@@ -65,7 +65,7 @@ public class DirectionalLight implements LightSource {
     }
 
     @Override
-    public Color getColor() {
+    public Color evaluate() {
         return color;
     }
 
@@ -75,7 +75,7 @@ public class DirectionalLight implements LightSource {
     }
 
     @Override
-    public boolean intercepts(Ray ray) {
+    public boolean hasIntercept(Ray ray) {
         return Vec.cos(towardsLight, ray.direction) > FloatMath.cos(angle / 4);
     }
 }

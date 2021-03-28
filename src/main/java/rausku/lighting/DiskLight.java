@@ -1,12 +1,9 @@
 package rausku.lighting;
 
-import rausku.geometry.BoundingBox;
-import rausku.geometry.Geometry;
-import rausku.geometry.Intercept;
 import rausku.math.*;
 import rausku.scenes.SceneIntercept;
 
-public class DiskLight implements LightSource, Geometry {
+public class DiskLight implements LightSource {
     private final Matrix transform;
     private final Matrix inverse;
     private final Color color;
@@ -15,6 +12,11 @@ public class DiskLight implements LightSource, Geometry {
         this.transform = transform;
         this.inverse = transform.inverse();
         this.color = color;
+    }
+
+    @Override
+    public int getSampleCount() {
+        return 4;
     }
 
     @Override
@@ -28,7 +30,7 @@ public class DiskLight implements LightSource, Geometry {
     }
 
     @Override
-    public boolean intercepts(Ray globalRay) {
+    public boolean hasIntercept(Ray globalRay) {
         Ray localRay = inverse.transform(globalRay);
         float intercept = -localRay.origin.y() / localRay.direction.y();
         Vec interceptPoint = localRay.apply(intercept);
@@ -36,7 +38,7 @@ public class DiskLight implements LightSource, Geometry {
     }
 
     @Override
-    public Color getColor() {
+    public Color evaluate() {
         return color;
     }
 
@@ -45,24 +47,4 @@ public class DiskLight implements LightSource, Geometry {
         return 1;
     }
 
-    @Override
-    public Vec getNormal(Intercept intercept) {
-        return Vec.J.mul(-1);
-    }
-
-    @Override
-    public Intercept getIntercept(Ray ray) {
-        float intercept = -ray.origin.y() / ray.direction.y();
-        Vec interceptPoint = ray.apply(intercept);
-        if (interceptPoint.sqLen() < 2) {
-            return new Intercept(intercept, interceptPoint, null);
-        } else {
-            return Intercept.noIntercept();
-        }
-    }
-
-    @Override
-    public BoundingBox getBoundingBox() {
-        return new BoundingBox(-1, 1, 0, 0, -1, 1);
-    }
 }

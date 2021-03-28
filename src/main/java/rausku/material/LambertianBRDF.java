@@ -18,6 +18,6 @@ public class LambertianBRDF implements BRDF {
 
     public Sample sample(Vec outgoing, float s, float t) {
         Vec hemisphere = Rand.cosineHemisphere(s, t);
-        return new Sample(color, hemisphere, hemisphere.y());
+        return new Sample(color, hemisphere, hemisphere.y(), false);
     }
 }

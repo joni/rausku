@@ -6,6 +6,9 @@ import rausku.math.Ray;
 import rausku.math.Vec;
 import rausku.scenes.SceneIntercept;
 
+/**
+ * Represents a light source that surrounds the scene and has a constant emission in all directions.
+ */
 public class AmbientLight implements LightSource {
     private Color color;
 
@@ -15,20 +18,18 @@ public class AmbientLight implements LightSource {
 
     @Override
     public Sample sample(SceneIntercept intercept, float s, float t) {
-        return new Sample(color, sampleRay(intercept, s, t), 1 / (4 * FloatMath.PI));
-    }
-
-    private Ray sampleRay(SceneIntercept intercept, float s, float t) {
+        // TODO could be better - we could pick the hemisphere
         Vec direction = Rand.sphere(s, t);
-        return Ray.fromOriginDirection(intercept.worldInterceptPoint, direction);
+        var rayToLight = Ray.fromOriginDirection(intercept.worldInterceptPoint, direction);
+        return new Sample(color, rayToLight, 1 / (4 * FloatMath.PI));
     }
 
     @Override
-    public boolean intercepts(Ray ray) {
+    public boolean hasIntercept(Ray ray) {
         return true;
     }
 
-    public Color getColor() {
+    public Color evaluate() {
         return color;
     }
 

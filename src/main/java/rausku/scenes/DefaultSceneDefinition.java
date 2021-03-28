@@ -3,10 +3,7 @@ package rausku.scenes;
 import rausku.algorithm.Camera;
 import rausku.geometry.Geometry;
 import rausku.geometry.Group;
-import rausku.lighting.AmbientLight;
-import rausku.lighting.Color;
-import rausku.lighting.DirectionalLight;
-import rausku.lighting.LightSource;
+import rausku.lighting.*;
 import rausku.material.Material;
 import rausku.math.Matrix;
 import rausku.math.Vec;
@@ -50,20 +47,16 @@ public class DefaultSceneDefinition implements SceneDefinition {
 
     @Override
     public Collection<LightSource> getLights() {
-        if (lights.isEmpty()) return DEFAULT_LIGHTS;
+        if (lights.isEmpty()) {
+            return DEFAULT_LIGHTS;
+        }
         return lights;
     }
 
     protected void addLight(LightSource lightSource) {
-        if (lightSource instanceof Geometry geometry) {
-            this.addObject(geometry, Material.lambertian(Color.of(1f)));
-        }
-        this.lights.add(lightSource);
-    }
-
-    protected void addLight(Matrix transform, LightSource lightSource) {
-        if (lightSource instanceof Geometry geometry) {
-            this.addObject(transform, geometry, Material.lambertian(Color.of(1f)));
+        if (lightSource instanceof AreaLight areaLight) {
+            objects.add(new SceneObjectInstance(areaLight.getGeometry(), areaLight.getWorldToObject(), areaLight.getObjectToWorld(),
+                    Material.lambertian(Color.black()), areaLight));
         }
         this.lights.add(lightSource);
     }
